@@ -176,60 +176,6 @@
   pointer-events: auto;
 }
 
-.reelPlayButton {
-  position: absolute;
-  left: 50%;
-  top: 46%;
-  z-index: 20;
-  width: 132px;
-  height: 132px;
-  display: grid;
-  place-items: center;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  background: #65c500;
-  color: #ffffff;
-  padding: 0;
-  cursor: pointer;
-  box-shadow: 0 10px 28px rgba(82, 107, 22, 0.34);
-  transform: translate(-50%, -50%);
-  transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
-  pointer-events: none;
-}
-
-.reelPlayButton svg {
-  width: 46px;
-  height: 46px;
-  margin-left: 6px;
-  fill: currentColor;
-  stroke-width: 1.8;
-}
-
-.videoCard:hover .reelPlayButton,
-.videoCard:focus-visible .reelPlayButton {
-  transform: translate(-50%, -50%) scale(1.08);
-  background: #76d400;
-  box-shadow: 0 14px 34px rgba(82, 107, 22, 0.42), 0 0 0 9px rgba(132, 204, 22, 0.16);
-}
-
-.thumbnailWrapper:focus-within .reelPlayButton {
-  opacity: 0;
-  visibility: hidden;
-}
-
-/* Mobile browsers do not consistently focus a cross-origin Instagram iframe.
-   A tap still establishes hover/active state on the iframe wrapper, so use it
-   as the visual fallback while the native reel player handles the same tap. */
-@media (hover: none), (pointer: coarse) {
-  .thumbnailWrapper:hover .reelPlayButton,
-  .thumbnailWrapper:active .reelPlayButton,
-  .thumbnailWrapper:focus-within .reelPlayButton {
-    opacity: 0;
-    visibility: hidden;
-    transform: translate(-50%, -50%) scale(0.92);
-  }
-}
-
 /* Common Overlay Elements */
 .cPlay {
   position: absolute;

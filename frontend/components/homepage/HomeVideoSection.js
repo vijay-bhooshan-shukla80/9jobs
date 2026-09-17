@@ -297,16 +297,6 @@ function PricingCardPreview() {
 
 export default function HomeVideoSection() {
   const [activeModalVideo, setActiveModalVideo] = useState(null);
-  const [startedInlineVideos, setStartedInlineVideos] = useState(() => new Set());
-
-  function startInlineVideo(reelId) {
-    setStartedInlineVideos((current) => {
-      if (current.has(reelId)) return current;
-      const next = new Set(current);
-      next.add(reelId);
-      return next;
-    });
-  }
 
   // Close modal on Escape key press
   useEffect(() => {
@@ -324,26 +314,6 @@ export default function HomeVideoSection() {
       document.body.style.overflow = "";
     };
   }, [activeModalVideo]);
-
-  useEffect(() => {
-    function handleWindowBlur() {
-      window.setTimeout(() => {
-        const focusedElement = document.activeElement;
-        const reelId = focusedElement?.dataset?.reelId;
-        if (focusedElement?.tagName === "IFRAME" && reelId) {
-          setStartedInlineVideos((current) => {
-            if (current.has(reelId)) return current;
-            const next = new Set(current);
-            next.add(reelId);
-            return next;
-          });
-        }
-      }, 0);
-    }
-
-    window.addEventListener("blur", handleWindowBlur);
-    return () => window.removeEventListener("blur", handleWindowBlur);
-  }, []);
 
   return (
     <section className={styles.videoSection} id="how-9jobs-works" aria-label="About 9Jobs">
@@ -428,15 +398,7 @@ export default function HomeVideoSection() {
                   allowFullScreen
                   tabIndex={0}
                   data-reel-id={card.id}
-                  onFocus={() => startInlineVideo(card.id)}
                 />
-
-                {!startedInlineVideos.has(card.id) && (
-                  <span className={styles.reelPlayButton} aria-hidden="true">
-                    <Play />
-                  </span>
-                )}
-
               </div>
 
               {/* Card Information */}
