@@ -4,10 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
-import { CalendlyLink } from "./CalendlyWidget";
 
 const links = [
-  { href: "/9-jobs", label: "9 Jobs" },
   { href: "/about", label: "About" },
   { href: "/features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
@@ -16,6 +14,7 @@ const links = [
     label: "Australian Jobs",
     href: "/jobs",
     isDropdown: true,
+    hidden: true,
     dropdownLinks: [
       { href: "/jobs/melbourne", label: "Melbourne" },
       { href: "/jobs/sydney", label: "Sydney NSW" },
@@ -58,6 +57,8 @@ export default function Navbar() {
   const [activeDesktopDropdown, setActiveDesktopDropdown] = useState(null);
   const [activeMobileDropdown, setActiveMobileDropdown] = useState(null);
 
+  const visibleLinks = links.filter((link) => !link.hidden);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 18);
     onScroll();
@@ -69,15 +70,27 @@ export default function Navbar() {
     <header className={`site-nav fj-nav${scrolled ? " is-scrolled" : ""}`}>
       <div className="nav-inner fj-nav-inner">
         <Link className="brand fj-brand" href="/" aria-label="9Jobs home">
-          <span className="fj-brand-mark" role="presentation">
-            <span />
-            <span />
-          </span>
-          <span>9Jobs</span>
+          {pathname === "/client-information" || pathname === "/client-information/" ? (
+            <img
+              src="https://res.cloudinary.com/er2zhu72/image/upload/v1789035479/9jobs-logo-removebg-preview.png"
+              width="170"
+              height="56"
+              style={{ width: '170px', height: '56px', objectFit: 'cover', display: 'block' }}
+              alt="9Jobs"
+            />
+          ) : (
+            <>
+              <span className="fj-brand-mark" role="presentation">
+                <span />
+                <span />
+              </span>
+              <span>9Jobs</span>
+            </>
+          )}
         </Link>
 
         <nav className="nav-links fj-nav-links" aria-label="Primary navigation">
-          {links.map((link) => {
+          {visibleLinks.map((link) => {
             if (link.isDropdown) {
               const isDropdownOpen = activeDesktopDropdown === link.label;
               return (
@@ -131,9 +144,9 @@ export default function Navbar() {
           <Link href="/pricing" className="fj-button fj-button--ghost" prefetch={false}>
             2 Days Trial
           </Link>
-          <CalendlyLink className="fj-button fj-button--dark">
-            Get a demo <ArrowRight size={17} />
-          </CalendlyLink>
+          <a href="tel:+61422279428" className="fj-button fj-button--dark">
+            Book a call <ArrowRight size={17} />
+          </a>
         </div>
 
         <button
@@ -152,7 +165,7 @@ export default function Navbar() {
         aria-label="Mobile navigation"
         aria-hidden={!isOpen}
       >
-        {links.map((link) => {
+        {visibleLinks.map((link) => {
           if (link.isDropdown) {
             const isMobileDropdownOpen = activeMobileDropdown === link.label;
             return (
@@ -207,9 +220,9 @@ export default function Navbar() {
         <Link className="fj-button fj-button--ghost" href="/pricing" prefetch={false} onClick={() => setIsOpen(false)}>
           2 Days Trial
         </Link>
-        <CalendlyLink className="fj-button fj-button--dark" onClick={() => setIsOpen(false)}>
-          Get a demo <ArrowRight size={17} />
-        </CalendlyLink>
+        <a className="fj-button fj-button--dark" href="tel:+61422279428" onClick={() => setIsOpen(false)}>
+          Book a call <ArrowRight size={17} />
+        </a>
       </nav>
     </header>
   );

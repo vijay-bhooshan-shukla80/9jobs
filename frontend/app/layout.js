@@ -33,15 +33,17 @@ export const metadata = {
     images: [
       {
         url: "https://9jobs.co/opengraph-image.png",
-        width: 356,
-        height: 356,
-        alt: "9Jobs logo",
+        secureUrl: "https://9jobs.co/opengraph-image.png",
+        width: 1024,
+        height: 1024,
+        type: "image/png",
+        alt: "9Jobs Job Application Service logo",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    images: ["https://9jobs.co/twitter-image.png"],
+    images: ["https://9jobs.co/opengraph-image.png"],
   },
   keywords: [
     "9jobs",

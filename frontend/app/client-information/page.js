@@ -9,12 +9,15 @@ export const metadata = {
     description: 'Provide your professional details, working rights, and upload your resume to get started with 9Jobs.',
     url: 'https://9jobs.co/client-information',
     siteName: '9Jobs',
+    type: 'website',
     images: [
       {
-        url: 'https://9jobs.co/9jobs-share-card.png',
-        width: 1200,
-        height: 630,
-        alt: '9Jobs logo',
+        url: 'https://9jobs.co/opengraph-image.png',
+        secureUrl: 'https://9jobs.co/opengraph-image.png',
+        width: 1024,
+        height: 1024,
+        type: 'image/png',
+        alt: '9Jobs Job Application Service logo',
       },
     ],
   },
@@ -22,7 +25,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Client Information Details - 9Jobs',
     description: 'Provide your professional details, working rights, and upload your resume to get started with 9Jobs.',
-    images: ['https://9jobs.co/9jobs-share-card.png'],
+    images: ['https://9jobs.co/opengraph-image.png'],
   },
 };
 

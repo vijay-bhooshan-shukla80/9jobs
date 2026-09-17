@@ -16,6 +16,8 @@ export const fortnightAgreementInputSchema = z.object({
   agreementDate: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/),
   servicePrice: z.string().trim().min(1).max(50), // Upfront Service Fee
   initialTerm: requiredTextSchema, // Service Period
+  permanentSuccessFeeDays: z.coerce.number().int().positive().max(Number.MAX_SAFE_INTEGER).default(14),
+  shortTermSuccessFeeDays: z.coerce.number().int().positive().max(Number.MAX_SAFE_INTEGER).default(7),
   renewalEnabled: z.boolean().optional().default(false),
   renewalTerm: requiredTextSchema.optional().or(z.literal('')),
   renewalFee: z.string().trim().max(50).optional().or(z.literal('')),

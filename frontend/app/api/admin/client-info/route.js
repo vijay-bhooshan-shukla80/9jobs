@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/utils/db';
 import ClientInfo from '@/models/ClientInfo';
 import { requireAdminApiSession } from '@/lib/admin/auth/require-admin';
+import { isClientSubmission } from '@/lib/client-info/submissions';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,7 +17,7 @@ export async function GET(request) {
 
     const submissions = await ClientInfo.find({}).sort({ createdAt: -1 });
 
-    return NextResponse.json(submissions, { status: 200 });
+    return NextResponse.json(submissions.filter(isClientSubmission), { status: 200 });
   } catch (error) {
     console.error('Admin Client Info API Error:', error);
     return NextResponse.json({ error: 'Failed to retrieve client submissions.' }, { status: 500 });

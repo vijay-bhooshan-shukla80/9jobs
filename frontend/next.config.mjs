@@ -37,7 +37,7 @@ const nextConfig = {
       "img-src 'self' data: blob: https:",
       "font-src 'self' https://fonts.gstatic.com data:",
       "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com https://assets.calendly.com https://calendly.com",
-      "frame-src 'self' https://calendly.com",
+      "frame-src 'self' https://calendly.com https://www.instagram.com",
       "media-src 'self' blob: https:",
       "worker-src 'self' blob:",
       "upgrade-insecure-requests",

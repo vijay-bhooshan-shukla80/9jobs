@@ -18,6 +18,8 @@ const initialState = {
   agreementDate: new Date().toISOString().slice(0, 10),
   servicePrice: 'AUD $200', // Upfront Service Fee
   initialTerm: '2 month', // Service Period
+  permanentSuccessFeeDays: 14,
+  shortTermSuccessFeeDays: 7,
   renewalEnabled: false,
   renewalTerm: '1 month',
   renewalFee: 'AUD $90',
@@ -37,6 +39,10 @@ const sections = [
     title: 'Agreement Parameters',
     fields: ['agreementDate', 'initialTerm', 'servicePrice', 'renewalEnabled', 'renewalTerm', 'renewalFee'],
   },
+  {
+    title: 'Success Fees',
+    fields: ['permanentSuccessFeeDays'],
+  },
 ];
 
 const labels = {
@@ -51,6 +57,7 @@ const labels = {
   agreementDate: 'Agreement Date',
   initialTerm: '2. Service Period',
   servicePrice: '3. Upfront Service Fee (e.g. AUD $200)',
+  permanentSuccessFeeDays: 'Success Fees',
   renewalEnabled: 'Renewal',
   renewalTerm: 'Renewal Month',
   renewalFee: 'Renewal Fee',
@@ -75,6 +82,7 @@ function buildFormValues(initialValues) {
   return {
     ...initialState,
     ...initialValues,
+    permanentSuccessFeeDays: Number(initialValues?.permanentSuccessFeeDays) === 7 ? 7 : 14,
     providerName: initialState.providerName,
     providerEmail: initialState.providerEmail,
     providerPhone: initialState.providerPhone,
@@ -118,7 +126,10 @@ export default function FortnightAgreementForm({ initialValues = null, agreement
   async function handleSubmit(event) {
     event.preventDefault();
     if (isPending) return;
-    const validation = fortnightAgreementInputSchema.safeParse(values);
+    const validation = fortnightAgreementInputSchema.safeParse({
+      ...values,
+      shortTermSuccessFeeDays: values.permanentSuccessFeeDays,
+    });
 
     if (!validation.success) {
       const nextErrors = {};
@@ -183,8 +194,13 @@ export default function FortnightAgreementForm({ initialValues = null, agreement
             {section.fields.map((field) => (
               shouldShowField(field) ? (
               <label className={`admin-field ${field === 'notes' ? 'admin-field--full' : ''}`} key={field}>
-                <span>{labels[field]}</span>
-                {field === 'initialTerm' || field === 'renewalTerm' ? (
+                {field !== 'permanentSuccessFeeDays' ? <span>{labels[field]}</span> : null}
+                {field === 'permanentSuccessFeeDays' ? (
+                  <select aria-label={labels[field]} onChange={(event) => updateField(field, Number(event.target.value))} value={values[field]}>
+                    <option value={7}>7 Days</option>
+                    <option value={14}>14 Days</option>
+                  </select>
+                ) : field === 'initialTerm' || field === 'renewalTerm' ? (
                   <select onChange={(event) => updateField(field, event.target.value)} value={values[field]}>
                     {(field === 'initialTerm' ? servicePeriodOptions : renewalTermOptions).map((option) => (
                       <option key={option} value={option}>

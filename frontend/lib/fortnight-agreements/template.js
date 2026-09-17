@@ -18,6 +18,13 @@ function createSection(heading, paragraphs, intro = '') {
   };
 }
 
+function formatSuccessFeeDays(value, fallback) {
+  const days = Number(value ?? fallback);
+  if (days === 14) return 'fourteen (14)';
+  if (days === 7) return 'seven (7)';
+  return String(days);
+}
+
 export function buildFortnightAgreementTemplate(input) {
   const provider = {
     legalName: input.providerName || FIXED_PROVIDER.legalName,
@@ -61,8 +68,8 @@ export function buildFortnightAgreementTemplate(input) {
       '4. Success Fee',
       [
         'If the Client secures employment during the service period, or from any application submitted by 9Jobs during the service period, the Client agrees to pay a success fee.',
-        'Permanent Employment or Fixed-Term Employment of Six (6) Months or More: The success fee will be equal to fourteen (14) days of the Client\'s gross salary before taxes.',
-        'Fixed-Term Employment of Three (3) Months or Less: The success fee will be equal to seven (7) days of the Client\'s gross salary before taxes.',
+        `Permanent Employment or Fixed-Term Employment of Six (6) Months or More: The success fee will be equal to ${formatSuccessFeeDays(input.permanentSuccessFeeDays, 14)} days of the Client's gross salary before taxes.`,
+        `Fixed-Term Employment of Three (3) Months or Less: The success fee will be equal to ${formatSuccessFeeDays(input.shortTermSuccessFeeDays, 7)} days of the Client's gross salary before taxes.`,
         'Other Fixed-Term Employment: If the Client secures fixed-term or contract employment for a period greater than three (3) months but less than six (6) months, the applicable success fee may be adjusted and will be agreed upon in writing between the Client and 9Jobs.',
       ]
     ),

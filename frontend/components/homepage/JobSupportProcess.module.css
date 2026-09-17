@@ -1,0 +1,491 @@
+.scrollSectionWrapper {
+  position: relative;
+  background: #fbfcfc;
+  width: 100%;
+  height: 360vh;
+  box-sizing: border-box;
+}
+
+/* Sticky full-screen viewport spanning 100vw with ample top and bottom padding */
+.stickyViewport {
+  position: sticky;
+  top: 80px;
+  height: calc(100vh - 80px);
+  width: 100vw;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  overflow: hidden;
+  padding: 16px 0 20px;
+  box-sizing: border-box;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  z-index: 12;
+  position: relative;
+  margin-bottom: 22px;
+  background: #fbfcfc;
+  padding: 6px 20px;
+}
+
+.heading {
+  font-family: var(--font-heading, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: clamp(26px, 3.4vw, 44px);
+  font-weight: 850;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #111827;
+  margin: 0;
+  line-height: 1.15;
+}
+
+.supportAccent {
+  color: #65c500;
+  margin: 0 0.25em;
+}
+
+/* 6,6 Split Full-Width Grid (50% / 50%) */
+.fullScreenStage {
+  position: relative;
+  width: 100vw;
+  max-width: 100%;
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  overflow: visible;
+}
+
+/* LEFT 6 (50%): Wheel Column */
+.wheelColumn {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Hexagon background - Spreads across the entire left section */
+.hexagonBg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 82%, rgba(0, 0, 0, 0) 99%);
+  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 82%, rgba(0, 0, 0, 0) 99%);
+}
+
+/* Hardware-accelerated smooth floating layers */
+.hexLayer1,
+.hexLayer2,
+.hexLayer3 {
+  will-change: transform, opacity;
+  transform-box: fill-box;
+}
+
+/* Shared center for the logo circle and the rotating icon orbit. */
+.wheelStageAnchor {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: scale(0.98);
+  transform-origin: center;
+}
+
+@media (max-width: 1200px) {
+  .wheelStageAnchor {
+    transform: scale(0.82);
+  }
+}
+
+/* 9Jobs Axle Hub Disc (250px) */
+.hubCircle {
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #f9fafb 100%);
+  border: 5px solid #7cdb00;
+  box-shadow: 
+    0 26px 54px -10px rgba(0, 0, 0, 0.22),
+    0 12px 28px -6px rgba(124, 219, 0, 0.38),
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    inset 0 3px 6px rgba(255, 255, 255, 0.95),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.hubImg {
+  width: 90%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Icon Badge Wrapper on Wheel */
+.wheelBadge {
+  position: absolute;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition: box-shadow 0.35s ease;
+  cursor: pointer;
+}
+
+.badgeInner {
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+  display: grid;
+  place-items: center;
+}
+
+.wheelBadge svg {
+  width: 50px;
+  height: 50px;
+}
+
+/* RIGHT 6 (50%): Text Content Column */
+.textColumn {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: clamp(28px, 2.5vw, 48px);
+  padding-right: clamp(40px, 6vw, 100px);
+  box-sizing: border-box;
+  z-index: 6;
+}
+
+.activeTextWrapper {
+  width: 100%;
+  max-width: 720px;
+}
+
+.trustPill {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 13px;
+  border: 1px solid rgba(101, 197, 0, 0.12);
+  border-radius: 999px;
+  background: rgba(248, 252, 246, 0.96);
+  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.08);
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.trustPill > span {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #65c500;
+  box-shadow: 0 0 0 5px rgba(101, 197, 0, 0.1);
+}
+
+.activeTitle {
+  font-family: var(--font-heading, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: clamp(38px, 3.8vw, 56px);
+  font-weight: 800;
+  color: #0f172a;
+  margin: 18px 0 0;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  display: flex;
+  flex-direction: column;
+}
+
+.activeTitleAccent {
+  color: #65c500;
+}
+
+/* Subheading / Description */
+.activeDesc {
+  font-family: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: clamp(19px, 1.5vw, 24px);
+  line-height: 1.75;
+  color: #334155;
+  margin: 26px 0 0;
+  max-width: 680px;
+  display: block;
+}
+
+.descText {
+  font-style: italic;
+  color: #334155;
+}
+
+/* CSS-Designed Double Quotation Marks */
+.quoteMark {
+  font-family: "Georgia", "Times New Roman", "Cambria", serif;
+  font-size: 1.4em;
+  font-weight: 800;
+  font-style: normal;
+  color: #65c500;
+  line-height: 0;
+  display: inline-block;
+  user-select: none;
+  opacity: 0.9;
+  vertical-align: -0.15em;
+}
+
+.quoteMark:first-child {
+  margin-right: 6px;
+  margin-left: 1px;
+}
+
+.quoteMark:last-child {
+  margin-left: 5px;
+}
+
+.stepBenefits {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  max-width: 650px;
+  margin-top: 38px;
+}
+
+.stepBenefit {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  text-align: center;
+  color: #172033;
+}
+
+.stepBenefit + .stepBenefit {
+  border-left: 1px solid #dfe5e7;
+}
+
+.stepBenefitIcon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(101, 197, 0, 0.14);
+  background: linear-gradient(145deg, #ffffff, #f3faea);
+  box-shadow: 0 8px 20px rgba(101, 197, 0, 0.13);
+  color: #65c500;
+}
+
+.stepBenefitIcon svg {
+  width: 28px;
+  height: 28px;
+  stroke-width: 2.4;
+}
+
+.stepBenefit strong {
+  max-width: 120px;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+@media (max-width: 1023px) {
+  .header {
+    margin-bottom: 12px;
+  }
+
+  .fullScreenStage {
+    grid-template-columns: 47% 53%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .wheelColumn,
+  .textColumn {
+    min-width: 0;
+  }
+
+  .wheelStageAnchor {
+    left: 46%;
+    transform: scale(0.62);
+  }
+
+  .textColumn {
+    padding-left: 22px;
+    padding-right: clamp(24px, 5vw, 52px);
+  }
+
+  .activeTitle {
+    font-size: clamp(27px, 4.2vw, 38px);
+    margin-top: 14px;
+  }
+
+  .activeDesc {
+    font-size: clamp(16px, 2.25vw, 20px);
+    line-height: 1.65;
+    margin-top: 20px;
+  }
+
+  .stepBenefits {
+    margin-top: 28px;
+  }
+
+  .stepBenefit {
+    padding: 0 8px;
+  }
+
+  .stepBenefitIcon {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+/* Phones retain the orbit on the left and the active content on the right. */
+@media (max-width: 600px) {
+  .stickyViewport {
+    top: 96px;
+    height: calc(100svh - 96px);
+    padding: 16px 0 8px;
+  }
+
+  .header {
+    margin-bottom: 0;
+    padding: 4px 12px;
+  }
+
+  .heading {
+    font-size: clamp(22px, 6.6vw, 28px);
+    line-height: 1.12;
+  }
+
+  .fullScreenStage {
+    grid-template-columns: 1fr;
+    grid-template-rows: 45% 55%;
+  }
+
+  .wheelColumn {
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .hexagonBg {
+    width: 118%;
+    mask-image: linear-gradient(to right, #000 76%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, #000 76%, transparent 100%);
+  }
+
+  .wheelStageAnchor {
+    left: 50%;
+    top: 48%;
+    transform: scale(0.46);
+  }
+
+  .textColumn {
+    height: 100%;
+    justify-content: flex-start;
+    padding: 8px 24px 0;
+  }
+
+  .activeTextWrapper {
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  .activeTitle {
+    font-size: clamp(18px, 5.2vw, 22px);
+    line-height: 1.16;
+    letter-spacing: -0.02em;
+    margin-top: 9px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .trustPill {
+    display: flex;
+    width: max-content;
+    gap: 5px;
+    padding: 4px 7px;
+    font-size: clamp(7px, 2.05vw, 9px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .trustPill > span {
+    width: 6px;
+    height: 6px;
+    box-shadow: 0 0 0 3px rgba(101, 197, 0, 0.1);
+  }
+
+  .activeDesc {
+    display: block;
+    font-size: clamp(12px, 3.45vw, 14px);
+    line-height: 1.6;
+    margin-top: 14px;
+  }
+
+  .stepBenefits {
+    margin-top: 18px;
+  }
+
+  .stepBenefit {
+    gap: 6px;
+    padding: 0 4px;
+  }
+
+  .stepBenefitIcon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .stepBenefitIcon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .stepBenefit strong {
+    font-size: clamp(7px, 2.1vw, 9px);
+    line-height: 1.2;
+  }
+
+  .quoteMark:first-child {
+    margin-right: 4px;
+    margin-left: 0;
+  }
+
+  .quoteMark:last-child {
+    margin-left: 3px;
+  }
+
+}
+
+@media (max-width: 380px) {
+  .fullScreenStage {
+    grid-template-columns: 1fr;
+    grid-template-rows: 43% 57%;
+  }
+
+  .wheelStageAnchor {
+    left: 50%;
+    top: 47%;
+    transform: scale(0.4);
+  }
+
+  .textColumn {
+    padding: 6px 16px 0;
+  }
+}

@@ -85,6 +85,7 @@ export async function POST(request) {
     }
 
     const newClientInfo = new ClientInfo({
+      submittedAt: new Date(),
       fullName,
       contactNo,
       workingRights: finalWorkingRights,

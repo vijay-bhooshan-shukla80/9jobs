@@ -315,8 +315,6 @@ export default function ClientInfoList({ initialSubmissions }) {
                 <th style={{ whiteSpace: 'nowrap' }}>Current Full Address</th>
                 <th style={{ whiteSpace: 'nowrap' }}>Account Email</th>
                 <th style={{ whiteSpace: 'nowrap' }}>Password</th>
-                <th style={{ whiteSpace: 'nowrap' }}>Billing Plan</th>
-                <th style={{ whiteSpace: 'nowrap' }}>Billing Status</th>
                 <th style={{ whiteSpace: 'nowrap' }}>Resume</th>
                 <th style={{ whiteSpace: 'nowrap' }}>Cover Letter</th>
                 <th style={{ whiteSpace: 'nowrap' }}>Submitted At</th>
@@ -340,8 +338,6 @@ export default function ClientInfoList({ initialSubmissions }) {
                   <td style={{ minWidth: '260px', whiteSpace: 'normal' }}>{sub.address}</td>
                   <td style={{ minWidth: '220px' }}>{sub.email}</td>
                   <td style={{ whiteSpace: 'nowrap', fontFamily: 'monospace' }}>{sub.password}</td>
-                  <td style={{ whiteSpace: 'nowrap' }}>{ensureBilling(sub).planType.replaceAll('_', ' ')}</td>
-                  <td style={{ whiteSpace: 'nowrap' }}>{ensureBilling(sub).billingState.replaceAll('_', ' ')}</td>
                   <td style={{ whiteSpace: 'nowrap' }}>
                     <a
                       className="admin-link admin-link--download"

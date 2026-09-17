@@ -40,7 +40,9 @@ describe('invoice send payment-link route', () => {
     const { POST } = await loadSendPaymentLinkRoute();
     getInvoiceDocumentById.mockResolvedValue({
       _id: 'invoice-1',
-      billedToName: 'Neetu Sharma',
+      billedToName: 'Neetu & Sharma <Client>',
+      dueDate: '2026-09-25',
+      duration: '2 MONTHS',
       billedToEmail: 'sharmamelbourne91@gmail.com',
       paymentStatus: 'pending',
       stripeCheckoutUrl: '',
@@ -68,11 +70,20 @@ describe('invoice send payment-link route', () => {
       expect.objectContaining({
         to: 'sharmamelbourne91@gmail.com',
         subject: '9Jobs Payment Details',
-        html: expect.stringContaining('Payment Now'),
         html: expect.stringContaining('href="https://checkout.stripe.com/pay/cs_test_123"'),
       })
     );
-    expect(sendMail.mock.calls[0][0].attachments).toBeUndefined();
+    const mail = sendMail.mock.calls[0][0];
+    expect(mail.attachments).toBeUndefined();
+    expect(mail.attachDataUrls).toBe(true);
+    expect(mail.html).toContain('Dear <strong>Neetu &amp; Sharma &lt;Client&gt;</strong>');
+    expect(mail.html).toContain('AUD $150');
+    expect(mail.html).toContain('2 MONTHS');
+    expect(mail.html).toContain('25 September 2026');
+    expect(mail.html).toContain('PAY NOW');
+    expect(mail.html).toContain('background:#D8FF3F');
+    expect(mail.html).not.toContain('[PAYMENT');
+    expect(mail.html).not.toContain('Weekly / Monthly');
     expect(body.checkoutUrl).toBe('https://checkout.stripe.com/pay/cs_test_123');
     expect(body.whatsappShareUrl).toBe('https://wa.me/61421803703?text=invoice');
   });

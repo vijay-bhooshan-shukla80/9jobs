@@ -1,133 +1,31 @@
 "use client";
 
 import { Children, useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useInView, useScroll, useSpring, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useInView, useScroll, useSpring, useTransform, useReducedMotion } from "framer-motion";
 
 const EASE = [0.22, 1, 0.36, 1];
-const useReducedMotion = () => false;
-function renderMotionTag(as, props, children) {
-  switch (as) {
-    case "article":
-      return <motion.article {...props}>{children}</motion.article>;
-    case "header":
-      return <motion.header {...props}>{children}</motion.header>;
-    case "li":
-      return <motion.li {...props}>{children}</motion.li>;
-    case "section":
-      return <motion.section {...props}>{children}</motion.section>;
-    case "span":
-      return <motion.span {...props}>{children}</motion.span>;
-    case "ul":
-      return <motion.ul {...props}>{children}</motion.ul>;
-    default:
-      return <motion.div {...props}>{children}</motion.div>;
-  }
-}
 
-function getAxis(direction, distance) {
-  switch (direction) {
-    case "down":
-      return { x: 0, y: -distance };
-    case "left":
-      return { x: distance, y: 0 };
-    case "right":
-      return { x: -distance, y: 0 };
-    default:
-      return { x: 0, y: distance };
-  }
-}
-
+// Plain markup is visible on the server; the public observer enhances it after mount.
 export function Reveal({
-  as = "div",
-  children,
-  className,
-  delay = 0,
-  direction = "up",
-  distance = 32,
-  duration = 0.72,
-  once = true,
-  amount = 0.04,
-  style,
-  ...props
+  as: Tag = "div", children, className, style,
+  delay = 0, direction = "up", distance: _distance, duration: _duration,
+  once: _once, amount: _amount, ...props
 }) {
-  const reduceMotion = useReducedMotion();
-  const hiddenAxis = getAxis(direction, distance);
-
-  return renderMotionTag(
-    as,
-    {
-      className,
-      initial: reduceMotion ? false : { opacity: 0, ...hiddenAxis },
-      whileInView: { opacity: 1, x: 0, y: 0 },
-      viewport: { once, amount },
-      transition: reduceMotion ? { duration: 0 } : { duration, delay, ease: EASE },
-      style: { willChange: "transform, opacity", ...style },
-      ...props,
-    },
-    children
-  );
+  return <Tag className={className} style={style} data-public-reveal={direction} data-public-delay={Math.min(delay * 1000, 240)} {...props}>{children}</Tag>;
 }
 
 export function StaggerContainer({
-  as = "div",
-  children,
-  className,
-  delayChildren = 0,
-  stagger = 0.1,
-  once = true,
-  amount = 0.2,
-  ...props
+  as: Tag = "div", children, className, stagger = 0.08,
+  delayChildren: _delayChildren, once: _once, amount: _amount, ...props
 }) {
-  const reduceMotion = useReducedMotion();
-
-  return renderMotionTag(
-    as,
-    {
-      className,
-      variants: {
-        hidden: {},
-        visible: {
-          transition: reduceMotion
-            ? { delayChildren: 0, staggerChildren: 0 }
-            : { delayChildren, staggerChildren: stagger },
-        },
-      },
-      initial: "hidden",
-      whileInView: "visible",
-      viewport: { once, amount },
-      ...props,
-    },
-    children
-  );
+  return <Tag className={className} data-public-stagger={Math.max(70, Math.min(stagger * 1000, 120))} {...props}>{children}</Tag>;
 }
 
 export function StaggerItem({
-  as = "div",
-  children,
-  className,
-  direction = "up",
-  distance = 40,
-  duration = 0.72,
-  style,
-  ...props
+  as: Tag = "div", children, className, direction = "up",
+  distance: _distance, duration: _duration, ...props
 }) {
-  const reduceMotion = useReducedMotion();
-  const hiddenAxis = getAxis(direction, distance);
-
-  return renderMotionTag(
-    as,
-    {
-      className,
-      variants: {
-        hidden: reduceMotion ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, ...hiddenAxis },
-        visible: { opacity: 1, x: 0, y: 0 },
-      },
-      transition: reduceMotion ? { duration: 0 } : { duration, ease: EASE },
-      style: { willChange: "transform, opacity", ...style },
-      ...props,
-    },
-    children
-  );
+  return <Tag className={className} data-public-reveal={direction} {...props}>{children}</Tag>;
 }
 
 export function FloatingCard({
@@ -197,7 +95,7 @@ export function AnimatedCounter({
   const reduceMotion = useReducedMotion();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.55 });
-  const [display, setDisplay] = useState(() => (0).toFixed(decimals));
+  const [display, setDisplay] = useState(() => value.toFixed(decimals));
 
   useEffect(() => {
     if (!isInView) return undefined;
@@ -292,8 +190,8 @@ export function HoverCard({ children, className, style, ...props }) {
   return (
     <motion.div
       className={className}
-      whileHover={reduceMotion ? undefined : { y: -8, scale: 1.015 }}
-      transition={{ duration: 0.4, ease: EASE }}
+      whileHover={reduceMotion ? undefined : { y: -3 }}
+      transition={{ duration: 0.25, ease: EASE }}
       style={{ willChange: "transform", ...style }}
       {...props}
     >
@@ -345,7 +243,7 @@ export function PageTransition({ children, style }) {
   const reduceMotion = useReducedMotion();
   return (
     <motion.div
-      initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.48, ease: EASE }}
       style={{ willChange: "transform, opacity", ...style }}

@@ -43,6 +43,21 @@ describe("homepage technical SEO contract", () => {
     expect(page).not.toContain('href="/feature"');
   });
 
+  test("uses the same first-party 9Jobs logo preview across website URLs", () => {
+    const layout = read("frontend/app/layout.js");
+    const homepage = read("frontend/app/page.js");
+    const clientInformation = read("frontend/app/client-information/page.js");
+    const seo = read("frontend/data/seo.js");
+
+    for (const source of [layout, homepage, clientInformation]) {
+      expect(source).toContain("https://9jobs.co/opengraph-image.png");
+    }
+    expect(clientInformation).not.toContain("res.cloudinary.com");
+    expect(seo).toContain('url: "/opengraph-image.png"');
+    expect(seo).toContain("width: 1024");
+    expect(seo).toContain("height: 1024");
+  });
+
   test("keeps the homepage to one brand H1", () => {
     const page = read("frontend/app/page.js");
 

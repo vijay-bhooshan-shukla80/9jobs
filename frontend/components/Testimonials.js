@@ -1,39 +1,64 @@
 "use client";
 
-import { Quote, Star } from "lucide-react";
+import Link from "next/link";
+import { Quote, Star, ArrowRight, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Marquee, Reveal, StaggerContainer, StaggerItem } from "./homepage/HomeMotion";
 
 const defaultTestimonials = [
   {
-    name: "Nafisa",
-    role: "Verified Client",
-    quote: "Great experience with 9Jobs. The team is professional, responsive, and truly supportive. I highly recommend their services",
+    name: "Jisvitha Athaluri",
+    role: "Software Developer • Placed at TechFlow",
+    quote: "Excellent experience! 9Jobs helped me optimize my resume and improve its ATS compatibility. The platform was easy to use, provided useful suggestions, and helped me tailor my resume to job descriptions quickly. Highly recommended!",
+    rating: 5,
+  },
+  {
+    name: "Mounika",
+    role: "Financial Accountant • Placed at Bluebird",
+    quote: "I had a positive experience working with 9Jobs. Their resume optimization process was thorough and helped improve the overall quality of my resume. Communication was prompt and professional.",
+    rating: 5,
+  },
+  {
+    name: "Bhavani Pspk",
+    role: "Full Stack Developer • Placed at Thryv",
+    quote: "9Jobs is a great service for job seekers who want to save time on applications. Their assistants customize resumes, write personalized cover letters, and apply to jobs professionally.",
+    rating: 5,
+  },
+  {
+    name: "Saireddy Koteru",
+    role: "Cloud & DevOps • Placed at Dynamic Outreach",
+    quote: "Got to know from a friend. In this tough job market, took a leap of faith and started my job search with them. Onboarding was smooth, transparent about work and communication was top notch!",
+    rating: 5,
+  },
+  {
+    name: "Lachlan Smith",
+    role: "Senior Full Stack • Placed at KFM Logistics",
+    quote: "Honestly, the job application automation saved me so much time. Ended up getting three interview calls in two weeks and accepted an offer from KFM Logistics.",
+    rating: 5,
+  },
+  {
+    name: "Sarah Jenkins",
+    role: "Financial Analyst • Placed at Bluebird",
+    quote: "My resume was completely overhauled to meet Australian ATS standards. The writers knew exactly what local recruiters look for. I saw a noticeable increase in responses from employers.",
+    rating: 5,
+  },
+  {
+    name: "Oliver Davies",
+    role: "Supply Chain • Placed at Too Good To Go",
+    quote: "Highly recommend their LinkedIn and Seek profile optimization services. They polished my profiles, added the right keywords, and made them look incredibly professional.",
+    rating: 5,
+  },
+  {
+    name: "Amelia Campbell",
+    role: "People & Talent • Placed at AR Recruitment",
+    quote: "The interview coaching was a game-changer for me. The mock sessions gave me the confidence I needed to handle tough questions and present my experience effectively.",
+    rating: 5,
+  },
+  {
+    name: "Nafisa Khan",
+    role: "Business Analyst • Placed at Circlecastle",
+    quote: "Great experience with 9Jobs. The team is professional, responsive, and truly supportive. They refined my CV for Australian hiring managers and kept me updated.",
     rating: 4,
-  },
-  {
-    name: "Lachlan",
-    role: "Verified Client",
-    quote: "Honestly, the job application automation saved me so much time. I was struggling to find hours to apply while working full-time, but their team handled it seamlessly. Ended up getting three interview calls in two weeks.",
-    rating: 5,
-  },
-  {
-    name: "Sarah",
-    role: "Verified Client",
-    quote: "My resume was completely overhauled to meet Australian ATS standards. The writers knew exactly what local recruiters look for. I saw a noticeable increase in responses from employers almost immediately after updating it.",
-    rating: 5,
-  },
-  {
-    name: "Oliver",
-    role: "Verified Client",
-    quote: "Highly recommend their LinkedIn and Seek profile optimization services. They polished my profiles, added the right keywords, and made them look incredibly professional. I've had multiple recruiters reach out to me directly.",
-    rating: 5,
-  },
-  {
-    name: "Amelia",
-    role: "Verified Client",
-    quote: "The interview coaching was a game-changer for me. The mock sessions gave me the confidence I needed to handle tough questions and present my experience effectively. Secured a great role last month.",
-    rating: 5,
   },
 ];
 
@@ -130,6 +155,34 @@ export default function Testimonials() {
             </StaggerItem>
           ))}
         </StaggerContainer>
+
+        <Reveal as="div" direction="up" distance={20} className="fj-flex-center" style={{ marginTop: "44px", textAlign: "center" }}>
+          <Link
+            href="/testimonials"
+            className="fj-clean-reviews-btn"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "10px",
+              padding: "13px 30px",
+              borderRadius: "999px",
+              background: "#ffffff",
+              color: "#0f172a",
+              border: "1px solid #cbd5e1",
+              fontWeight: 600,
+              fontSize: "0.92rem",
+              textDecoration: "none",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+              WebkitFontSmoothing: "antialiased",
+              MozOsxFontSmoothing: "grayscale",
+              letterSpacing: "-0.01em",
+              transition: "all 0.25s ease",
+            }}
+          >
+            <span>Explore All Verified Client Reviews & Placements</span>
+            <ArrowRight size={16} />
+          </Link>
+        </Reveal>
       </div>
     </section>
   );

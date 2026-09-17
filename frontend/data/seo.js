@@ -2,10 +2,11 @@ export const siteConfig = {
   name: "9 Jobs (9jobs)",
   siteUrl: "https://9jobs.co",
   defaultImage: {
-    url: "/dashboard.png",
-    width: 1200,
-    height: 630,
-    alt: "9 Jobs (9jobs) career support dashboard for Australian job seekers",
+    url: "/opengraph-image.png",
+    width: 1024,
+    height: 1024,
+    type: "image/png",
+    alt: "9Jobs Job Application Service logo",
   },
   locale: "en_AU",
 };

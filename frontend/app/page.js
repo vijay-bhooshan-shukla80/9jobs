@@ -1,4 +1,6 @@
+import HomeHero from "../components/homepage/HomeHero";
 import { Children } from "react";
+import { Reveal, StaggerContainer, StaggerItem } from "../components/homepage/HomeMotion";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -25,62 +27,17 @@ import { cities } from "../data/australianJobsData";
 import { JsonLd, createBreadcrumbSchema, createFaqSchema } from "../data/seo";
 
 const Testimonials = dynamic(() => import("../components/Testimonials"));
-const FeedbackStats = dynamic(() => import("../components/FeedbackStats"));
+const IndustryAccordion = dynamic(() => import("../components/homepage/IndustryAccordion"));
 const HomeFaq = dynamic(() => import("../components/homepage/HomeFaq"));
 const FlowchartSection = dynamic(() => import("../components/homepage/FlowchartSection"));
 const AustraliaJobMap = dynamic(() => import("../components/homepage/AustraliaJobMap"));
+const HomeVideoSection = dynamic(() => import("../components/homepage/HomeVideoSection"));
+const ApplicationCreditsSection = dynamic(() => import("../components/homepage/ApplicationCreditsSection"));
+const DashboardPreview = dynamic(() => import("../components/homepage/DashboardPreview"));
+const RoiCalculatorSection = dynamic(() => import("../components/homepage/RoiCalculatorSection"));
+const ComparisonSection = dynamic(() => import("../components/homepage/ComparisonSection"));
+const DreamCompanyCtaSection = dynamic(() => import("../components/homepage/DreamCompanyCtaSection"));
 
-function Reveal({
-  as: Tag = "div",
-  children,
-  className,
-  delay: _delay,
-  direction: _direction,
-  distance: _distance,
-  duration: _duration,
-  once: _once,
-  amount: _amount,
-  ...props
-}) {
-  return (
-    <Tag className={className} {...props}>
-      {children}
-    </Tag>
-  );
-}
-
-function StaggerContainer({
-  as: Tag = "div",
-  children,
-  className,
-  delayChildren: _delayChildren,
-  stagger: _stagger,
-  once: _once,
-  amount: _amount,
-  ...props
-}) {
-  return (
-    <Tag className={className} {...props}>
-      {children}
-    </Tag>
-  );
-}
-
-function StaggerItem({
-  as: Tag = "div",
-  children,
-  className,
-  direction: _direction,
-  distance: _distance,
-  duration: _duration,
-  ...props
-}) {
-  return (
-    <Tag className={className} {...props}>
-      {children}
-    </Tag>
-  );
-}
 
 function FloatingCard({
   children,
@@ -170,9 +127,11 @@ export const metadata = {
     images: [
       {
         url: "https://9jobs.co/opengraph-image.png",
-        width: 356,
-        height: 356,
-        alt: "9Jobs logo",
+        secureUrl: "https://9jobs.co/opengraph-image.png",
+        width: 1024,
+        height: 1024,
+        type: "image/png",
+        alt: "9Jobs Job Application Service logo",
       },
     ],
     locale: "en_AU",
@@ -182,18 +141,9 @@ export const metadata = {
     card: "summary_large_image",
     title: homepageTitle,
     description: homepageDescription,
-    images: ["https://9jobs.co/twitter-image.png"],
+    images: ["https://9jobs.co/opengraph-image.png"],
   },
 };
-
-const candidates = [
-  ["David Wilson", "Founder & CEO", "$200,000", "Pending", "DW"],
-  ["Jessica Hayes", "Co-founder & CFO", "$200,000", "Pending", "JH"],
-  ["Constanza Perez", "Head of Product", "$150,000", "Pending", "CP"],
-  ["Meera Desai", "Head of Engineering", "$170,000", "Pending", "MD"],
-  ["Benjamin Weber", "Backend Engineer", "$120,000", "Pending", "BW"],
-  ["Jacob Jones", "Frontend Engineer", "$120,000", "Pending", "JJ"],
-];
 
 const featureCards = [
   {
@@ -411,70 +361,6 @@ const cityGeoData = {
   },
 };
 
-function DashboardPreview() {
-  return (
-    <div className="fj-dashboard">
-      <div className="fj-dashboard-sidebar">
-        <span className="fj-brand-mark fj-brand-mark--small" role="presentation">
-          <span />
-          <span />
-        </span>
-        {[UsersRound, Briefcase, Gauge, Sparkles].map((Icon) => (
-          <span className="fj-dashboard-icon" key={Icon.displayName || Icon.name}>
-            <Icon size={19} />
-          </span>
-        ))}
-      </div>
-      <div className="fj-dashboard-main">
-        <div className="fj-dashboard-top">
-          <div>
-            <p className="fj-dashboard-title">Good morning, Jessica!</p>
-            <div className="fj-dashboard-filters">
-              <span>Team <strong>All</strong></span>
-              <span>Status <strong>Pending</strong></span>
-            </div>
-          </div>
-          <div className="fj-dashboard-actions">
-            <span className="fj-sparkles-gold"><Sparkles size={18} /></span>
-            <span><Bell size={18} /></span>
-          </div>
-        </div>
-        <div className="fj-table">
-          <div className="fj-table-head">
-            <span>Users</span>
-            <span>Role</span>
-            <span>Status</span>
-            <span>Amount</span>
-            <span>Team</span>
-          </div>
-          {candidates.map(([name, role, amount, status, initials], index) => (
-            <div className="fj-table-row" key={name}>
-              <span className="fj-user-cell">
-                <span className={index < 2 ? "fj-check is-active" : "fj-check"}>
-                  {index < 2 && <Check size={15} />}
-                </span>
-                <span className="fj-avatar">{initials}</span>
-                {name}
-              </span>
-              <span>
-                {role}
-                {role.includes("Product") && <em>Product</em>}
-                {role.includes("Engineer") && <em className="is-lime">Tech</em>}
-                {(role.includes("CEO") || role.includes("CFO")) && <em className="is-gold">Executive</em>}
-              </span>
-              <span><mark>{status}</mark></span>
-              <span>{amount}</span>
-              <span className="fj-team-bubbles">
-                <i>AS</i><i>MB</i>
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function Home() {
   const breadcrumbSchema = createBreadcrumbSchema([{ name: "Home", path: "/" }]);
   const faqSchema = createFaqSchema(schemaFaqs);
@@ -503,38 +389,18 @@ export default function Home() {
       <JsonLd schema={faqSchema} />
       <JsonLd schema={webpageSchema} />
 
-      <section className="fj-hero fj-home-hero-shell fj-home-section--hero">
-        <div className="fj-home-orb fj-home-orb--gold fj-stripe-orb" aria-hidden="true" />
-        <div className="fj-home-orb fj-home-orb--ink" aria-hidden="true" />
-        <div className="fj-container fj-home-hero-grid">
-          <div className="fj-hero-inner fj-home-hero-copy">
-            <Reveal as="div" direction="down" distance={28} duration={0.7}>
-              <Link className="fj-announcement" href="/features" prefetch={false}>
-                <span>New</span>
-                Announcing our Job Applying Automation Tool
-                <ArrowRight size={24} />
-              </Link>
-            </Reveal>
-            <StaggerContainer as="div" className="fj-home-copy-stack" stagger={0.12} delayChildren={0.08}>
-              <StaggerItem as="div">
-                <h1>9Jobs - Job Search, Resume Writing & <span className="heading-mark">Career Support Australia</span></h1>
-              </StaggerItem>
-              <StaggerItem as="div">
-                <p>We optimize your resume, LinkedIn, SEEK and Jora profiles, apply for jobs on your behalf, and help you secure interviews and job offers.</p>
-              </StaggerItem>
-              <StaggerItem as="div">
-                <div className="fj-actions">
-                  <Link className="fj-button fj-button--ghost fj-button--motion" href="/pricing" prefetch={false}>2 Days Trial</Link>
-                  <CalendlyLink className="fj-button fj-button--dark fj-button--motion fj-button--glow">Get a demo</CalendlyLink>
-                </div>
-              </StaggerItem>
-            </StaggerContainer>
-            <div className="fj-hero-doodle" aria-hidden="true">
-              <Image src="/framer/app-icon.svg" alt="9Jobs smarter job application automation tool" width={360} height={360} priority />
-            </div>
-          </div>
+      <HomeHero />
 
-          <Reveal as="div" className="fj-hero-dashboard fj-home-parallax-card" direction="right" distance={36} duration={0.86}>
+      <HomeVideoSection />
+
+      <section className="fj-section fj-home-section--dashboard-preview" aria-labelledby="placed-clients-title" style={{ padding: "40px 0 60px" }}>
+        <div className="fj-placement-preview-heading">
+          <span>CLIENT OUTCOMES</span>
+          <h2 id="placed-clients-title">Placed Clients</h2>
+          <p>Professionals successfully placed in roles across Australia.</p>
+        </div>
+        <div className="fj-container" style={{ display: "flex", justifyContent: "center" }}>
+          <Reveal as="div" className="fj-hero-dashboard fj-home-parallax-card" direction="up" distance={32} duration={0.86} style={{ marginTop: 0 }}>
             <FloatingCard className="fj-hero-dashboard-shell" depth={24} floatRange={12} duration={7.2}>
               <DashboardPreview />
             </FloatingCard>
@@ -548,13 +414,15 @@ export default function Home() {
                 <span>SEEK, LinkedIn and Jora workflow active</span>
               </FloatingCard>
               <FloatingCard className="fj-hero-floating-card fj-hero-floating-card--interview" depth={12} floatRange={8} duration={6.4} delay={0.2}>
-                <strong>Interview scheduled</strong>
-                <span>Follow-up prep ready in the pipeline</span>
+                <strong>Placement successful</strong>
+                <span>Full-time offer accepted</span>
               </FloatingCard>
             </div>
           </Reveal>
         </div>
       </section>
+
+      <FlowchartSection />
 
       <section className="fj-section fj-section--tight fj-home-section--compact">
         <div className="fj-container fj-trust">
@@ -578,6 +446,7 @@ export default function Home() {
                     width={logo.width}
                     height={logo.height}
                     sizes="(max-width: 640px) 96px, 120px"
+                    unoptimized
                   />
                 </div>
               ))}
@@ -649,11 +518,6 @@ export default function Home() {
           </Reveal>
         </div>
       </section>
-
-      <div style={{ display: "none" }} aria-hidden="true">
-        <ScrollProgressLine className="fj-progress-line-shell" />
-      </div>
-      <FlowchartSection />
 
       <section className="fj-section fj-section--muted fj-home-section--spotlight">
         <div className="fj-container fj-split">
@@ -746,6 +610,8 @@ export default function Home() {
         </div>
       </section>
 
+      <ApplicationCreditsSection />
+
       <section className="fj-section fj-section--dark fj-home-section--darkband">
         <div className="fj-container fj-split">
           <Reveal as="div" direction="left" distance={24}>
@@ -767,35 +633,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="fj-section fj-home-section--spotlight">
-        <div className="fj-container fj-split">
-          <Reveal as="div" direction="left" distance={28}>
-            <div className="fj-ai-card">
-              <div className="fj-ai-search">
-                <Bot size={22} />
-                <span>New job found</span>
-              </div>
-              <div className="fj-ai-note">
-                <span>CV recognition</span>
-                <strong>Analyse experience in Area</strong>
-                <p>Yes, Chris has 3 years of experience in SaaS for Healthcare.</p>
-              </div>
-              <div className="fj-ai-note">
-                <span>Compatibility</span>
-                <strong>Masters in Computer Science</strong>
-                <p>2 years working on healthcare and improving leadership skills.</p>
-              </div>
-            </div>
-          </Reveal>
-          <Reveal as="div" direction="right" distance={28}>
-            <div className="fj-copy-block">
-              <h2>Make actionable decisions <span className="heading-mark">simpler</span></h2>
-              <p>Focus on what matters. Let us handle the busywork while you build better relationships.</p>
-              <CalendlyLink className="fj-button fj-button--dark fj-button--motion">Get a demo</CalendlyLink>
-            </div>
-          </Reveal>
-        </div>
-      </section>
+      <RoiCalculatorSection />
 
       <div className="fj-section-divider" />
 
@@ -822,21 +660,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="fj-section fj-home-section--media">
-        <div className="fj-container fj-leader-card">
-          <Reveal as="div" direction="left" distance={24}>
-            <div>
-              <h2>9Jobs is your job search partner in <span className="heading-mark">Australia</span></h2>
-              <p>We manage your job search end-to-end: resume optimization, profile updates, and active applications.</p>
-            </div>
-          </Reveal>
-          <Reveal as="div" direction="right" distance={24}>
-            <div className="fj-leader-media">
-              <Image src="/framer/story-ops.jpg" alt="9Jobs candidate workflow" width={900} height={600} sizes="(max-width: 768px) 100vw, 600px" />
-            </div>
-          </Reveal>
-        </div>
-      </section>
+      <ComparisonSection />
 
       <section className="fj-section fj-home-section--grid fj-locations-showcase-section" id="explore-australia">
         <div className="fj-container">
@@ -852,42 +676,35 @@ export default function Home() {
         </div>
       </section>
 
-      <FeedbackStats />
+      <IndustryAccordion />
       <Testimonials />
 
       <section className="fj-section fj-section--muted fj-home-section--compact" id="faqs">
-        <div className="fj-container fj-faq-grid">
-          <Reveal as="div" direction="left" distance={24}>
-            <div className="fj-faq-intro">
+        <div className="fj-container">
+          <Reveal as="div" direction="up" distance={20}>
+            <div className="fj-section-head fj-faq-centered-head">
               <span className="fj-label">FAQs</span>
               <h2>Questions before you start with <span className="heading-mark">9Jobs.</span></h2>
               <p>Clear answers for candidates who want a more organized, Australia-ready job search.</p>
-              <CalendlyLink className="fj-button fj-button--dark fj-button--motion">
-                Talk to us <ArrowRight size={17} />
-              </CalendlyLink>
             </div>
           </Reveal>
-          <Reveal as="div" direction="right" distance={24}>
-            <HomeFaq items={displayFaqs} />
+
+          <Reveal as="div" direction="up" distance={24} delay={0.08}>
+            <div className="fj-faq-centered-wrap">
+              <HomeFaq items={displayFaqs} />
+
+              <div className="fj-faq-action-row">
+                <CalendlyLink className="fj-button fj-button--dark fj-button--motion">
+                  Talk to us <ArrowRight size={17} />
+                </CalendlyLink>
+              </div>
+            </div>
           </Reveal>
         </div>
       </section>
 
-      <section className="fj-section fj-section--tight fj-home-section--compact">
-        <Reveal as="div" direction="up" distance={24}>
-          <div className="fj-container fj-final-cta fj-final-cta--animated">
-            <span>Automate with 9Jobs</span>
-            <h2>Start for free <span className="heading-mark">today.</span></h2>
-            <div className="fj-actions">
-              <Link className="fj-button fj-button--ghost fj-button--motion fj-cta-pulse" href="/pricing" prefetch={false}>2 Days Trial</Link>
-              <CalendlyLink className="fj-button fj-button--dark fj-button--motion fj-button--glow fj-cta-pulse">Schedule a demo</CalendlyLink>
-              <Link className="fj-button fj-button--ghost fj-button--motion" href="/blog" prefetch={false}>Read our Blog</Link>
-              <Link className="fj-button fj-button--ghost fj-button--motion" href="/contact" prefetch={false}>Contact Us</Link>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <DreamCompanyCtaSection />
+
     </main>
   );
 }
-

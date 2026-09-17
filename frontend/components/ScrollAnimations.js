@@ -2,223 +2,156 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { animate } from "framer-motion/dom/mini";
+import videoStyles from "./homepage/HomeVideoSection.module.css";
+import creditStyles from "./homepage/ApplicationCreditsSection.module.css";
 
-const revealRules = [
-  [".fj-hero .fj-announcement, .fj-page-hero .fj-announcement", "fade-down", 0],
-  [".fj-hero h1, .fj-page-hero h1", "fade-up", 70],
-  [".fj-hero p, .fj-page-hero p", "fade-up", 140],
-  [".fj-actions", "fade-up", 210],
-  [".fj-hero-dashboard, .fj-dashboard", "slide-from-bottom", 120],
-  [".fj-home-hero-shell .fj-home-orb", "fade-in", 0],
-  [".fj-trust, .fj-quote-panel, .fj-final-cta", "zoom-in", 0],
-  [".fj-section-head > *, .fj-copy-block > *", "fade-up", 0],
-  [".fj-image-card, .fj-card-media, .fj-leader-media", "fade-in", 0],
-  [".fj-contact-panel", "fade-left", 0],
-  [".fj-contact-form-slot", "fade-right", 90],
-  [".fj-footer", "fade-up", 0],
-  [".fj-social-back-link", "fade-left", 0],
-  [".fj-social-detail", "fade-up", 90],
-  [".site-main h1, .site-main h2, .site-main h3", "fade-up", 0],
-  [".site-main p, .site-main li, .site-main label, .site-main input, .site-main textarea, .site-main select", "fade-up", 70],
+// AppChrome is the only caller. Select public roots, never document-wide content.
+const rules = [
+  [".fj-announcement", "down"],
+  [".fj-hero h1, .fj-page-hero h1", "up", 80],
+  [".fj-hero-subheading, .fj-page-hero p", "up", 160],
+  [".fj-actions", "up", 240],
+  [".fj-hero-dashboard-shell, .fj-image-card, .fj-comparison-card", "scale"],
+  [".fj-hero-floating-card--resume", "left"],
+  [".fj-hero-floating-card--applied", "right"],
+  [".fj-section-head > *, .fj-copy-block > h2, .fj-copy-block > p, .fj-copy-block > .fj-label", "up"],
+  [".fj-feature-card, .fj-plan-card, .fj-pricing-card, .fj-blog-card, .fj-mini-item, .fj-stat-card, .fj-faq-item, .fj-location-card", "up"],
+  [".fj-activity-card", "left"],
+  [".fj-role-card", "right"],
+  [".fj-cta-card > *, .fj-final-cta > *, .fj-footer-grid > *", "up"],
+  [`.${videoStyles.headerWrapper} > :not([aria-hidden]), .${videoStyles.videoCard}, .${videoStyles.benefitItem}`, "up"],
+  [`.${creditStyles.headerWrapper} > *, .${creditStyles.leftCard}`, "up"],
+  [`.${creditStyles.rightCard}`, "right"],
 ];
-
-const cardSelector = [
-  ".fj-feature-card",
-  ".fj-plan-card",
-  ".fj-pricing-card",
-  ".fj-blog-card",
-  ".fj-team-card",
-  ".fj-mini-item",
-  ".fj-activity-card",
-  ".fj-role-card",
-  ".fj-ai-card",
-  ".fj-faq-item",
-  ".fj-contact-hours",
-].join(", ");
-
-const rowSelector = [
-  ".fj-table-row",
-  ".fj-activity-row",
-  ".fj-role-row",
-  ".fj-task-row",
-  ".fj-chip-list span",
-  ".fj-price-list span",
-  ".fj-logo-row span",
-  ".fj-integration-grid span",
-  ".fj-footer-links a",
-].join(", ");
-
-function toArray(selector, root = document) {
-  return Array.from(root.querySelectorAll(selector));
-}
-
-function markElement(element, type, delay = 0) {
-  if (!element || element.dataset.fjRevealBound === "true") return;
-  if (element.closest("[data-fj-motion-root='true']")) return;
-  element.dataset.fjReveal = type;
-  element.dataset.fjRevealBound = "true";
-  element.style.setProperty("--reveal-delay", `${Math.min(delay, 520)}ms`);
-}
-
-function markList(elements, type, baseDelay = 0, step = 70) {
-  elements.forEach((element, index) => markElement(element, type, baseDelay + index * step));
-}
 
 export default function ScrollAnimations() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const reduceMotion = false;
-    const cleanupTimers = [];
-    let cleanupSetup = () => {};
+    if (!pathname || pathname === "/admin" || pathname.startsWith("/admin/")) return;
+    const roots = [...document.querySelectorAll("main.site-main, main.fj-page, .site-footer")];
+    if (!roots.length) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mobile = window.matchMedia("(max-width: 767px)");
+    const html = document.documentElement;
+    const previousScroll = html.style.getPropertyValue("scroll-behavior");
+    const previousPriority = html.style.getPropertyPriority("scroll-behavior");
+    const seen = new WeakSet();
+    const pending = new Map();
+    const active = new Map();
+    let disposed = false;
 
-    function setup() {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("is-visible");
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
-      );
-
-      function runSetup() {
-        revealRules.forEach(([selector, type, delay]) => {
-          markList(toArray(selector), type, delay, 55);
-        });
-
-        toArray(".fj-section").forEach((section) => {
-          markElement(section, "smooth-section", 0);
-          markList(toArray(cardSelector, section), "zoom-in", 60, 80);
-          markList(toArray(rowSelector, section), "fade-up", 70, 50);
-        });
-
-        toArray(".fj-split").forEach((split) => {
-          Array.from(split.children).forEach((child, index) => {
-            markElement(child, index % 2 === 0 ? "slide-from-left" : "slide-from-right", index * 90);
-          });
-        });
-
-        toArray(".fj-card-grid, .fj-list-grid, .fj-integration-grid, .fj-logo-row, .fj-footer-grid").forEach((group) => {
-          group.dataset.fjStagger = "true";
-          Array.from(group.children).forEach((child, index) => {
-            if (!child.dataset.fjRevealBound) {
-              markElement(child, index % 2 === 0 ? "fade-up" : "fade-in", index * 65);
-            }
-          });
-        });
-
-        toArray(".fj-hero-doodle, .fj-dashboard, .fj-image-card, .fj-leader-media, .fj-ai-card, .fj-home-parallax-card, .fj-home-orb").forEach((element, index) => {
-          element.dataset.fjParallax = index % 2 === 0 ? "18" : "-14";
-        });
-
-        const revealElements = toArray("[data-fj-reveal]");
-
-        if (reduceMotion) {
-          revealElements.forEach((element) => element.classList.add("is-visible"));
-        } else {
-          revealElements.forEach((element) => {
-            const rect = element.getBoundingClientRect();
-            const startsInView = rect.top < window.innerHeight * 0.94 && rect.bottom > -40;
-
-            if (startsInView) {
-              element.classList.add("is-visible");
-            } else {
-              observer.observe(element);
-            }
-          });
-        }
-        measureParallax();
-      }
-
-      runSetup();
-
-      let setupTimer = null;
-      const mutationObserver = new MutationObserver((mutations) => {
-        let added = false;
-        for (const mutation of mutations) {
-          if (mutation.addedNodes.length > 0) {
-            added = true;
-            break;
-          }
-        }
-        if (added) {
-          if (setupTimer) clearTimeout(setupTimer);
-          setupTimer = setTimeout(runSetup, 60);
-        }
-      });
-      mutationObserver.observe(document.body, { childList: true, subtree: true });
-
-      let frame = 0;
-      let cachedParallax = [];
-
-      function measureParallax() {
-        const scrollTop = window.scrollY || window.pageYOffset || 0;
-        cachedParallax = toArray("[data-fj-parallax]").map((element) => {
-          const rect = element.getBoundingClientRect();
-          return {
-            element,
-            offsetTop: rect.top + scrollTop,
-            height: rect.height,
-            strength: Number(element.dataset.fjParallax || 16),
-          };
-        });
-      }
-
-      function updateParallax() {
-        frame = 0;
-        const viewportHeight = window.innerHeight || 1;
-        const scrollTop = window.scrollY || window.pageYOffset || 0;
-
-        cachedParallax.forEach((item) => {
-          const currentTop = item.offsetTop - scrollTop;
-          const currentBottom = currentTop + item.height;
-
-          if (currentBottom < -120 || currentTop > viewportHeight + 120) return;
-
-          const centerY = currentTop + item.height / 2;
-          const progress = (viewportHeight / 2 - centerY) / viewportHeight;
-          item.element.style.setProperty("--parallax-y", `${(progress * item.strength).toFixed(2)}px`);
-        });
-      }
-
-      function requestParallax() {
-        if (!frame) frame = window.requestAnimationFrame(updateParallax);
-      }
-
-      function handleResize() {
-        measureParallax();
-        requestParallax();
-      }
-
-      measureParallax();
-      requestParallax();
-      window.addEventListener("scroll", requestParallax, { passive: true });
-      window.addEventListener("resize", handleResize);
-
-      return () => {
-        observer.disconnect();
-        mutationObserver.disconnect();
-        if (setupTimer) clearTimeout(setupTimer);
-        window.removeEventListener("scroll", requestParallax);
-        window.removeEventListener("resize", handleResize);
-        if (frame) window.cancelAnimationFrame(frame);
-      };
+    function finish(element) {
+      active.get(element)?.();
     }
 
-    const timer = window.setTimeout(() => {
-      cleanupSetup = setup() || (() => {});
-    }, 80);
-    cleanupTimers.push(timer);
+    function reveal(element, { direction = "up", delay = 0 } = {}) {
+      if (disposed || reduced.matches || element.contains(document.activeElement)) return;
+      const style = getComputedStyle(element);
+      if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) === 0) return;
+      const homepage = element.closest(".fj-homepage");
+      const distance = homepage ? (mobile.matches ? 15 : 24) : (mobile.matches ? 18 : 28);
+      const base = style.transform === "none" ? "" : style.transform;
+      const offset = {
+        up: `translateY(${distance}px)`, down: `translateY(-${distance}px)`,
+        left: `translateX(-${distance}px)`, right: `translateX(${distance}px)`,
+        scale: `translateY(${mobile.matches ? 18 : 20}px) scale(${homepage ? 0.97 : 0.98})`,
+      }[direction] || `translateY(${distance}px)`;
+      const original = ["opacity", "transform"].map(key => [key, element.style.getPropertyValue(key), element.style.getPropertyPriority(key)]);
+      let control;
+      const restore = () => {
+        active.delete(element);
+        control?.cancel();
+        original.forEach(([key, value, priority]) => value ? element.style.setProperty(key, value, priority) : element.style.removeProperty(key));
+      };
+      active.set(element, restore);
+      try {
+        // No hidden waiting state: SSR, failed JS and unobserved content stay readable.
+        control = animate(element, {
+          opacity: [0, Number(style.opacity)],
+          transform: [`${base} ${offset}`.trim(), style.transform],
+        }, { duration: homepage ? .7 : (direction === "scale" ? 0.6 : 0.48), delay: Math.min(delay, 240) / 1000, ease: [0.22, 1, 0.36, 1] });
+        // Motion commits its final styles after onComplete; restore after that commit.
+        control.then(() => { if (active.get(element) === restore) restore(); });
+      } catch {
+        restore();
+      }
+    }
+
+    const observer = "IntersectionObserver" in window ? new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const options = pending.get(entry.target);
+        pending.delete(entry.target);
+        observer.unobserve(entry.target);
+        reveal(entry.target, options);
+      });
+    }, { threshold: 0.12 }) : null;
+
+    function setup() {
+      if (!observer || reduced.matches) return;
+      roots.forEach(root => {
+        const candidates = new Map();
+        root.querySelectorAll("[data-public-reveal]").forEach(element => {
+          candidates.set(element, { direction: element.dataset.publicReveal, delay: Number(element.dataset.publicDelay || 0) });
+        });
+        rules.forEach(([selector, direction, delay]) => {
+          root.querySelectorAll(selector).forEach(element => {
+            if (!candidates.has(element)) candidates.set(element, { direction, delay });
+          });
+        });
+        const elements = [...candidates.keys()];
+        const groups = new Map();
+        candidates.forEach((options, element) => {
+          // Select the smallest units, avoiding nested reveals and whole sections.
+          if (elements.some(child => child !== element && element.contains(child))) return;
+          if (seen.has(element)) return;
+          seen.add(element);
+          const group = element.closest("[data-public-stagger]") || element.parentElement;
+          const index = groups.get(group) || 0;
+          groups.set(group, index + 1);
+          const stagger = Number(group.dataset.publicStagger || 80);
+          pending.set(element, { ...options, delay: options.delay || Math.min(index, 3) * stagger });
+          observer.observe(element);
+        });
+      });
+    }
+
+    function motionPreference() {
+      html.style.setProperty("scroll-behavior", reduced.matches ? "auto" : "smooth", "important");
+      if (reduced.matches) {
+        observer?.disconnect();
+        pending.clear();
+        [...active.keys()].forEach(finish);
+      } else setup();
+    }
+    function onFocus(event) {
+      // Keyboard users never wait for an entrance effect.
+      [...active.keys()].forEach(element => {
+        if (element.contains(event.target)) finish(element);
+      });
+    }
+    motionPreference();
+    const mutations = new MutationObserver(records => {
+      if (records.some(record => [...record.addedNodes].some(node => node.nodeType === 1))) setup();
+    });
+    roots.forEach(root => mutations.observe(root, { childList: true, subtree: true }));
+    reduced.addEventListener("change", motionPreference);
+    document.addEventListener("focusin", onFocus);
 
     return () => {
-      cleanupTimers.forEach((item) => window.clearTimeout(item));
-      cleanupSetup();
+      disposed = true;
+      observer?.disconnect();
+      mutations.disconnect();
+      reduced.removeEventListener("change", motionPreference);
+      document.removeEventListener("focusin", onFocus);
+      [...active.keys()].forEach(finish);
+      if (previousScroll) html.style.setProperty("scroll-behavior", previousScroll, previousPriority);
+      else html.style.removeProperty("scroll-behavior");
     };
   }, [pathname]);
 
   return null;
 }
+

@@ -15,6 +15,8 @@ const FortnightAgreementSchema = new mongoose.Schema(
     servicePrice: { type: String, required: true, trim: true }, // Upfront Service Fee
     weeklyJobTarget: { type: String, default: '70', trim: true },
     initialTerm: { type: String, required: true, trim: true }, // Service Period
+    permanentSuccessFeeDays: { type: Number, default: 14, min: 1 },
+    shortTermSuccessFeeDays: { type: Number, default: 7, min: 1 },
     renewalEnabled: { type: Boolean, default: false },
     renewalTerm: { type: String, default: '', trim: true },
     renewalFee: { type: String, default: '', trim: true },

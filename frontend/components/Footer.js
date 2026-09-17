@@ -17,7 +17,7 @@ const footerGroups = [
     title: "Popular Locations",
     href: "/jobs",
     links: [
-      { href: "/jobs/melbourne", label: "Jobs in Melbourne" },
+      { href: "/jobs/melbourne", label: "Jobs in Melbourne", hidden: true },
       { href: "/jobs/sydney", label: "Jobs in Sydney" },
       { href: "/jobs/brisbane", label: "Jobs in Brisbane" },
       { href: "/jobs/perth", label: "Jobs in Perth" },
@@ -40,6 +40,7 @@ const footerGroups = [
   {
     title: "Regional & Niche",
     href: "/jobs",
+    hidden: true,
     links: [
       { href: "/jobs/geelong", label: "Jobs in Geelong" },
       { href: "/jobs/vic", label: "Jobs in Victoria" },
@@ -69,7 +70,15 @@ const footerGroups = [
   },
 ];
 
-const footerRows = Math.max(...footerGroups.map((group) => group.links.length));
+const visibleFooterGroups = footerGroups
+  .filter((group) => !group.hidden)
+  .map((group) => ({
+    ...group,
+    links: group.links.filter((link) => !link.hidden),
+  }))
+  .filter((group) => group.links.length > 0);
+
+const footerRows = Math.max(...visibleFooterGroups.map((group) => group.links.length));
 
 export default function Footer() {
   return (
@@ -109,7 +118,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {footerGroups.map((group) => (
+          {visibleFooterGroups.map((group) => (
             <div className="fj-footer-column" key={group.title}>
               {group.href ? (
                 <h3>
@@ -136,11 +145,11 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="footer-bottom fj-footer-bottom" style={{ display: "flex", flexDirection: "column", gap: "10px", borderTop: "1px solid var(--line)", paddingTop: "20px", marginTop: "40px", fontSize: "0.8rem", color: "var(--muted)" }}>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
+        <div className="footer-bottom fj-footer-bottom" style={{ display: "flex", flexDirection: "column", gap: "12px", borderTop: "1px solid var(--fj-line)", paddingTop: "24px", marginTop: "48px", fontSize: "0.82rem", color: "var(--fj-muted)", textAlign: "center", alignItems: "center" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "15px" }}>
             <span>&copy; 2026 9Jobs. All rights reserved. Registered Australian Business.</span>
           </div>
-          <p style={{ margin: 0, fontSize: "0.75rem", lineHeight: "1.4" }}>
+          <p style={{ margin: 0, fontSize: "0.75rem", lineHeight: "1.45", maxWidth: "820px" }}>
             Disclaimer: 9Jobs is a private career support, resume optimization, and job search facilitation provider. We are not associated with or endorsed by SEEK Limited, Jora, or LinkedIn Corporation. All product and service names, logos, and brands are property of their respective owners.
           </p>
         </div>

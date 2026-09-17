@@ -89,6 +89,7 @@ const ClientInfoSchema = new mongoose.Schema(
     email: { type: String, required: true, lowercase: true, trim: true },
     password: { type: String, required: true }, // Placed as per requirement table "Password New"
     preferredRole: { type: String, required: true, trim: true },
+    submittedAt: { type: Date, default: null },
     resumeUrl: { type: String, default: '' },
     resumeStorageKey: { type: String, default: '' },
     resumeFileName: { type: String, default: '' },
