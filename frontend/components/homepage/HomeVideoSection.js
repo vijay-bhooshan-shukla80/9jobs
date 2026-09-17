@@ -299,6 +299,15 @@ export default function HomeVideoSection() {
   const [activeModalVideo, setActiveModalVideo] = useState(null);
   const [startedInlineVideos, setStartedInlineVideos] = useState(() => new Set());
 
+  function startInlineVideo(reelId) {
+    setStartedInlineVideos((current) => {
+      if (current.has(reelId)) return current;
+      const next = new Set(current);
+      next.add(reelId);
+      return next;
+    });
+  }
+
   // Close modal on Escape key press
   useEffect(() => {
     function handleKeyDown(e) {
@@ -409,15 +418,7 @@ export default function HomeVideoSection() {
               className={styles.videoCard} data-public-reveal="scale"
             >
               {/* Ultra High Definition Crisp Vector Preview Container */}
-              <div
-                className={styles.thumbnailWrapper}
-                onPointerEnter={() => {
-                  if (document.activeElement?.tagName === "IFRAME") {
-                    document.activeElement.blur();
-                  }
-                  window.focus();
-                }}
-              >
+              <div className={styles.thumbnailWrapper}>
                 <iframe
                   className={styles.reelPreview}
                   src={card.embedUrl}
@@ -427,6 +428,7 @@ export default function HomeVideoSection() {
                   allowFullScreen
                   tabIndex={0}
                   data-reel-id={card.id}
+                  onFocus={() => startInlineVideo(card.id)}
                 />
 
                 {!startedInlineVideos.has(card.id) && (

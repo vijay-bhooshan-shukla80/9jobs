@@ -57,6 +57,20 @@ describe("homepage process and laptop regression contract", () => {
     expect(videoSection).not.toContain("Watch How <span");
   });
 
+  test("hides the custom reel play control as soon as inline playback starts", () => {
+    const videoSection = read("frontend/components/homepage/HomeVideoSection.js");
+    const styles = read("frontend/components/homepage/HomeVideoSection.module.css");
+
+    expect(videoSection).toContain("function startInlineVideo(reelId)");
+    expect(videoSection).toContain("onFocus={() => startInlineVideo(card.id)}");
+    expect(videoSection).toContain("!startedInlineVideos.has(card.id) &&");
+    expect(videoSection).not.toContain("onPointerEnter={() =>");
+    expect(styles).toMatch(/\.reelPreview\s*\{[\s\S]*?pointer-events: auto;/);
+    expect(styles).toMatch(/\.reelPlayButton\s*\{[\s\S]*?pointer-events: none;/);
+    expect(styles).toContain("@media (hover: none), (pointer: coarse)");
+    expect(styles).toContain(".thumbnailWrapper:active .reelPlayButton");
+  });
+
   test("adds the animated watch-demo cue without changing the demo destination", () => {
     const hero = read("frontend/components/homepage/HomeHero.js");
     const styles = read("frontend/components/homepage/HomeHero.module.css");

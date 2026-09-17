@@ -217,6 +217,19 @@
   visibility: hidden;
 }
 
+/* Mobile browsers do not consistently focus a cross-origin Instagram iframe.
+   A tap still establishes hover/active state on the iframe wrapper, so use it
+   as the visual fallback while the native reel player handles the same tap. */
+@media (hover: none), (pointer: coarse) {
+  .thumbnailWrapper:hover .reelPlayButton,
+  .thumbnailWrapper:active .reelPlayButton,
+  .thumbnailWrapper:focus-within .reelPlayButton {
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+}
+
 /* Common Overlay Elements */
 .cPlay {
   position: absolute;
