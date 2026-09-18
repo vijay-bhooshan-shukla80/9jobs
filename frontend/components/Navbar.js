@@ -7,7 +7,6 @@ import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
 
 const links = [
   { href: "/about", label: "About" },
-  { href: "/features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
   { href: "/success-stories", label: "Success Stories" },
   {
@@ -46,7 +45,6 @@ function normalizeMenuLabel(label) {
 }
 
 function isActive(pathname, href) {
-  if (href === "/features") return pathname === "/features";
   return pathname === href;
 }
 

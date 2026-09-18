@@ -104,6 +104,7 @@ const stepsData = [
     headlineLead: "Ready to Start",
     headlineAccent: "Your Journey?",
     desc: "Client confirms they are ready to proceed with our Australian job support program.",
+    pill: "Ready to Begin",
     benefits: [["Faster Applications", Rocket], ["Dedicated Support", ShieldCheck], ["Better Opportunities", BarChart3]],
     icon: ReadyToStartCheckIcon,
     accent: "#84cc16",
@@ -116,6 +117,7 @@ const stepsData = [
     headlineLead: "Smooth",
     headlineAccent: "Onboarding",
     desc: "We send the Agreement & Invoice. The client signs and completes payment.",
+    pill: "Simple & Secure Setup",
     benefits: [["Clear Agreement", FileSignature], ["Secure Payment", CreditCard], ["Quick Setup", ClipboardCheck]],
     icon: OnboardingClipboardIcon,
     accent: "#22c55e",
@@ -128,6 +130,7 @@ const stepsData = [
     headlineLead: "Profile Setup &",
     headlineAccent: "Optimisation",
     desc: "Dedicated WhatsApp group created, details collected, Resume/CV and profiles optimised.",
+    pill: "Profile Optimisation",
     benefits: [["WhatsApp Support", MessageCircle], ["ATS Resume", FileCheck2], ["Stronger Profile", Contact]],
     icon: WhatsAppBubbleIcon,
     accent: "#166534",
@@ -140,6 +143,7 @@ const stepsData = [
     headlineLead: "Active Job",
     headlineAccent: "Search",
     desc: "20+ targeted applications daily, with regular updates shared in your WhatsApp group.",
+    pill: "20+ Targeted Applications Daily",
     benefits: [["Targeted Search", Search], ["Daily Applications", Send], ["Live Updates", BellRing]],
     icon: TargetArrowIcon,
     accent: "#eab308",
@@ -152,6 +156,7 @@ const stepsData = [
     headlineLead: "Interview",
     headlineAccent: "Opportunities",
     desc: "When an interview opportunity comes in, we immediately inform and coordinate with you.",
+    pill: "Interview Support Included",
     benefits: [["Fast Coordination", CalendarCheck], ["Personal Guidance", Users], ["Better Preparation", BadgeCheck]],
     icon: InterviewSceneIcon,
     accent: "#f97316",
@@ -164,6 +169,7 @@ const stepsData = [
     headlineLead: "Secure Your",
     headlineAccent: "Employment",
     desc: "You secure a suitable job opportunity, completing the journey to your dream career.",
+    pill: "Employment Goal Reached",
     benefits: [["Right Opportunity", BriefcaseBusiness], ["Career Success", Trophy], ["New Beginning", Sparkles]],
     icon: EmploymentGiftIcon,
     accent: "#ef4444",
@@ -583,7 +589,7 @@ export default function JobSupportProcessSection() {
               >
                 <div className={styles.trustPill}>
                   <span aria-hidden="true" />
-                  Trusted by Job Seekers
+                  {currentStep.pill}
                 </div>
 
                 <h3 className={styles.activeTitle}>

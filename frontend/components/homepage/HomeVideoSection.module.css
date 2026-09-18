@@ -167,13 +167,55 @@
   user-select: none;
 }
 
-.reelPreview {
+.inlineVideo {
   width: 100%;
   height: 100%;
   display: block;
   border: 0;
-  background: #ffffff;
-  pointer-events: auto;
+  background: #000000;
+  pointer-events: none;
+  object-fit: cover;
+}
+
+.previewPlayButton {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.inlinePlayIcon {
+  width: clamp(58px, 19cqw, 76px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: rgba(15, 23, 42, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.32);
+}
+
+.inlinePlayIcon svg {
+  width: 44%;
+  height: 44%;
+  fill: currentColor;
+  margin-left: 5%;
+}
+
+.previewPlayButton:focus-visible {
+  outline: 3px solid #84cc16;
+  outline-offset: -5px;
 }
 
 /* Common Overlay Elements */
@@ -858,6 +900,10 @@
   font-size: 0.84rem;
   font-weight: 700;
   text-decoration: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
 .cardInstagramLink:hover {
@@ -1081,6 +1127,8 @@
   height: 100%;
   border: 0;
   background: #ffffff;
+  overflow: hidden;
+  overscroll-behavior: contain;
 }
 
 .modalTabs {

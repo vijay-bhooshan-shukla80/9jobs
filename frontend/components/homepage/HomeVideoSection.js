@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import Link from "next/link";
 import {
   Play,
@@ -9,8 +9,6 @@ import {
   GraduationCap,
   Zap,
   Heart,
-  X,
-  ExternalLink,
 } from "lucide-react";
 import styles from "./HomeVideoSection.module.css";
 
@@ -21,27 +19,24 @@ export const videoCardsData = [
     title: "ATS Resume Optimization",
     description:
       "See how 9Jobs helps you get the right candidates faster with smart automation.",
-    duration: "02:47",
-    instagramUrl: "https://www.instagram.com/reel/DccrTSTmqhs/",
-    embedUrl: "https://www.instagram.com/reel/DccrTSTmqhs/embed/",
+    videoSrc: "/home-reels/reel-01.mp4",
+    posterSrc: "/home-reels/reel-01.jpg",
   },
   {
     id: "02",
     title: "How We're Different",
     description:
       "Discover what makes 9Jobs unique compared to other hiring platforms.",
-    duration: "01:08",
-    instagramUrl: "https://www.instagram.com/reel/DdIcyuWCCzY/",
-    embedUrl: "https://www.instagram.com/reel/DdIcyuWCCzY/embed/",
+    videoSrc: "/home-reels/reel-02.mp4",
+    posterSrc: "/home-reels/reel-02.jpg",
   },
   {
     id: "03",
     title: "Our Pricing",
     description:
       "A quick overview of our plans and what you get with each one.",
-    duration: "00:54",
-    instagramUrl: "https://www.instagram.com/reel/Dc-Jp5lkasa/",
-    embedUrl: "https://www.instagram.com/reel/Dc-Jp5lkasa/embed/",
+    videoSrc: "/home-reels/reel-03.mp4",
+    posterSrc: "/home-reels/reel-03.jpg",
   },
 ];
  
@@ -295,25 +290,80 @@ function PricingCardPreview() {
   );
 }
 
-export default function HomeVideoSection() {
-  const [activeModalVideo, setActiveModalVideo] = useState(null);
+function InlineVideoCard({ card }) {
+  const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  // Close modal on Escape key press
-  useEffect(() => {
-    function handleKeyDown(e) {
-      if (e.key === "Escape") {
-        setActiveModalVideo(null);
+  async function togglePlayback() {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (video.paused) {
+      document.querySelectorAll("[data-home-inline-video]").forEach((otherVideo) => {
+        if (otherVideo !== video) otherVideo.pause();
+      });
+      try {
+        await video.play();
+      } catch {
+        setIsPlaying(false);
       }
+    } else {
+      video.pause();
     }
-    if (activeModalVideo) {
-      window.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
-    }
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [activeModalVideo]);
+  }
+
+  return (
+    <article className={styles.videoCard} data-public-reveal="scale">
+      <div className={styles.thumbnailWrapper}>
+        <video
+          ref={videoRef}
+          className={styles.inlineVideo}
+          src={card.videoSrc}
+          poster={card.posterSrc}
+          preload="metadata"
+          playsInline
+          data-home-inline-video={card.id}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onEnded={() => setIsPlaying(false)}
+          aria-label={card.title}
+        />
+        <button
+          type="button"
+          className={styles.previewPlayButton}
+          onClick={togglePlayback}
+          aria-label={`${isPlaying ? "Pause" : "Play"} ${card.title}`}
+          aria-pressed={isPlaying}
+          data-inline-reel={card.id}
+        >
+          {!isPlaying && (
+            <span className={styles.inlinePlayIcon} aria-hidden="true">
+              <Play />
+            </span>
+          )}
+        </button>
+      </div>
+
+      <div className={styles.cardContent}>
+        <div className={styles.numberBadge} aria-hidden="true">{card.id}</div>
+        <div className={styles.cardText}>
+          <h3 className={styles.cardTitle}>{card.title}</h3>
+          <p className={styles.cardDesc}>{card.description}</p>
+          <button type="button" className={styles.cardInstagramLink} onClick={togglePlayback}>
+            {isPlaying ? "Pause video" : "Play video here"}
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+export default function HomeVideoSection() {
+  function playFirstVideo() {
+    const firstVideoButton = document.querySelector('[data-inline-reel="01"]');
+    firstVideoButton?.scrollIntoView({ behavior: "smooth", block: "center" });
+    firstVideoButton?.click();
+  }
 
   return (
     <section className={styles.videoSection} id="how-9jobs-works" aria-label="About 9Jobs">
@@ -382,46 +432,7 @@ export default function HomeVideoSection() {
 
         {/* 3 Video Cards Grid */}
         <div className={styles.cardsGrid} data-public-stagger="100">
-          {videoCardsData.map((card) => (
-            <article
-              key={card.id}
-              className={styles.videoCard} data-public-reveal="scale"
-            >
-              {/* Ultra High Definition Crisp Vector Preview Container */}
-              <div className={styles.thumbnailWrapper}>
-                <iframe
-                  className={styles.reelPreview}
-                  src={card.embedUrl}
-                  title={`${card.title} Instagram reel preview`}
-                  loading="lazy"
-                  allow="autoplay; encrypted-media; picture-in-picture"
-                  allowFullScreen
-                  tabIndex={0}
-                  data-reel-id={card.id}
-                />
-              </div>
-
-              {/* Card Information */}
-              <div className={styles.cardContent}>
-                <div className={styles.numberBadge} aria-hidden="true">
-                  {card.id}
-                </div>
-                <div className={styles.cardText}>
-                  <h3 className={styles.cardTitle}>{card.title}</h3>
-                  <p className={styles.cardDesc}>{card.description}</p>
-                  <a
-                    className={styles.cardInstagramLink}
-                    href={card.instagramUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    View on Instagram <ExternalLink size={14} aria-hidden="true" />
-                  </a>
-                </div>
-              </div>
-            </article>
-          ))}
+          {videoCardsData.map((card) => <InlineVideoCard key={card.id} card={card} />)}
         </div>
 
         {/* CTA Buttons Row */}
@@ -429,7 +440,7 @@ export default function HomeVideoSection() {
           <button
             type="button"
             className={styles.primaryBtn}
-            onClick={() => setActiveModalVideo(videoCardsData[0])}
+            onClick={playFirstVideo}
           >
             <Play className={styles.primaryBtnPlay} size={14} />
             <span>Watch All Videos</span>
@@ -480,70 +491,6 @@ export default function HomeVideoSection() {
         </div>
       </div>
 
-      {/* Video Modal Player */}
-      {activeModalVideo && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setActiveModalVideo(null)}
-          role="dialog"
-          aria-modal="true"
-          aria-label={activeModalVideo.title}
-        >
-          <div
-            className={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className={styles.modalHeader}>
-              <h3 className={styles.modalTitle}>
-                {activeModalVideo.id} · {activeModalVideo.title}
-              </h3>
-              <div className={styles.modalHeaderActions}>
-                <a
-                  className={styles.modalInstagramLink}
-                  href={activeModalVideo.instagramUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Instagram <ExternalLink size={15} aria-hidden="true" />
-                </a>
-                <button
-                  type="button"
-                  className={styles.modalCloseBtn}
-                  onClick={() => setActiveModalVideo(null)}
-                  aria-label="Close video player"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-            </div>
-
-            <div className={styles.modalVideoWrapper}>
-              <iframe
-                src={`${activeModalVideo.embedUrl}?autoplay=1`}
-                className={styles.modalVideoPlayer}
-                title={`${activeModalVideo.title} Instagram reel`}
-                allow="autoplay; encrypted-media; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-
-            <div className={styles.modalTabs}>
-              {videoCardsData.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={`${styles.modalTabBtn} ${
-                    activeModalVideo.id === item.id ? styles.modalTabActive : ""
-                  }`}
-                  onClick={() => setActiveModalVideo(item)}
-                >
-                  {item.id} · {item.title} ({item.duration})
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

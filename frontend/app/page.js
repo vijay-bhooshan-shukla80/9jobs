@@ -11,7 +11,6 @@ import {
   Bot,
   Briefcase,
   Check,
-  CheckCircle2,
   ClipboardCheck,
   FileText,
   Gauge,
@@ -172,13 +171,6 @@ const pipelineItems = [
   ["LinkedIn Optimization", "Optimized profiles present a strong and consistent professional brand.", SearchCheck],
   ["Resume Review & Editing", "Get an ATS-friendly resume optimized with high-impact industry keywords.", FileText],
   ["Australian Market Focus", "All content is aligned with Australian hiring practices and employer expectations.", Gauge],
-];
-
-const growthItems = [
-  ["Profile optimization", "Enhance your LinkedIn, SEEK, and Jora profiles to stand out to recruiters."],
-  ["ATS-ready resumes", "Get custom, ATS-friendly resumes written specifically for Australian hiring systems."],
-  ["Automated applications", "We actively search and apply for matching roles on your behalf."],
-  ["Interview preparation", "Access targeted coaching and feedback to secure job offers."],
 ];
 
 const plans = [
@@ -455,70 +447,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="fj-section fj-home-section--grid">
-        <div className="fj-container">
-          <Reveal as="div" direction="up" distance={24}>
-            <div className="fj-section-head">
-              <span className="fj-label">9Jobs services</span>
-              <h2>Choose the support that moves your search <span className="heading-mark">forward</span></h2>
-              <p>Targeted help for your resume, LinkedIn, SEEK, applications, and interviews.</p>
-            </div>
-          </Reveal>
-          <StaggerContainer as="div" className="fj-card-grid fj-card-grid--three" stagger={0.12}>
-            {[
-              {
-                title: "Resume Writing Australia",
-                text: "ATS-friendly resumes written for Australian recruiter expectations, local keywords, and clear achievement-led scanning.",
-                href: "/services/resume-writing",
-                badge: "Executive Preferred",
-                premium: true,
-              },
-              {
-                title: "LinkedIn Optimization",
-                text: "Profile headlines, summaries, skills, and experience sections aligned with LinkedIn Recruiter search behavior.",
-                href: "/services/linkedin-optimization",
-              },
-              {
-                title: "SEEK Profile Optimization",
-                text: "SEEK summaries, target titles, skills, and visibility settings configured for Australian candidate searches.",
-                href: "/services/seek-profile-optimization",
-              },
-              {
-                title: "Job Application Support",
-                text: "Structured job sourcing and application support to keep your role pipeline active across SEEK, LinkedIn, and Jora.",
-                href: "/services/job-application-automation",
-                badge: "Top Sourcing Service",
-                premium: true,
-              },
-              {
-                title: "Interview Coaching",
-                text: "Mock interview practice, STAR answer coaching, and interview follow-up support for Australian hiring processes.",
-                href: "/services/interview-coaching",
-              },
-            ].map((service) => (
-              <StaggerItem as="article" key={service.title} className={`fj-feature-card fj-card-hover${service.premium ? " fj-feature-card--premium" : ""}`}>
-                {service.badge && <span className="fj-badge-gold">{service.badge}</span>}
-                <h3>{service.title}</h3>
-                <p>{service.text}</p>
-                <Link href={service.href} prefetch={false} className="fj-link-animated">
-                  {service.title === "Resume Writing Australia" ? "Resume writing" : service.title === "LinkedIn Optimization" ? "LinkedIn optimization" : service.title === "SEEK Profile Optimization" ? "SEEK profile optimization" : service.title === "Job Application Support" ? "Job application support" : "Interview coaching"} <ArrowRight size={16} />
-                </Link>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-          <Reveal as="div" direction="up" distance={20} delay={0.08}>
-            <div style={{ display: "flex", gap: "16px", justifyContent: "center", marginTop: "40px", flexWrap: "wrap" }}>
-              <Link href="/services" className="fj-button fj-button--ghost fj-button--motion" prefetch={false}>
-                Explore Services Hub <ArrowRight size={16} />
-              </Link>
-              <Link href="/jobs" className="fj-button fj-button--ghost fj-button--motion" prefetch={false}>
-                Search Jobs in Australia <ArrowRight size={16} />
-              </Link>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
       <section className="fj-section fj-section--muted fj-home-section--spotlight">
         <div className="fj-container fj-split">
           <Reveal as="div" direction="left" distance={28}>
@@ -558,53 +486,6 @@ export default function Home() {
                   </StaggerItem>
                 ))}
               </StaggerContainer>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="fj-section fj-home-section--spotlight fj-home-section--market">
-        <div className="fj-container fj-split fj-split--reverse">
-          <Reveal as="div" direction="left" distance={28}>
-            <div className="fj-copy-block">
-              <span className="fj-label">growth at every level</span>
-              <h2>Optimized for the Australian Job <span className="heading-mark">Market</span></h2>
-              <div className="fj-list-grid fj-list-grid--single-motion">
-                {growthItems.map(([title, text], index) => (
-                  <Reveal
-                    as="div"
-                    className="fj-mini-item fj-mini-item--check"
-                    key={title}
-                    direction={index % 2 === 0 ? "left" : "right"}
-                    distance={30}
-                    delay={index * 0.08}
-                    duration={0.72}
-                  >
-                    <span className="fj-checklist-icon"><CheckCircle2 size={18} /></span>
-                    <div>
-                      <h3>{title}</h3>
-                      <p>{text}</p>
-                    </div>
-                  </Reveal>
-                ))}
-              </div>
-            </div>
-          </Reveal>
-          <Reveal as="div" direction="right" distance={28}>
-            <div className="fj-role-card">
-              {["Software Developer", "Lead Software Developer", "Product Owner"].map((role, index) => (
-                <div className="fj-role-row" key={role}>
-                  <span>{role}</span>
-                  <strong>{index === 1 ? 8 : index === 2 ? 5 : 6}</strong>
-                </div>
-              ))}
-              {["ATS Resume Drafted", "LinkedIn & SEEK Optimized", "Daily Job Applications Sent", "Interview Scheduled"].map((task, index) => (
-                <div className="fj-task-row" key={task}>
-                  <CheckCircle2 size={18} />
-                  <span>{task}</span>
-                  {index > 1 && <em>Optional</em>}
-                </div>
-              ))}
             </div>
           </Reveal>
         </div>

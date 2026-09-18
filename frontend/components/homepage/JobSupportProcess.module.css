@@ -371,11 +371,13 @@
   .heading {
     font-size: clamp(22px, 6.6vw, 28px);
     line-height: 1.12;
+    width: 100%;
+    text-wrap: balance;
   }
 
   .fullScreenStage {
     grid-template-columns: 1fr;
-    grid-template-rows: 45% 55%;
+    grid-template-rows: 48% 52%;
   }
 
   .wheelColumn {
@@ -391,8 +393,8 @@
 
   .wheelStageAnchor {
     left: 50%;
-    top: 48%;
-    transform: scale(0.46);
+    top: 50%;
+    transform: scale(0.42);
   }
 
   .textColumn {
@@ -417,7 +419,11 @@
 
   .trustPill {
     display: flex;
-    width: max-content;
+    width: fit-content;
+    max-width: calc(100% - 16px);
+    justify-content: center;
+    text-align: center;
+    white-space: normal;
     gap: 5px;
     padding: 4px 7px;
     font-size: clamp(7px, 2.05vw, 9px);
@@ -476,16 +482,22 @@
 @media (max-width: 380px) {
   .fullScreenStage {
     grid-template-columns: 1fr;
-    grid-template-rows: 43% 57%;
+    grid-template-rows: 47% 53%;
   }
 
   .wheelStageAnchor {
     left: 50%;
-    top: 47%;
-    transform: scale(0.4);
+    top: 50%;
+    transform: scale(0.38);
   }
 
   .textColumn {
     padding: 6px 16px 0;
+  }
+}
+
+@media (max-width: 340px) {
+  .wheelStageAnchor {
+    transform: scale(0.34);
   }
 }

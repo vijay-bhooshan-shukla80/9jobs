@@ -1,6 +1,6 @@
 import HeroLaptop from "./HeroLaptop";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, ChevronsDown } from "lucide-react";
+import { CheckCircle2, ChevronsDown } from "lucide-react";
 import { CalendlyLink } from "../CalendlyWidget";
 import styles from "./HomeHero.module.css";
 
@@ -8,9 +8,6 @@ export default function HomeHero() {
   return (
     <section className={styles.hero} aria-labelledby="home-hero-title">
       <div className={styles.container}>
-            <Link className={styles.announcement} href="/features" prefetch={false}>
-              <span>New</span><span>Announcing our Job Automation Tools &amp; Manual Apply</span><ArrowRight size={15} />
-            </Link>
         <div className={styles.layout}>
           <div className={styles.copy}>
 

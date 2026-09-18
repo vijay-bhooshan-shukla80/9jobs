@@ -34,8 +34,8 @@ describe("homepage process and laptop regression contract", () => {
 
     expect(styles).toContain("@media (max-width: 600px)");
     expect(styles).toContain("grid-template-columns: 1fr;");
-    expect(styles).toContain("grid-template-rows: 45% 55%;");
-    expect(styles).toContain("transform: scale(0.46);");
+    expect(styles).toContain("grid-template-rows: 48% 52%;");
+    expect(styles).toContain("transform: scale(0.42);");
     expect(styles).not.toContain(".mobileLayout");
     expect(styles).not.toContain(".finalStep .wheelStageAnchor");
   });
@@ -49,6 +49,16 @@ describe("homepage process and laptop regression contract", () => {
     expect(styles).toContain(".fj-placement-preview-heading");
   });
 
+  test("changes the mobile process pill with each scroll step", () => {
+    const process = read("frontend/components/homepage/JobSupportProcessSection.js");
+
+    expect(process).toContain('pill: "Ready to Begin"');
+    expect(process).toContain('pill: "20+ Targeted Applications Daily"');
+    expect(process).toContain('pill: "Employment Goal Reached"');
+    expect(process).toContain("{currentStep.pill}");
+    expect(process).not.toContain("Trusted by Job Seekers\n                </div>");
+  });
+
   test("uses the requested About 9Jobs section heading", () => {
     const videoSection = read("frontend/components/homepage/HomeVideoSection.js");
 
@@ -57,15 +67,21 @@ describe("homepage process and laptop regression contract", () => {
     expect(videoSection).not.toContain("Watch How <span");
   });
 
-  test("uses the native Instagram player on every reel card", () => {
+  test("plays every homepage reel inline with one centered control", () => {
     const videoSection = read("frontend/components/homepage/HomeVideoSection.js");
     const styles = read("frontend/components/homepage/HomeVideoSection.module.css");
 
-    expect(videoSection).toContain("src={card.embedUrl}");
+    expect(videoSection).toContain("src={card.videoSrc}");
+    expect(videoSection).toContain("poster={card.posterSrc}");
+    expect(videoSection).toContain("playsInline");
     expect(videoSection).not.toContain("startedInlineVideos");
     expect(videoSection).not.toContain("startInlineVideo");
-    expect(styles).toMatch(/\.reelPreview\s*\{[\s\S]*?pointer-events: auto;/);
-    expect(styles).not.toContain(".reelPlayButton");
+    expect(videoSection).not.toContain("target=\"_blank\"");
+    expect(videoSection).not.toContain("activeModalVideo");
+    expect(videoSection).toContain("className={styles.previewPlayButton}");
+    expect(styles).toMatch(/\.inlineVideo\s*\{[\s\S]*?pointer-events: none;/);
+    expect(styles).toMatch(/\.previewPlayButton\s*\{[\s\S]*?align-items: center;[\s\S]*?justify-content: center;/);
+    expect(styles).toContain(".inlinePlayIcon");
   });
 
   test("adds the animated watch-demo cue without changing the demo destination", () => {
@@ -87,7 +103,7 @@ describe("homepage process and laptop regression contract", () => {
     expect(process).toContain('return "blur(5px)"');
     expect(process).not.toContain('strokeDasharray="9 9"');
     expect(process).toContain('stroke="#65c500"');
-    expect(process).toContain("Trusted by Job Seekers");
+    expect(process).toContain("{currentStep.pill}");
     expect(process).toContain("currentStep.benefits.map");
     expect(process).toContain("width: 260");
     expect(process).toContain("height: 260");
