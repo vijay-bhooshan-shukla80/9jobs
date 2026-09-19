@@ -19,14 +19,14 @@ export async function POST(request) {
       port: 465,
       secure: true,
       auth: {
-        user: '9jobsapplicationservice@gmail.com',
+        user: 'Info@9jobs.co',
         pass: gmailPass,
       },
     });
 
     const mailOptions = {
-      from: '"9Jobs Contact Form" <9jobsapplicationservice@gmail.com>',
-      to: '9jobsapplicationservice@gmail.com',
+      from: '"9Jobs Contact Form" <Info@9jobs.co>',
+      to: 'Info@9jobs.co',
       replyTo: email,
       subject: `New Contact Submission from ${firstName} ${lastName}`,
       html: `

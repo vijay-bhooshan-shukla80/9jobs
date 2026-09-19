@@ -1,6 +1,6 @@
 import { sendEmail } from '@/lib/email/delivery';
 
-const ADMIN_MAILBOX = process.env.MAIL_FROM || '9jobsapplicationservice@gmail.com';
+const ADMIN_MAILBOX = process.env.MAIL_FROM || 'Info@9jobs.co';
 
 export async function sendOtpEmail({ email, name, otp }) {
   await sendEmail({

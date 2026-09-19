@@ -2,7 +2,7 @@ const FIXED_PROVIDER = {
   legalName: '9 Jobs Pty Ltd',
   abn: '83679842972',
   phone: '+61 422 279 428',
-  email: '9jobsapplicationservice@gmail.com',
+  email: 'Info@9jobs.co',
 };
 
 function formatInitialTerm(value) {

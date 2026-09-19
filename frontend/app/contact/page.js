@@ -57,7 +57,7 @@ export default async function ContactPage({ searchParams }) {
 
                 <div className="fj-contact-list">
                   <a href="tel:+61422279428"><Phone size={20} /> +61 422 279 428</a>
-                  <a href="mailto:9jobsapplicationservice@gmail.com"><Mail size={20} /> 9jobsapplicationservice@gmail.com</a>
+                  <a href="mailto:Info@9jobs.co"><Mail size={20} /> Info@9jobs.co</a>
                   <span><MapPin size={20} /> Melbourne, Australia</span>
                 </div>
 

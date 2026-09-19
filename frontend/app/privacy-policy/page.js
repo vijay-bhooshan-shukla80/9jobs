@@ -102,13 +102,13 @@ export default function PrivacyPolicy() {
             <div className={styles.section}>
               <h2>Contact Information</h2>
               <div className={styles.contactGrid}>
-                <a href="mailto:9jobsapplicationservice@gmail.com" className={styles.contactCard}>
+                <a href="mailto:Info@9jobs.co" className={styles.contactCard}>
                   <div className={styles.contactIcon}>
                     <Mail size={20} />
                   </div>
                   <div className={styles.contactInfo}>
                     <span className={styles.contactLabel}>Email</span>
-                    <span className={styles.contactValue}>9jobsapplicationservice@gmail.com</span>
+                    <span className={styles.contactValue}>Info@9jobs.co</span>
                   </div>
                 </a>
 

@@ -1,4 +1,4 @@
-const DEFAULT_FROM_EMAIL = '9jobsapplicationservice@gmail.com';
+const DEFAULT_FROM_EMAIL = 'Info@9jobs.co';
 
 function getFromEmail() {
   return process.env.MAIL_FROM || DEFAULT_FROM_EMAIL;
@@ -65,7 +65,7 @@ async function sendViaGmail({ to, subject, html, attachments = [] }) {
     port: 465,
     secure: true,
     auth: {
-      user: DEFAULT_FROM_EMAIL,
+      user: getFromEmail(),
       pass: gmailPass,
     },
   });

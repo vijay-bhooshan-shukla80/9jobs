@@ -600,8 +600,8 @@ export default function TestimonialsContent() {
                   </div>
                   <div className="tp-contact-text-box">
                     <span className="tp-contact-label">Email Inquiries</span>
-                    <a href="mailto:9jobsapplicationservice@gmail.com" className="tp-contact-link tp-contact-link--email">
-                      9jobsapplicationservice@gmail.com
+                    <a href="mailto:Info@9jobs.co" className="tp-contact-link tp-contact-link--email">
+                      Info@9jobs.co
                     </a>
                   </div>
                 </li>

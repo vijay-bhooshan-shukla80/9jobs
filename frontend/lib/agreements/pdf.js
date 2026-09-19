@@ -278,7 +278,7 @@ function drawHeaderAndFooter(renderer, logoImage) {
 
     const contactLines = [
       '+61 422 279 428',
-      '9jobsapplicationservice@gmail.com',
+      'Info@9jobs.co',
       'ABN: 83 679 842 972',
       'www.9jobs.co'
     ];

@@ -21,7 +21,7 @@ function createMailer() {
     port: 465,
     secure: true,
     auth: {
-      user: '9jobsapplicationservice@gmail.com',
+      user: 'Info@9jobs.co',
       pass: gmailPass,
     },
   });
@@ -70,7 +70,7 @@ export async function POST(request, { params }) {
     const transporter = createMailer();
 
     await transporter.sendMail({
-      from: '"9 Jobs" <9jobsapplicationservice@gmail.com>',
+      from: '"9 Jobs" <Info@9jobs.co>',
       to: invoiceDocument.billedToEmail,
       subject: `Service Invoice between ${invoiceDocument.billedToName} and 9Jobs`,
       html: `

@@ -5,7 +5,7 @@ import connectMongoDB from '@/lib/mongodb';
 import AdminUser from '@/models/AdminUser';
 import { createPasswordResetToken, hashPasswordResetToken } from '@/lib/admin/auth/password-reset';
 
-const ADMIN_MAILBOX = '9jobsapplicationservice@gmail.com';
+const ADMIN_MAILBOX = 'Info@9jobs.co';
 
 function buildAuthError(message, code) {
   const error = new Error(message);
@@ -47,7 +47,7 @@ async function sendPasswordResetEmail({ email, name, resetUrl }) {
   const transporter = await getAdminTransporter();
 
   await transporter.sendMail({
-    from: '"9Jobs Admin Access" <9jobsapplicationservice@gmail.com>',
+    from: '"9Jobs Admin Access" <Info@9jobs.co>',
     to: email,
     subject: 'Reset your 9Jobs admin password',
     html: `
