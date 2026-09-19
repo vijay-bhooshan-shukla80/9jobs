@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
+import { CalendlyLink } from "./CalendlyWidget";
 
 const links = [
   { href: "/about", label: "About" },
@@ -139,12 +140,12 @@ export default function Navbar() {
         </nav>
 
         <div className="nav-actions fj-nav-actions">
-          <Link href="/pricing" className="fj-button fj-button--ghost" prefetch={false}>
+          <CalendlyLink className="fj-button fj-button--ghost">
             2 Days Trial
-          </Link>
-          <a href="tel:+61422279428" className="fj-button fj-button--dark">
+          </CalendlyLink>
+          <CalendlyLink className="fj-button fj-button--dark">
             Book a call <ArrowRight size={17} />
-          </a>
+          </CalendlyLink>
         </div>
 
         <button
@@ -215,12 +216,12 @@ export default function Navbar() {
             </Link>
           );
         })}
-        <Link className="fj-button fj-button--ghost" href="/pricing" prefetch={false} onClick={() => setIsOpen(false)}>
+        <CalendlyLink className="fj-button fj-button--ghost" onClick={() => setIsOpen(false)}>
           2 Days Trial
-        </Link>
-        <a className="fj-button fj-button--dark" href="tel:+61422279428" onClick={() => setIsOpen(false)}>
+        </CalendlyLink>
+        <CalendlyLink className="fj-button fj-button--dark" onClick={() => setIsOpen(false)}>
           Book a call <ArrowRight size={17} />
-        </a>
+        </CalendlyLink>
       </nav>
     </header>
   );

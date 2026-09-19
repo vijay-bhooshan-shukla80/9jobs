@@ -1,5 +1,4 @@
 import HeroLaptop from "./HeroLaptop";
-import Link from "next/link";
 import { CheckCircle2, ChevronsDown } from "lucide-react";
 import { CalendlyLink } from "../CalendlyWidget";
 import styles from "./HomeHero.module.css";
@@ -14,7 +13,7 @@ export default function HomeHero() {
             <h1 id="home-hero-title">9Jobs - <span className={styles.lime}>Everything<br />You Need</span> to Get<br />Hired in <span className={styles.mark}>Australia</span></h1>
             <p>From smarter job search and ATS-optimized resumes to LinkedIn optimization, tailored applications and interview support – 9Jobs helps you at every step of your career journey.</p>
             <div className={styles.actions}>
-              <Link className={styles.trial} href="/pricing" prefetch={false}>2 Days Trial</Link>
+              <CalendlyLink className={styles.trial}>2 Days Trial</CalendlyLink>
               <CalendlyLink className={styles.demo}>Get a demo</CalendlyLink>
             </div>
           </div>

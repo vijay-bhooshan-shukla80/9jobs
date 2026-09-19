@@ -1,4 +1,10 @@
 import Link from "next/link";
+import PricingCheckoutButton from "../PricingCheckoutButton";
+
+const standardPlan = {
+  name: "Standard Plan",
+  ctaLabel: "Get Started — from $149/mo",
+};
 
 export default function DreamCompanyCtaSection() {
   return (
@@ -11,9 +17,10 @@ export default function DreamCompanyCtaSection() {
             See a role at Intel, Adobe, Salesforce, or Stripe you want to apply to? Our team handles everything &mdash; tailored resume for each JD, cover letter, and screenshot proof of submission. From $149/month.
           </p>
           <div className="fj-cta-card-actions">
-            <Link href="/pricing" className="fj-cta-card-btn-primary" prefetch={false}>
-              Get Started &mdash; from $149/mo
-            </Link>
+            <PricingCheckoutButton
+              plan={standardPlan}
+              className="fj-cta-card-btn-primary"
+            />
             <Link href="/features" className="fj-cta-card-btn-secondary" prefetch={false}>
               Explore Free Tools
             </Link>

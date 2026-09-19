@@ -17,7 +17,7 @@ function ensureBilling(submission) {
     planLabel: submission?.billing?.planLabel || '',
     billingState: submission?.billing?.billingState || 'PENDING_AGREEMENT',
     agreedWeeklyAmountCents: submission?.billing?.agreedWeeklyAmountCents || 0,
-    onboardingFeeCents: submission?.billing?.onboardingFeeCents || 20000,
+    onboardingFeeCents: submission?.billing?.onboardingFeeCents || 19900,
     latestSuccessFeeAmountCents: submission?.billing?.latestSuccessFeeAmountCents || 0,
     currency: submission?.billing?.currency || 'aud',
     billingFrequency: submission?.billing?.billingFrequency || 'week',

@@ -385,6 +385,10 @@ export default function Home() {
 
       <HomeVideoSection />
 
+      <FlowchartSection />
+
+      <RoiCalculatorSection />
+
       <section className="fj-section fj-home-section--dashboard-preview" aria-labelledby="placed-clients-title" style={{ padding: "40px 0 60px" }}>
         <div className="fj-placement-preview-heading">
           <span>CLIENT OUTCOMES</span>
@@ -413,8 +417,6 @@ export default function Home() {
           </Reveal>
         </div>
       </section>
-
-      <FlowchartSection />
 
       <section className="fj-section fj-section--tight fj-home-section--compact">
         <div className="fj-container fj-trust">
@@ -513,8 +515,6 @@ export default function Home() {
           </Reveal>
         </div>
       </section>
-
-      <RoiCalculatorSection />
 
       <div className="fj-section-divider" />
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Ghost, Banknote, FileText, Brain } from "lucide-react";
+import { ArrowRight, Clock3, BadgePercent, FileText, Brain } from "lucide-react";
 import { CalendlyLink } from "../CalendlyWidget";
 
 export default function RoiCalculatorSection() {
@@ -135,28 +135,28 @@ export default function RoiCalculatorSection() {
           <h2>
             The Hidden Costs of <span className="heading-mark">Job Searching</span>
           </h2>
-          <p>Think our plans are expensive? Consider what you&apos;re already paying.</p>
+          <p>A job search costs more than money. Here&apos;s where the time and effort often go.</p>
         </div>
 
         <div className="fj-hidden-costs-grid">
           {/* Card 1 */}
           <div className="fj-hidden-cost-card">
             <div className="fj-hidden-cost-icon">
-              <Ghost size={20} />
+              <Clock3 size={20} />
             </div>
-            <h4>The &apos;Ghosted&apos; Tax</h4>
-            <div className="fj-hidden-cost-amount">$500+</div>
-            <p>20+ hours on jobs where you never hear back</p>
+            <h4>Repeated Applications</h4>
+            <div className="fj-hidden-cost-amount">Time spent</div>
+            <p>Every role needs reviewing, tailoring and form filling</p>
           </div>
 
           {/* Card 2 */}
           <div className="fj-hidden-cost-card">
             <div className="fj-hidden-cost-icon">
-              <Banknote size={20} />
+              <BadgePercent size={20} />
             </div>
-            <h4>Agency Commission</h4>
-            <div className="fj-hidden-cost-amount">$15,000+</div>
-            <p>20% cut from your first year salary</p>
+            <h4>Recruitment Agency Fees</h4>
+            <div className="fj-hidden-cost-amount">Percentage-based</div>
+            <p>Fees vary by provider, role and hiring arrangement</p>
           </div>
 
           {/* Card 3 */}
@@ -164,9 +164,9 @@ export default function RoiCalculatorSection() {
             <div className="fj-hidden-cost-icon">
               <FileText size={20} />
             </div>
-            <h4>Resume Rewrite</h4>
-            <div className="fj-hidden-cost-amount">$300+</div>
-            <p>Generic template that doesn&apos;t stand out</p>
+            <h4>Resume Support</h4>
+            <div className="fj-hidden-cost-amount">From $49</div>
+            <p>A clear one-time price shown before payment</p>
           </div>
 
           {/* Card 4 */}
@@ -174,9 +174,9 @@ export default function RoiCalculatorSection() {
             <div className="fj-hidden-cost-icon">
               <Brain size={20} />
             </div>
-            <h4>Burnout Cost</h4>
-            <div className="fj-hidden-cost-amount">Priceless</div>
-            <p>Late nights filling endless Workday forms</p>
+            <h4>Job-search Fatigue</h4>
+            <div className="fj-hidden-cost-amount">Hard to measure</div>
+            <p>Repeated forms and follow-ups add to the mental load</p>
           </div>
         </div>
 

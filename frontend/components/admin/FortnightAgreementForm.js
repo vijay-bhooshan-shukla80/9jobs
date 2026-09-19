@@ -16,7 +16,7 @@ const initialState = {
   providerSignatureName: 'Aditya Singh',
   providerAbn: '83679842972',
   agreementDate: new Date().toISOString().slice(0, 10),
-  servicePrice: 'AUD $200', // Upfront Service Fee
+  servicePrice: 'AUD $199', // Upfront Service Fee
   initialTerm: '2 month', // Service Period
   permanentSuccessFeeDays: 14,
   shortTermSuccessFeeDays: 7,
@@ -56,7 +56,7 @@ const labels = {
   providerAbn: 'Provider ABN',
   agreementDate: 'Agreement Date',
   initialTerm: '2. Service Period',
-  servicePrice: '3. Upfront Service Fee (e.g. AUD $200)',
+  servicePrice: '3. Upfront Service Fee (e.g. AUD $199)',
   permanentSuccessFeeDays: 'Success Fees',
   renewalEnabled: 'Renewal',
   renewalTerm: 'Renewal Month',

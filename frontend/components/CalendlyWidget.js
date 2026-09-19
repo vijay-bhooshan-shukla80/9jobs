@@ -1,6 +1,8 @@
 "use client";
 
-const CALENDLY_URL = "https://calendly.com/mayanksodhi11/30min?hide_event_type_details=1";
+import Link from "next/link";
+
+const BOOKING_PATH = "/book-a-call";
 
 export function CalendlyLoader() {
   return null;
@@ -8,14 +10,13 @@ export function CalendlyLoader() {
 
 export function CalendlyLink({ children, className, onClick }) {
   return (
-    <a
+    <Link
       className={className}
-      href={CALENDLY_URL}
+      href={BOOKING_PATH}
       onClick={onClick}
-      target="_blank"
-      rel="noopener noreferrer"
+      prefetch={false}
     >
       {children}
-    </a>
+    </Link>
   );
 }

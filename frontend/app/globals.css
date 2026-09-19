@@ -11226,3 +11226,39 @@ section.hero.hero-split,
     width: 100%;
   }
 }
+
+/* Public responsive containment: allow split-panel motion wrappers to shrink
+   with their grid track instead of inheriting a marquee/content min-width. */
+.fj-page .fj-split > *,
+.fj-homepage .fj-split > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.fj-page .fj-card-grid > *,
+.fj-homepage .fj-card-grid > *,
+.fj-page .fj-ai-card > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.fj-page .fj-ai-search span,
+.fj-page .fj-ai-note strong,
+.fj-page .fj-ai-note p {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Preserve the slanted pricing-card treatment while keeping its transformed
+   visual bounds inside tablet and phone containers. */
+@media (max-width: 1180px) {
+  .fj-page .fj-resume-cards-grid {
+    padding-inline: clamp(32px, 4vw, 48px);
+  }
+}
+
+@media (max-width: 880px) {
+  .fj-page .fj-resume-cards-grid {
+    padding-inline: 16px;
+  }
+}

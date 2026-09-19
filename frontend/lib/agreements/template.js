@@ -45,8 +45,8 @@ export function buildAgreementTemplate(input) {
       'The Service Provider agrees to perform the following services on behalf of the Customer:'
     ),
     createSection('2. Payment Terms', [
-        `The Customer agrees to pay the Service Provider a fee of ${input.servicePrice || '$150 (AUD)'} in advance for the services.`,
-        `If the Customer wishes to continue receiving services after ${formatInitialTerm(input.initialTerm || '1')}, the fee will be ${input.servicePrice || '$150 (AUD)'} per week, payable in advance.`,
+        `The Customer agrees to pay the Service Provider a fee of ${input.servicePrice || '$149 (AUD)'} in advance for the services.`,
+        `If the Customer wishes to continue receiving services after ${formatInitialTerm(input.initialTerm || '1')}, the fee will be ${input.servicePrice || '$149 (AUD)'} per week, payable in advance.`,
         `Payments must be made using the agreed payment method between the Customer and the Service Provider. Payments are due every ${input.paymentDay || 'Monday'} before services commence for that week. Services will not be provided unless payment is received in advance.`,
     ]),
     createSection('3. Payment Schedule, Cost Structure and Service Oversight', [

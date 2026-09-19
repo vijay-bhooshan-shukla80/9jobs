@@ -20,9 +20,37 @@ export const DEFAULT_WEEKLY_TERMS_VERSION = 'weekly-subscription-v2';
 
 export const ONE_TIME_CHECKOUT_PLANS = {
   Trial: {
-    unitAmount: 5000,
+    unitAmount: 4900,
     currency: 'aud',
     description: 'Trial plan - / 2 days',
+    mode: 'payment',
+  },
+  'Standard Plan': {
+    unitAmount: 14900,
+    currency: 'aud',
+    description: 'Standard weekly job-support subscription',
+    mode: 'subscription',
+    recurring: {
+      interval: 'week',
+    },
+  },
+  'Standard 2-Week Sprint': {
+    unitAmount: 27000,
+    currency: 'aud',
+    description: 'Standard two-week job-application sprint',
+    mode: 'payment',
+  },
+  'Standard 4-Week Sprint': {
+    unitAmount: 50000,
+    currency: 'aud',
+    description: 'Standard four-week job-application sprint',
+    mode: 'payment',
+  },
+  'Two-Month Success-Based': {
+    unitAmount: 19900,
+    currency: 'aud',
+    description: 'Two-Month Success-Based onboarding fee',
+    mode: 'payment',
   },
   'Resume Makeover': {
     unitAmount: 4900,

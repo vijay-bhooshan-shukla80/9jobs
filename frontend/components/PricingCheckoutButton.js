@@ -10,13 +10,9 @@ export default function PricingCheckoutButton({ plan, className, style }) {
         return;
       }
 
-      // Use relative path in production to avoid CORS/mixed-content issues.
-      // In local development, fallback to the env var or localhost:5000.
-      const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost';
-      const apiBase = isLocal ? (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/$/, "") : "";
       const endpoint = plan?.checkoutEndpoint || "/api/billing/one-time-checkout";
       
-      const response = await fetch(`${apiBase}${endpoint}`, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

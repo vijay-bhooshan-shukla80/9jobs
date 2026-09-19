@@ -8,15 +8,15 @@ import { Reveal, StaggerContainer, StaggerItem, HoverCard, PageTransition } from
 const plans = [
   {
     name: "Trial",
-    price: "AUD $50",
+    price: "AUD $49",
     period: "/ 2 days",
     summary: "Try the 9Jobs experience for 2 days with a simple one-time checkout under the Standard Plan.",
     items: ["Full platform access", "Resume review", "Application support", "2-day support window"],
-    ctaLabel: "Pay AUD $50",
+    ctaLabel: "Pay Now",
   },
   {
     name: "Standard Plan",
-    price: "AUD $150",
+    price: "AUD $149",
     period: "/ week",
     summary: "Standard Plan weekly job-support subscription with recurring billing disclosed before payment.",
     items: [
@@ -27,13 +27,11 @@ const plans = [
       "Agreement-linked recurring consent",
     ],
     highlighted: true,
-    action: "contact",
-    href: "/contact?intent=standard-weekly",
-    ctaLabel: "Request private checkout",
+    ctaLabel: "Pay Now",
   },
   {
     name: "Two-Month Success-Based",
-    price: "AUD $200",
+    price: "AUD $199",
     period: "/ onboarding",
     summary: "Start with upfront onboarding fees, then handle any later success fee as a separate one-time charge.",
     items: [
@@ -44,9 +42,7 @@ const plans = [
       "Manual approval before any success-fee payment",
     ],
     dark: true,
-    action: "contact",
-    href: "/contact?intent=success-based",
-    ctaLabel: "Request onboarding link",
+    ctaLabel: "Pay Now",
   },
 ];
 

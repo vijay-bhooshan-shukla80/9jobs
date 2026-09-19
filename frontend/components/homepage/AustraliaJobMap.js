@@ -31,8 +31,8 @@ const locationAreas = {
     stepDesc: "CBD, Docklands, Richmond, Southbank · FinTech & Enterprise IT",
     slug: "melbourne",
     pricing: {
-      standard: "$150 AUD",
-      fortnight: "$200 AUD",
+      standard: "$149 AUD",
+      fortnight: "$199 AUD",
       placement: "2 Weeks Salary (1st Month)",
       quota: "20 Jobs/Day Applied · 100+/Wk",
     },
@@ -58,8 +58,8 @@ const locationAreas = {
     stepDesc: "CBD, North Sydney, Parramatta · Investment Banking & Cloud",
     slug: "sydney",
     pricing: {
-      standard: "$150 AUD",
-      fortnight: "$200 AUD",
+      standard: "$149 AUD",
+      fortnight: "$199 AUD",
       placement: "2 Weeks Salary (1st Month)",
       quota: "20 Jobs/Day Applied · 100+/Wk",
     },
@@ -85,8 +85,8 @@ const locationAreas = {
     stepDesc: "CBD, Fortitude Valley, Gold Coast · HealthTech & Engineering",
     slug: "brisbane",
     pricing: {
-      standard: "$150 AUD",
-      fortnight: "$200 AUD",
+      standard: "$149 AUD",
+      fortnight: "$199 AUD",
       placement: "2 Weeks Salary (1st Month)",
       quota: "20 Jobs/Day Applied · 100+/Wk",
     },
@@ -112,8 +112,8 @@ const locationAreas = {
     stepDesc: "Perth CBD, Adelaide CBD · Mining Resources, Tech & AgTech",
     slug: "perth",
     pricing: {
-      standard: "$150 AUD",
-      fortnight: "$200 AUD",
+      standard: "$149 AUD",
+      fortnight: "$199 AUD",
       placement: "2 Weeks Salary (1st Month)",
       quota: "20 Jobs/Day Applied · 100+/Wk",
     },

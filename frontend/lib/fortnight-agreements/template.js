@@ -56,11 +56,11 @@ export function buildFortnightAgreementTemplate(input) {
       '3. Upfront Service Fee',
       hasRenewal
         ? [
-            `Fee Amount: The Client agrees to pay an upfront service fee of ${input.servicePrice || 'AUD $200'} for ${servicePeriod}.`,
+            `Fee Amount: The Client agrees to pay an upfront service fee of ${input.servicePrice || 'AUD $199'} for ${servicePeriod}.`,
             `Renewal: To continue the services after ${renewalTerm}, the Client must pay ${input.renewalFee || 'AUD $90'} for each additional month.`,
           ]
         : [
-            `Fee Amount: The Client agrees to pay an upfront service fee of ${input.servicePrice || 'AUD $200'}.`,
+            `Fee Amount: The Client agrees to pay an upfront service fee of ${input.servicePrice || 'AUD $199'}.`,
             'Non-Refundable: This fee is non-refundable.',
           ]
     ),

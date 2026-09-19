@@ -300,19 +300,20 @@ export async function createWeeklySubscriptionCheckout({ token, request, origin 
   return session;
 }
 
-async function createGenericOneTimeCheckout({ planName, amountCents, currency = 'aud', description, metadata = {}, origin = '' }) {
+async function createGenericOneTimeCheckout({ planName, amountCents, currency = 'aud', description, metadata = {}, mode = 'payment', recurring, origin = '' }) {
   const stripe = getStripeClient();
   const baseUrl = getBaseUrl(origin);
 
   return stripe.checkout.sessions.create({
-    ...getHostedCheckoutCustomerCaptureConfig(),
-    mode: 'payment',
+    billing_address_collection: 'required',
+    mode,
     line_items: [
       {
-        price_data: {
-          currency,
-          unit_amount: amountCents,
-          product_data: {
+          price_data: {
+            currency,
+            unit_amount: amountCents,
+            ...(recurring ? { recurring } : {}),
+            product_data: {
             name: `9Jobs ${planName}`,
             description,
           },
@@ -322,7 +323,7 @@ async function createGenericOneTimeCheckout({ planName, amountCents, currency = 
     ],
     client_reference_id: metadata.client_id || undefined,
     metadata,
-    success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&billing=one-time`,
+    success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&billing=${mode === 'subscription' ? 'subscription' : 'one-time'}`,
     cancel_url: `${baseUrl}/pricing`,
   });
 }
@@ -339,6 +340,8 @@ export async function createOneTimePlanCheckout({ planName, origin = '' }) {
     amountCents: plan.unitAmount,
     currency: plan.currency,
     description: plan.description,
+    mode: plan.mode,
+    recurring: plan.recurring,
     metadata: {
       plan_name: planName,
       plan_type: 'public_one_time',
@@ -357,7 +360,7 @@ export async function createSuccessBasedOnboardingCheckout({ token, origin = '' 
     throw new Error('This client is not configured for the success-based onboarding flow.');
   }
 
-  const onboardingFeeCents = client.billing.onboardingFeeCents || 20000;
+  const onboardingFeeCents = client.billing.onboardingFeeCents || 19900;
   const stripeCustomerId = await ensureStripeCustomer(client);
   const session = await createGenericOneTimeCheckout({
     planName: 'Two-Month Success-Based Onboarding',

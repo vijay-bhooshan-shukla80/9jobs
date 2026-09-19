@@ -28,7 +28,9 @@ import {
   MessageSquarePlus,
 } from "lucide-react";
 import { clientReviews, reviewsStats, placedCompaniesList } from "../../data/reviewsData";
+import { CalendlyLink } from "../../components/CalendlyWidget";
 import { Marquee } from "../../components/homepage/HomeMotion";
+import "./reviews.css";
 
 const brandLogos = [
   { name: "kfm", src: "/assets/logo-1.png", width: 156, height: 90 },
@@ -193,13 +195,10 @@ export default function TestimonialsContent() {
                   <MessageSquarePlus size={16} />
                   <span>Write a review</span>
                 </button>
-                <a
-                  href="tel:+61422279428"
-                  className="tp-btn-secondary"
-                >
+                <CalendlyLink className="tp-btn-secondary">
                   <Phone size={16} />
-                  <span>Book a call (+61 422 279 428)</span>
-                </a>
+                  <span>Book a call</span>
+                </CalendlyLink>
                 <Link
                   href="/"
                   className="tp-btn-outline"

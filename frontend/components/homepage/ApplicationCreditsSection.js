@@ -10,9 +10,9 @@ export const STANDARD_DURATIONS = {
     weeks: 1,
     label: "1 Week",
     jobsCount: "100+ Jobs",
-    price: 150,
+    price: 149,
     discountAmount: 0,
-    rateText: "AU$150 / week",
+    rateText: "AU$149 / week",
     savingsNotice: "STANDARD 1-WEEK RATE • 20 JOBS/DAY (100+/WEEK)",
     saveTag: null,
   },
@@ -98,14 +98,33 @@ export default function ApplicationCreditsSection() {
   const currentStandard =
     STANDARD_DURATIONS[standardDuration] || STANDARD_DURATIONS[1];
 
-  const handlePurchase = () => {
-    if (typeof window !== "undefined") {
-      const intentParam =
-        selectedPlan === "standard"
-          ? `standard-${standardDuration}wk`
-          : "success-based";
-      const amount = selectedPlan === "standard" ? currentStandard.price : 200;
-      window.location.href = `/contact?intent=${intentParam}&amount=${amount}&currency=AUD`;
+  const handlePurchase = async () => {
+    try {
+      const standardPlanNames = {
+        1: "Standard Plan",
+        2: "Standard 2-Week Sprint",
+        4: "Standard 4-Week Sprint",
+      };
+      const planName = selectedPlan === "standard"
+        ? standardPlanNames[standardDuration]
+        : "Two-Month Success-Based";
+      const response = await fetch("/api/billing/one-time-checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ planName }),
+      });
+      const session = await response.json();
+
+      if (!response.ok || !session.url) {
+        throw new Error(session.error || "Stripe checkout URL was not returned");
+      }
+
+      window.location.href = session.url;
+    } catch (error) {
+      console.error("Checkout error:", error);
+      alert("Failed to initiate checkout. Please try again.");
     }
   };
 
@@ -212,7 +231,7 @@ export default function ApplicationCreditsSection() {
                 }`}
               >
                 <span>Standard Plan</span>
-                <span className={styles.planTabBadge}>AU$150/wk</span>
+                <span className={styles.planTabBadge}>AU$149/wk</span>
               </button>
 
               <button
@@ -225,7 +244,7 @@ export default function ApplicationCreditsSection() {
                 }`}
               >
                 <span>Success-Based</span>
-                <span className={styles.planTabBadge}>AU$200 Onboarding</span>
+                <span className={styles.planTabBadge}>AU$199 Onboarding</span>
               </button>
             </div>
 
@@ -396,7 +415,7 @@ export default function ApplicationCreditsSection() {
                   </div>
 
                   <div className={styles.priceDisplay}>
-                    <span className={styles.priceAmount}>AU$200</span>
+                    <span className={styles.priceAmount}>AU$199</span>
                     <span className={styles.pricePeriod}>
                       fortnight onboarding fee
                     </span>
@@ -408,7 +427,7 @@ export default function ApplicationCreditsSection() {
 
                   <p className={styles.planDescText}>
                     Start with an affordable fortnight onboarding fee of{" "}
-                    <strong>AU$200</strong>. We actively apply to 100+ jobs/week
+                    <strong>AU$199</strong>. We actively apply to 100+ jobs/week
                     (20 jobs/day), optimize your profiles, and conduct mock
                     interviews. You only pay the placement fee (2 weeks salary
                     from your 1st month) after you get hired and receive your
@@ -442,7 +461,7 @@ export default function ApplicationCreditsSection() {
                   <div className={styles.breakdownRow}>
                     <span>Fortnight Onboarding Fee</span>
                     <span className={styles.breakdownRowStrong}>
-                      AU$200.00
+                      AU$199.00
                     </span>
                   </div>
 
@@ -479,7 +498,7 @@ export default function ApplicationCreditsSection() {
                   <div className={styles.totalPriceRow}>
                     <span className={styles.totalLabel}>DUE TODAY</span>
                     <span className={styles.totalValue}>
-                      <span className={styles.totalAmount}>AU$200</span>
+                      <span className={styles.totalAmount}>AU$199</span>
                       <span className={styles.totalCurrency}>AUD</span>
                     </span>
                   </div>
@@ -504,7 +523,7 @@ export default function ApplicationCreditsSection() {
                   onClick={handlePurchase}
                   className={styles.ctaButton}
                 >
-                  APPLY FOR SUCCESS-BASED PLAN (AU$200)
+                  APPLY FOR SUCCESS-BASED PLAN (AU$199)
                 </button>
               </>
             )}
