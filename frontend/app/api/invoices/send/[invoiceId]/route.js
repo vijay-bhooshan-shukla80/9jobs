@@ -70,8 +70,10 @@ export async function POST(request, { params }) {
     const transporter = createMailer();
 
     await transporter.sendMail({
-      from: '"9 Jobs" <Info@9jobs.co>',
+      from: '"9 Jobs" <accounts@9jobs.co>',
+      replyTo: 'accounts@9jobs.co',
       to: invoiceDocument.billedToEmail,
+      bcc: ['Info@9jobs.co', 'accounts@9jobs.co'],
       subject: `Service Invoice between ${invoiceDocument.billedToName} and 9Jobs`,
       html: `
  <div style="font-family: Arial, sans-serif; font-size: 14px; color: #334155; line-height: 1.5; max-width: 600px;">

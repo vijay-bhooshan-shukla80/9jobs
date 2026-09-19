@@ -43,8 +43,10 @@ export async function POST(request, { params }) {
     const transporter = createMailer();
 
     await transporter.sendMail({
-      from: '"9 Jobs" <Info@9jobs.co>',
+      from: '"9 Jobs" <accounts@9jobs.co>',
+      replyTo: 'accounts@9jobs.co',
       to: invoice.billedToEmail,
+      bcc: ['Info@9jobs.co', 'accounts@9jobs.co'],
       subject: '9Jobs Payment Details',
       attachDataUrls: true,
       html: buildPaymentLinkEmailHtml(invoice, checkoutUrl),

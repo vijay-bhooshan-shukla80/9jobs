@@ -1,4 +1,4 @@
-const DEFAULT_FROM_EMAIL = 'Info@9jobs.co';
+const DEFAULT_FROM_EMAIL = 'accounts@9jobs.co';
 
 function getFromEmail() {
   return process.env.MAIL_FROM || DEFAULT_FROM_EMAIL;
@@ -8,7 +8,7 @@ function getFromName() {
   return '9Jobs Contract Service';
 }
 
-async function sendViaSendGrid({ to, subject, html, attachments = [] }) {
+async function sendViaSendGrid({ to, bcc, subject, html, attachments = [] }) {
   const apiKey = process.env.SENDGRID_API_KEY;
   if (!apiKey) {
     throw new Error('SENDGRID_API_KEY is not configured.');
@@ -21,13 +21,18 @@ async function sendViaSendGrid({ to, subject, html, attachments = [] }) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      personalizations: [
+        personalizations: [
         {
           to: [{ email: to }],
+          ...(bcc?.length ? { bcc: bcc.map((email) => ({ email })) } : {}),
           subject,
         },
       ],
       from: {
+        email: getFromEmail(),
+        name: getFromName(),
+      },
+      reply_to: {
         email: getFromEmail(),
         name: getFromName(),
       },
@@ -52,7 +57,7 @@ async function sendViaSendGrid({ to, subject, html, attachments = [] }) {
   }
 }
 
-async function sendViaGmail({ to, subject, html, attachments = [] }) {
+async function sendViaGmail({ to, bcc, subject, html, attachments = [] }) {
   const nodemailer = (await import('nodemailer')).default;
   const gmailPass = process.env.GMAIL_PASS;
 
@@ -65,14 +70,16 @@ async function sendViaGmail({ to, subject, html, attachments = [] }) {
     port: 465,
     secure: true,
     auth: {
-      user: getFromEmail(),
+      user: process.env.GMAIL_USER || getFromEmail(),
       pass: gmailPass,
     },
   });
 
   await transporter.sendMail({
     from: `"${getFromName()}" <${getFromEmail()}>`,
+    replyTo: getFromEmail(),
     to,
+    ...(bcc?.length ? { bcc } : {}),
     subject,
     html,
     attachments,

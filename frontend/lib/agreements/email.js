@@ -1,6 +1,7 @@
 import { sendEmail } from '@/lib/email/delivery';
 
-const ADMIN_MAILBOX = process.env.MAIL_FROM || 'Info@9jobs.co';
+const ADMIN_MAILBOX = process.env.MAIL_FROM || 'accounts@9jobs.co';
+const ADMIN_COPY_MAILBOXES = ['Info@9jobs.co', 'accounts@9jobs.co'];
 
 /**
  * Sends a six-digit OTP to the signer.
@@ -36,6 +37,7 @@ export async function sendClientSigningInvite(agreement, rawToken) {
 
   await sendEmail({
     to: agreement.clientEmail,
+    bcc: ADMIN_COPY_MAILBOXES,
     subject: 'Signature Required: Your 9Jobs Contract',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -64,6 +66,7 @@ export async function sendProviderSigningInvite(agreement, rawToken) {
 
   await sendEmail({
     to: agreement.providerEmail,
+    bcc: ADMIN_COPY_MAILBOXES,
     subject: 'Signature Required: 9Jobs Contract (' + agreement.clientName + ')',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -103,6 +106,7 @@ export async function sendAgreementCompletedEmail({ email, name, agreement, pdfB
 
   await sendEmail({
     to: email,
+    bcc: ADMIN_COPY_MAILBOXES,
     subject: 'Contract Completed: 9Jobs & ' + agreement.clientName,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
