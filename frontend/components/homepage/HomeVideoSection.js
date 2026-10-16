@@ -373,42 +373,6 @@ export default function HomeVideoSection() {
       <div className={styles.container}>
         {/* Header Block */}
         <div className={styles.headerWrapper}>
-          {/* Left Decorative Text & Arrow (Large Desktop) */}
-          <div className={styles.decorLeft} aria-hidden="true">
-            <span className={styles.decorLeftText}>
-              {"Your\nHiring Partner"}
-            </span>
-            <svg
-              className={styles.decorLeftArrow}
-              width="56"
-              height="50"
-              viewBox="0 0 54 48"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 8C22 10 38 18 36 34C35 40 28 44 24 42"
-                stroke="#65a30d"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-              />
-              <path
-                d="M18 38L24 43L28 36"
-                stroke="#65a30d"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-
-          {/* Right Decorative Text (Large Desktop) */}
-          <div className={styles.decorRight} aria-hidden="true">
-            <span className={styles.decorRightText}>
-              {"Find.\nHire.\nGrow."}
-            </span>
-          </div>
-
           {/* Top Badge */}
           <div>
             <span className={styles.topBadge}>
