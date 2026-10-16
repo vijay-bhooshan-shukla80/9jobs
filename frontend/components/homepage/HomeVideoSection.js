@@ -16,25 +16,25 @@ import styles from "./HomeVideoSection.module.css";
 export const videoCardsData = [
   {
     id: "01",
-    title: "ATS Resume Optimization",
+    title: "Stop Applying Alone. Let 9Jobs Handle It.",
     description:
-      "See how 9Jobs helps you get the right candidates faster with smart automation.",
+      "From job searching and applications to LinkedIn updates and interview preparation, let 9Jobs simplify your journey.",
     videoSrc: "/home-reels/reel-01.mp4",
     posterSrc: "/home-reels/reel-01.jpg",
   },
   {
     id: "02",
-    title: "How We're Different",
+    title: "Less Job Search Stress. More Results.",
     description:
-      "Discover what makes 9Jobs unique compared to other hiring platforms.",
+      "Skip the repetitive applications and let 9Jobs manage the hard work while you focus on your next opportunity.",
     videoSrc: "/home-reels/reel-02.mp4",
     posterSrc: "/home-reels/reel-02.jpg",
   },
   {
     id: "03",
-    title: "Our Pricing",
+    title: "9Jobs Australia – Job Search News & Updates",
     description:
-      "A quick overview of our plans and what you get with each one.",
+      "Discover the latest insights about job searching and how 9Jobs supports Australian job seekers.",
     videoSrc: "/home-reels/reel-03.mp4",
     posterSrc: "/home-reels/reel-03.jpg",
   },
