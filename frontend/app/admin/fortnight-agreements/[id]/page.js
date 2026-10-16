@@ -39,6 +39,9 @@ export default async function FortnightAgreementDetailPage({ params }) {
     agreement = result.agreement;
   }
 
+  const showSignedPdf = agreement.status === 'completed' && Boolean(agreement.signedPdfUrl);
+  const previewUrl = `/api/fortnight-agreements/${agreement._id}/preview-pdf${showSignedPdf ? '?variant=signed' : ''}`;
+
   return (
     <AdminShell eyebrow="Generate, preview, send, and download" title={agreement.clientName}>
       <section className="admin-panel">
