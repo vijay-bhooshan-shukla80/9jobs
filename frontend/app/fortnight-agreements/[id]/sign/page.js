@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useParams } from 'next/navigation';
+import layoutStyles from './sign.module.css';
+import AgreementPdfPreview from '@/components/AgreementPdfPreview';
 
 const SIGNATURE_FONT_STACK = '"Segoe Script", "Snell Roundhand", "Brush Script MT", "Lucida Handwriting", cursive';
 const MAX_SIGNATURE_EXPORT_WIDTH = 560;
@@ -39,6 +41,11 @@ export default function SignFortnightAgreementPage() {
   const lastDrawTimeRef = useRef(0);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasDrawnSignature, setHasDrawnSignature] = useState(false);
+
+  const signerDisplayName =
+    signerContext?.signerRole === 'Client'
+      ? signerContext?.clientName
+      : signerContext?.providerSignerName || signerContext?.signerName || signerContext?.providerName;
 
   // Fetch Initial Token Verification Context
   useEffect(() => {
@@ -138,6 +145,7 @@ export default function SignFortnightAgreementPage() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
+    // Set canvas resolution for crisp lines
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * 2;
     canvas.height = rect.height * 2;
@@ -149,6 +157,7 @@ export default function SignFortnightAgreementPage() {
     ctx.lineJoin = 'round';
   }, [isOtpVerified, signatureType, submissionState]);
 
+  // Pointer-based drawing supports mouse, finger, and stylus like a pen.
   const getCanvasPoint = (e) => {
     if (!canvasRef.current) return null;
     const rect = canvasRef.current.getBoundingClientRect();
@@ -257,6 +266,7 @@ export default function SignFortnightAgreementPage() {
 
     let fontSize = 72;
     const paddingX = 30;
+    const paddingY = 24;
     const maxTextWidth = width - paddingX * 2;
 
     ctx.font = `italic ${fontSize}px ${SIGNATURE_FONT_STACK}`;
@@ -280,6 +290,7 @@ export default function SignFortnightAgreementPage() {
     ctx.fillText(trimmedName, 0, 0);
     ctx.restore();
 
+    // Trim the transparent margins so the final sealed PDF shows only the ink.
     const imageData = ctx.getImageData(0, 0, width, height);
     const { data } = imageData;
     let minX = width;
@@ -321,7 +332,6 @@ export default function SignFortnightAgreementPage() {
 
   // Actions
   const handleRequestOtp = async () => {
-    if (loading) return;
     setLoading(true);
     try {
       const res = await fetch(`/api/fortnight-agreements/${agreementId}/sign`, {
@@ -345,7 +355,6 @@ export default function SignFortnightAgreementPage() {
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    if (otpVerifying) return;
     setOtpVerifying(true);
     const otp = otpCode.join('');
     if (otp.length !== 6) {
@@ -379,6 +388,7 @@ export default function SignFortnightAgreementPage() {
     newCode[index] = val;
     setOtpCode(newCode);
 
+    // Auto-focus next field
     if (val && index < 5) {
       document.getElementById(`otp-${index + 1}`).focus();
     }
@@ -391,7 +401,6 @@ export default function SignFortnightAgreementPage() {
   };
 
   const handleSubmitSignature = async () => {
-    if (submittingSign) return;
     if (!consentAccepted) {
       alert('You must accept the electronic signature consent checkbox.');
       return;
@@ -434,12 +443,15 @@ export default function SignFortnightAgreementPage() {
       if (!res.ok) {
         alert(data.error || 'Failed to submit signature.');
       } else {
-        if (signerContext?.signerRole === 'Client') {
+        if (data.status === 'client_signed') {
           setSubmissionState('client_signed');
           setSubmissionMessage('The service provider will receive the invitation to sign next.');
         } else if (data.status === 'completed') {
           setSubmissionState('completed');
           setSubmissionMessage('A completed copy of the document has been emailed to your registered mailbox.');
+        } else if (data.status === 'completion_processing_failed') {
+          setSubmissionState('completion_processing_failed');
+          setSubmissionMessage('Both signatures were saved. Our team will retry processing the completed document.');
         } else {
           setSubmissionState('completion_processing');
           setSubmissionMessage('We are finalizing the completed agreement now.');
@@ -503,14 +515,12 @@ export default function SignFortnightAgreementPage() {
     );
   }
 
-  // OTP Gate
-  if (!isOtpVerified) {
-    return (
-      <div style={styles.otpContainer}>
-        <div style={styles.otpCard}>
+  // Keep document review available while identity verification is pending.
+  const otpContent = (
+        <div style={{ ...styles.otpCard, width: '100%', padding: '24px 18px', marginTop: '20px' }}>
           <h3 style={styles.otpTitle}>Security Identity Verification</h3>
           <p style={styles.otpDesc}>
-            For security compliance, please verify your identity to access the signing portal for this document.
+            Review the agreement in the preview, then verify your email to sign it.
           </p>
 
           {!otpSent ? (
@@ -553,53 +563,45 @@ export default function SignFortnightAgreementPage() {
             </form>
           )}
         </div>
-      </div>
     );
-  }
 
+  // 2. Render PDF Viewer & Signature Collection Form
   return (
-    <div style={styles.signLayout}>
+    <div className={layoutStyles.layout} style={styles.signLayout}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
-        * { font-family: 'Outfit', sans-serif; }
+        .${layoutStyles.layout} * { font-family: 'Outfit', sans-serif; }
       `}</style>
       
-      <div style={styles.pdfPanel}>
-        <iframe
-          src={`/api/fortnight-agreements/${agreementId}/preview-original?token=${token}`}
-          style={styles.iframe}
-          title="Document Preview"
+      {/* PDF View Panel */}
+      <div className={layoutStyles.pdfPanel} style={styles.pdfPanel}>
+        <AgreementPdfPreview
+          key={`${agreementId}:${token}`}
+          src={`/api/fortnight-agreements/${agreementId}/preview-original?token=${encodeURIComponent(token)}`}
+          title="Agreement PDF"
         />
       </div>
 
-      <div style={styles.signPanel}>
+      {/* Signature Panel */}
+      <div className={layoutStyles.signPanel} style={styles.signPanel}>
         <div style={styles.signCard}>
+          <a
+            href={`/api/fortnight-agreements/${agreementId}/preview-original?token=${encodeURIComponent(token)}`}
+            target="_blank"
+            rel="noreferrer"
+            style={{ ...styles.btnSecondary, textAlign: 'center', marginBottom: '20px' }}
+          >
+            View Agreement PDF
+          </a>
+          {!isOtpVerified ? otpContent : <>
           <span style={styles.badge}>{signerContext?.signerRole} Session</span>
-          
-          <div style={{
-            backgroundColor: signerContext?.signerRole === 'Client' ? '#eff6ff' : '#f0fdf4',
-            border: signerContext?.signerRole === 'Client' ? '1px solid #bfdbfe' : '1px solid #bbf7d0',
-            color: signerContext?.signerRole === 'Client' ? '#1e3a8a' : '#15803d',
-            padding: '12px',
-            borderRadius: '6px',
-            fontSize: '13px',
-            fontWeight: '600',
-            marginTop: '12px',
-            marginBottom: '15px',
-            textAlign: 'center',
-            lineHeight: '1.4'
-          }}>
-            {signerContext?.signerRole === 'Client' 
-              ? `Signing as CLIENT: ${signerContext?.clientName} (${signerContext?.signerEmail})` 
-              : `Signing as SERVICE PROVIDER: ${signerContext?.providerSignerName || signerContext?.signerName} (${signerContext?.providerName})`
-            }
-          </div>
 
           <h2 style={styles.signTitle}>Review and Sign</h2>
           <p style={styles.signDesc}>
             Please review the document in the preview pane, enter your signature below, and click Submit.
           </p>
 
+          {/* Consent Checkbox */}
           <div style={styles.consentRow}>
             <input
               type="checkbox"
@@ -613,6 +615,7 @@ export default function SignFortnightAgreementPage() {
             </label>
           </div>
 
+          {/* Signature Mode Selector */}
           <div style={styles.tabBar}>
             <button
               onClick={() => setSignatureType('drawn')}
@@ -637,11 +640,12 @@ export default function SignFortnightAgreementPage() {
               value={signerName}
               onChange={(e) => setSignerName(e.target.value)}
               style={styles.inputField}
-              placeholder="Enter your name"
+              placeholder={signerDisplayName || 'Enter your name'}
               required
             />
           </div>
 
+          {/* Signature Input Container */}
           {signatureType === 'drawn' ? (
             <div style={{ marginBottom: '20px' }}>
               <label style={styles.inputLabel}>Draw Signature on Canvas</label>
@@ -672,6 +676,7 @@ export default function SignFortnightAgreementPage() {
             </div>
           )}
 
+          {/* Actions */}
           <button
             onClick={handleSubmitSignature}
             disabled={submittingSign}
@@ -679,12 +684,14 @@ export default function SignFortnightAgreementPage() {
           >
             {submittingSign ? 'Submitting Signature...' : 'Sign and Submit'}
           </button>
+          </>}
         </div>
       </div>
     </div>
   );
 }
 
+// Styling Object using Premium Glassmorphism & Sleek Dark Accents
 const styles = {
   loadingContainer: {
     display: 'flex',
@@ -700,6 +707,7 @@ const styles = {
     border: '4px solid rgba(255,255,255,0.1)',
     borderTop: '4px solid #2563eb',
     borderRadius: '50%',
+    animation: 'spin 1s linear infinite',
   },
   errorContainer: {
     display: 'flex',
@@ -716,32 +724,23 @@ const styles = {
     padding: '40px',
     maxWidth: '450px',
     textAlign: 'center',
-    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-    backdropFilter: 'blur(12px)',
+    boxShadow: '0 8px 32px 0 rgba(0,0,0,0.3)',
   },
   errorIcon: {
-    width: '60px',
-    height: '60px',
-    borderRadius: '50%',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    fontSize: '40px',
     color: '#ef4444',
-    fontSize: '28px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: '0 auto 20px auto',
+    marginBottom: '20px',
   },
   errorTitle: {
     color: '#ffffff',
     fontSize: '22px',
-    fontWeight: '600',
-    margin: '0 0 10px 0',
+    fontWeight: 'bold',
+    marginBottom: '10px',
   },
   errorDescription: {
     color: '#94a3b8',
     fontSize: '15px',
     lineHeight: '1.5',
-    margin: 0,
   },
   completedContainer: {
     display: 'flex',
@@ -752,38 +751,30 @@ const styles = {
     padding: '20px',
   },
   completedCard: {
-    backgroundColor: 'rgba(30, 27, 46, 0.75)',
-    border: '1px solid rgba(16, 185, 129, 0.2)',
+    backgroundColor: 'rgba(15, 23, 42, 0.8)',
+    border: '1px solid rgba(255,255,255,0.05)',
     borderRadius: '16px',
     padding: '40px',
-    maxWidth: '480px',
+    maxWidth: '500px',
     textAlign: 'center',
-    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-    backdropFilter: 'blur(12px)',
+    boxShadow: '0 8px 32px 0 rgba(0,0,0,0.3)',
   },
   completedIcon: {
-    width: '60px',
-    height: '60px',
-    borderRadius: '50%',
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    fontSize: '48px',
     color: '#10b981',
-    fontSize: '28px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: '0 auto 20px auto',
+    marginBottom: '20px',
   },
   completedTitle: {
     color: '#ffffff',
-    fontSize: '22px',
-    fontWeight: '600',
-    margin: '0 0 10px 0',
+    fontSize: '24px',
+    fontWeight: 'bold',
+    marginBottom: '15px',
   },
   completedDesc: {
-    color: '#94a3b8',
-    fontSize: '15px',
-    lineHeight: '1.5',
-    margin: '0 0 15px 0',
+    color: '#e2e8f0',
+    fontSize: '16px',
+    lineHeight: '1.6',
+    marginBottom: '10px',
   },
   otpContainer: {
     display: 'flex',
@@ -794,107 +785,138 @@ const styles = {
     padding: '20px',
   },
   otpCard: {
-    backgroundColor: 'rgba(30, 27, 46, 0.75)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#0f172a',
+    border: '1px solid rgba(255,255,255,0.05)',
     borderRadius: '16px',
     padding: '40px',
     width: '100%',
-    maxWidth: '440px',
+    maxWidth: '450px',
     textAlign: 'center',
-    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-    backdropFilter: 'blur(12px)',
+    boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
   },
   otpTitle: {
     color: '#ffffff',
-    fontSize: '22px',
-    fontWeight: '600',
-    margin: '0 0 10px 0',
+    fontSize: '20px',
+    fontWeight: 'bold',
+    marginBottom: '10px',
   },
   otpDesc: {
     color: '#94a3b8',
     fontSize: '14px',
     lineHeight: '1.5',
-    margin: '0 0 25px 0',
+    marginBottom: '25px',
   },
   otpInputRow: {
     display: 'flex',
     justifyContent: 'space-between',
-    gap: '10px',
     margin: '25px 0',
   },
   otpBox: {
-    width: '48px',
-    height: '52px',
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: '8px',
+    width: '45px',
+    height: '50px',
+    backgroundColor: '#1e293b',
+    border: '1px solid #334155',
     color: '#ffffff',
-    fontSize: '22px',
+    fontSize: '20px',
     fontWeight: 'bold',
     textAlign: 'center',
+    borderRadius: '8px',
     outline: 'none',
+  },
+  btnPrimary: {
+    width: '100%',
+    backgroundColor: '#2563eb',
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: '8px',
+    padding: '12px 20px',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+  },
+  btnSecondary: {
+    backgroundColor: '#1e293b',
+    color: '#cbd5e1',
+    border: '1px solid #334155',
+    borderRadius: '6px',
+    padding: '8px 15px',
+    fontSize: '13px',
+    cursor: 'pointer',
+    marginTop: '8px',
+  },
+  btnDisabled: {
+    width: '100%',
+    backgroundColor: '#334155',
+    color: '#64748b',
+    border: 'none',
+    borderRadius: '8px',
+    padding: '12px 20px',
+    fontSize: '16px',
+    cursor: 'not-allowed',
+  },
+  btnText: {
+    background: 'none',
+    border: 'none',
+    color: '#3b82f6',
+    fontSize: '14px',
+    cursor: 'pointer',
+    textDecoration: 'underline',
   },
   signLayout: {
     display: 'flex',
     height: '100vh',
     backgroundColor: '#090d16',
+    overflow: 'hidden',
   },
   pdfPanel: {
-    flex: '1',
-    borderRight: '1px solid rgba(255,255,255,0.06)',
+    flex: 1,
     height: '100%',
+    borderRight: '1px solid #1e293b',
   },
   iframe: {
     width: '100%',
     height: '100%',
     border: 'none',
-    backgroundColor: '#1c1f26',
   },
   signPanel: {
-    width: '420px',
+    width: '450px',
     height: '100%',
     overflowY: 'auto',
-    padding: '24px',
+    backgroundColor: '#0f172a',
+    padding: '30px',
+  },
+  signCard: {
     display: 'flex',
     flexDirection: 'column',
   },
-  signCard: {
-    backgroundColor: 'rgba(30, 27, 46, 0.6)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    borderRadius: '16px',
-    padding: '24px',
-    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.25)',
-    backdropFilter: 'blur(10px)',
-  },
   badge: {
-    display: 'inline-block',
-    fontSize: '11px',
-    fontWeight: '600',
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(37, 99, 235, 0.15)',
     color: '#3b82f6',
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-    padding: '4px 10px',
-    borderRadius: '100px',
-    marginBottom: '12px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
+    fontSize: '12px',
+    fontWeight: 'bold',
+    padding: '4px 12px',
+    borderRadius: '20px',
+    marginBottom: '15px',
   },
   signTitle: {
     color: '#ffffff',
     fontSize: '22px',
-    fontWeight: '600',
+    fontWeight: 'bold',
     margin: '0 0 8px 0',
   },
   signDesc: {
     color: '#94a3b8',
-    fontSize: '13.5px',
+    fontSize: '14px',
     lineHeight: '1.5',
-    margin: '0 0 20px 0',
+    margin: '0 0 25px 0',
   },
   consentRow: {
     display: 'flex',
-    gap: '12px',
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    alignItems: 'flex-start',
+    gap: '10px',
+    backgroundColor: 'rgba(30, 41, 59, 0.5)',
+    border: '1px solid #1e293b',
     borderRadius: '8px',
     padding: '12px',
     marginBottom: '20px',
@@ -906,141 +928,98 @@ const styles = {
   checkboxLabel: {
     color: '#cbd5e1',
     fontSize: '12px',
-    lineHeight: '1.4',
+    lineHeight: '1.5',
     cursor: 'pointer',
   },
   tabBar: {
     display: 'flex',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    padding: '4px',
-    borderRadius: '8px',
+    gap: '10px',
+    borderBottom: '1px solid #1e293b',
     marginBottom: '20px',
   },
   tabActive: {
-    flex: '1',
-    backgroundColor: 'rgba(255, 255, 255, 0.07)',
+    background: 'none',
     border: 'none',
-    color: '#ffffff',
-    padding: '8px',
-    borderRadius: '6px',
-    fontSize: '13px',
-    fontWeight: '600',
-    cursor: 'default',
+    borderBottom: '2.5px solid #3b82f6',
+    color: '#3b82f6',
+    padding: '10px',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
   },
   tabInactive: {
-    flex: '1',
-    backgroundColor: 'transparent',
+    background: 'none',
     border: 'none',
-    color: '#94a3b8',
-    padding: '8px',
-    borderRadius: '6px',
-    fontSize: '13px',
+    borderBottom: '2.5px solid transparent',
+    color: '#64748b',
+    padding: '10px',
+    fontSize: '14px',
     cursor: 'pointer',
   },
   inputLabel: {
     display: 'block',
     color: '#94a3b8',
-    fontSize: '12.5px',
-    fontWeight: '500',
+    fontSize: '13px',
     marginBottom: '6px',
   },
   inputField: {
     width: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    borderRadius: '8px',
-    padding: '10px 14px',
+    backgroundColor: '#1e293b',
+    border: '1px solid #334155',
+    borderRadius: '6px',
+    padding: '10px 12px',
     color: '#ffffff',
     fontSize: '14px',
     outline: 'none',
   },
-  signatureHint: {
-    color: '#64748b',
-    fontSize: '11px',
-    margin: '0 0 8px 0',
-  },
   canvasContainer: {
-    position: 'relative',
+    width: '100%',
+    height: '150px',
     backgroundColor: '#ffffff',
-    border: '1px solid rgba(255,255,255,0.1)',
     borderRadius: '8px',
-    height: '130px',
     overflow: 'hidden',
-    marginBottom: '10px',
-  },
-  canvasPencilBadge: {
-    position: 'absolute',
-    top: '8px',
-    right: '8px',
-    color: '#94a3b8',
-    fontSize: '16px',
-    pointerEvents: 'none',
+    border: '2px dashed #334155',
+    position: 'relative',
   },
   canvas: {
     width: '100%',
     height: '100%',
-    cursor: 'crosshair',
+    cursor: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M6 22l4-1 10-10-3-3L7 18l-1 4z' fill='%23111827'/%3E%3Cpath d='M17 7l3 3' stroke='%23ffffff' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") 4 24, crosshair`,
+    backgroundColor: '#ffffff',
     touchAction: 'none',
+  },
+  canvasPencilBadge: {
+    position: 'absolute',
+    top: '10px',
+    right: '12px',
+    color: '#475569',
+    fontSize: '16px',
+    pointerEvents: 'none',
+    opacity: 0.9,
+  },
+  signatureHint: {
+    color: '#cbd5e1',
+    fontSize: '12px',
+    margin: '0 0 10px 0',
+    lineHeight: '1.5',
   },
   typedPreview: {
     width: '100%',
-    height: '110px',
-    backgroundColor: '#ffffff',
-    border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: '8px',
-    color: '#111827',
-    fontSize: '38px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: '20px',
+    backgroundColor: '#f8fafc',
+    color: '#0f172a',
+    fontSize: '30px',
     fontStyle: 'italic',
     fontFamily: SIGNATURE_FONT_STACK,
-    overflow: 'hidden',
-    padding: '10px',
-    whiteSpace: 'nowrap',
+    textAlign: 'center',
+    borderRadius: '8px',
+    border: '1px solid #e2e8f0',
+    minHeight: '82px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   hiddenCanvas: {
     display: 'none',
-  },
-  btnPrimary: {
-    width: '100%',
-    backgroundColor: '#2563eb',
-    color: '#ffffff',
-    border: 'none',
-    borderRadius: '8px',
-    padding: '12px',
-    fontSize: '14px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    outline: 'none',
-  },
-  btnSecondary: {
-    backgroundColor: 'transparent',
-    color: '#cbd5e1',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    borderRadius: '8px',
-    padding: '6px 12px',
-    fontSize: '11px',
-    fontWeight: '500',
-    cursor: 'pointer',
-  },
-  btnText: {
-    backgroundColor: 'transparent',
-    border: 'none',
-    color: '#3b82f6',
-    fontSize: '13px',
-    fontWeight: '500',
-    cursor: 'pointer',
-  },
-  btnDisabled: {
-    width: '100%',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    color: 'rgba(255,255,255,0.2)',
-    border: 'none',
-    borderRadius: '8px',
-    padding: '12px',
-    fontSize: '14px',
-    fontWeight: '600',
-    cursor: 'not-allowed',
-  },
+  }
 };

@@ -4,6 +4,7 @@ import { useState, startTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { agreementInputSchema } from '@/lib/agreements/schema';
+import { getProviderOptions, getProviderSignatureName } from '@/lib/agreements/providers';
 import { useToast } from '@/components/admin/ToastProvider';
 
 function getWeekdayName(dateValue) {
@@ -21,7 +22,7 @@ const initialState = {
   clientEmail: '',
   clientPhone: '',
   providerName: 'Aditya',
-  providerEmail: '9jobsapplicationservice@gmail.com',
+  providerEmail: 'accounts@9jobs.co',
   providerPhone: '+61 422 279 428',
   providerSignatureName: 'Aditya Singh',
   providerAbn: '83679842972',
@@ -66,13 +67,13 @@ const labels = {
 };
 
 const lockedFields = new Set(['providerEmail', 'providerPhone', 'providerAbn', 'packageName', 'weeklyJobTarget', 'paymentDay']);
-const providerNameOptions = ['Aditya', 'Addy', 'Jay'];
 
 function buildFormValues(initialValues) {
   return {
     ...initialState,
     ...initialValues,
     providerName: initialValues?.providerName || initialState.providerName,
+    providerSignatureName: initialValues?.providerSignatureName || getProviderSignatureName(initialValues?.providerName || initialState.providerName),
     providerEmail: initialState.providerEmail,
     providerPhone: initialState.providerPhone,
     providerAbn: initialState.providerAbn,
@@ -101,7 +102,7 @@ export default function AgreementForm({ initialValues = null, agreementId = '', 
     setValues((current) => ({
       ...current,
       [field]: value,
-      ...(field === 'providerName' ? { providerSignatureName: value } : {}),
+      ...(field === 'providerName' ? { providerSignatureName: getProviderSignatureName(value) } : {}),
       ...(field === 'agreementDate' ? { paymentDay: getWeekdayName(value) } : {}),
     }));
   }
@@ -191,9 +192,9 @@ export default function AgreementForm({ initialValues = null, agreementId = '', 
                     rows={5}
                     value={values[field]}
                   />
-                ) : field === 'providerName' ? (
+                ) : field === 'providerName' || field === 'providerSignatureName' ? (
                   <select onChange={(event) => updateField(field, event.target.value)} value={values[field]}>
-                    {providerNameOptions.map((option) => (
+                    {getProviderOptions(field, values[field]).map((option) => (
                       <option key={option} value={option}>
                         {option}
                       </option>

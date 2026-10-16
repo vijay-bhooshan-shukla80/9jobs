@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 
 import AdminShell from '@/components/admin/AdminShell';
 import AgreementActions from '@/components/admin/AgreementActions';
+import AgreementPdfPreview from '@/components/AgreementPdfPreview';
 import StatusBadge from '@/components/admin/StatusBadge';
 import { requireAdminPageSession } from '@/lib/admin/auth/require-admin';
 import {
@@ -57,6 +58,9 @@ export default async function AgreementDetailPage({ params }) {
     }
   }
 
+  const showSignedPdf = agreement.status === 'completed' && Boolean(agreement.signedPdfUrl);
+  const previewUrl = `/api/agreements/${agreement._id}/preview-pdf${showSignedPdf ? '?variant=signed' : ''}`;
+
   return (
     <AdminShell eyebrow="Generate, preview, send, and download" title={agreement.clientName}>
       <section className="admin-panel">
@@ -106,12 +110,12 @@ export default async function AgreementDetailPage({ params }) {
           <div className="admin-panel__header">
             <div>
               <h2>PDF Preview</h2>
-              <p>The preview matches the PDF sent through DocuSign.</p>
+              <p>{showSignedPdf ? 'Completed agreement with both signatures.' : 'Review the agreement PDF before sending.'}</p>
             </div>
             {agreement.generatedPdfUrl ? (
               <a
                 className="admin-ghost-button admin-ghost-button--link"
-                href={`/api/agreements/${agreement._id}/preview-pdf`}
+                href={previewUrl}
                 rel="noreferrer"
                 target="_blank"
               >
@@ -121,11 +125,9 @@ export default async function AgreementDetailPage({ params }) {
           </div>
 
           {agreement.generatedPdfUrl ? (
-            <iframe
-              className="admin-pdf-frame"
-              src={`/api/agreements/${agreement._id}/preview-pdf`}
-              title="Agreement PDF preview"
-            />
+            <div className="admin-pdf-frame">
+              <AgreementPdfPreview key={previewUrl} src={previewUrl} title={showSignedPdf ? 'Signed Agreement PDF' : 'Agreement PDF'} />
+            </div>
           ) : (
             <div className="admin-empty-state">
               <p>Generate the PDF preview to review the exact contract before sending it to DocuSign.</p>

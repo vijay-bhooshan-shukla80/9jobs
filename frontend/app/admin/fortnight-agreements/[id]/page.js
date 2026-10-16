@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import AgreementPdfPreview from '@/components/AgreementPdfPreview';
 import AdminShell from '@/components/admin/AdminShell';
 import FortnightAgreementActions from '@/components/admin/FortnightAgreementActions';
 import StatusBadge from '@/components/admin/StatusBadge';
@@ -91,7 +92,7 @@ export default async function FortnightAgreementDetailPage({ params }) {
             {agreement.generatedPdfUrl ? (
               <a
                 className="admin-ghost-button admin-ghost-button--link"
-                href={`/api/fortnight-agreements/${agreement._id}/preview-pdf`}
+                href={previewUrl}
                 rel="noreferrer"
                 target="_blank"
               >
@@ -101,11 +102,9 @@ export default async function FortnightAgreementDetailPage({ params }) {
           </div>
 
           {agreement.generatedPdfUrl ? (
-            <iframe
-              className="admin-pdf-frame"
-              src={`/api/fortnight-agreements/${agreement._id}/preview-pdf`}
-              title="Fortnight Agreement PDF preview"
-            />
+            <div className="admin-pdf-frame">
+              <AgreementPdfPreview src={previewUrl} title="Fortnight Agreement PDF preview" />
+            </div>
           ) : (
             <div className="admin-empty-state">
               <p>Generate the PDF preview to review the contract before sending.</p>

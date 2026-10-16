@@ -26,7 +26,7 @@ function formatUtcDate(date) {
  * @param {Object} agreement Mongoose agreement document
  * @returns {Promise<Buffer>} Sealed PDF buffer
  */
-export async function sealAgreementPdf(originalPdfBuffer, agreement) {
+export async function sealAgreementPdf(originalPdfBuffer, agreement, { providerOnly = false } = {}) {
   // 1. Dynamic Coordinate Parsing
   const coords = await resolvePdfSignatureCoords(originalPdfBuffer, agreement);
   
@@ -41,7 +41,7 @@ export async function sealAgreementPdf(originalPdfBuffer, agreement) {
   const clientCoords = coords.customerSign;
   const clientPage = pages[clientCoords.pageIndex];
   
-  if (agreement.clientSignature.signatureFileKey) {
+  if (!providerOnly && agreement.clientSignature.signatureFileKey) {
     const { fetchBlobBufferByKey } = require('@/lib/storage/blob');
     const clientSigBuffer = await fetchBlobBufferByKey(agreement.clientSignature.signatureFileKey);
     const clientImage = await pdfDoc.embedPng(clientSigBuffer);
@@ -52,7 +52,7 @@ export async function sealAgreementPdf(originalPdfBuffer, agreement) {
       width: isTypedClient ? 112 : 140,
       height: isTypedClient ? 22 : 36,
     });
-  } else if (agreement.clientSignature.signatureType === 'typed') {
+  } else if (!providerOnly && agreement.clientSignature.signatureType === 'typed') {
     clientPage.drawText(agreement.clientSignature.name, {
       x: clientCoords.x,
       y: clientCoords.y - 2,
@@ -103,13 +103,15 @@ export async function sealAgreementPdf(originalPdfBuffer, agreement) {
     color: rgb(0.22, 0.25, 0.32),
   });
 
-  datePage.drawText(`Date: ${clientDateStr}`, {
-    x: dateCoords.x + 300,
-    y: dateCoords.y,
-    font: helvetica,
-    size: 9,
-    color: rgb(0.22, 0.25, 0.32),
-  });
+  if (!providerOnly) {
+    datePage.drawText(`Date: ${clientDateStr}`, {
+      x: dateCoords.x + 300,
+      y: dateCoords.y,
+      font: helvetica,
+      size: 9,
+      color: rgb(0.22, 0.25, 0.32),
+    });
+  }
 
   const sealedBuffer = Buffer.from(await pdfDoc.save());
   return sealedBuffer;

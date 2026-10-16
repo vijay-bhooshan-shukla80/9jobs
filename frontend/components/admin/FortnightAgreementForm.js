@@ -4,6 +4,7 @@ import { useState, startTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { fortnightAgreementInputSchema } from '@/lib/fortnight-agreements/schema';
+import { getProviderOptions, getProviderSignatureName } from '@/lib/agreements/providers';
 import { useToast } from '@/components/admin/ToastProvider';
 
 const initialState = {
@@ -11,7 +12,7 @@ const initialState = {
   clientEmail: '',
   clientPhone: '',
   providerName: 'Aditya',
-  providerEmail: '9jobsapplicationservice@gmail.com',
+  providerEmail: 'accounts@9jobs.co',
   providerPhone: '+61 422 279 428',
   providerSignatureName: 'Aditya Singh',
   providerAbn: '83679842972',
@@ -64,7 +65,6 @@ const labels = {
 };
 
 const lockedFields = new Set(['providerEmail', 'providerPhone', 'providerAbn']);
-const providerNameOptions = ['Aditya', 'Addy', 'Jay'];
 const servicePeriodOptions = ['1 month', '2 month'];
 const renewalTermOptions = ['1 month', '2 month'];
 
@@ -83,7 +83,8 @@ function buildFormValues(initialValues) {
     ...initialState,
     ...initialValues,
     permanentSuccessFeeDays: Number(initialValues?.permanentSuccessFeeDays) === 7 ? 7 : 14,
-    providerName: initialState.providerName,
+    providerName: initialValues?.providerName || initialState.providerName,
+    providerSignatureName: initialValues?.providerSignatureName || getProviderSignatureName(initialValues?.providerName || initialState.providerName),
     providerEmail: initialState.providerEmail,
     providerPhone: initialState.providerPhone,
     providerAbn: initialState.providerAbn,
@@ -112,6 +113,7 @@ export default function FortnightAgreementForm({ initialValues = null, agreement
     setValues((current) => ({
       ...current,
       [field]: value,
+      ...(field === 'providerName' ? { providerSignatureName: getProviderSignatureName(value) } : {}),
     }));
   }
 
@@ -208,9 +210,9 @@ export default function FortnightAgreementForm({ initialValues = null, agreement
                       </option>
                     ))}
                   </select>
-                ) : field === 'providerName' ? (
+                ) : field === 'providerName' || field === 'providerSignatureName' ? (
                   <select onChange={(event) => updateField(field, event.target.value)} value={values[field]}>
-                    {providerNameOptions.map((option) => (
+                    {getProviderOptions(field, values[field]).map((option) => (
                       <option key={option} value={option}>
                         {option}
                       </option>

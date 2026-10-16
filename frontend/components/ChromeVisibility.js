@@ -8,7 +8,7 @@ function isAdminPath(pathname) {
 
 export default function ChromeVisibility() {
   const pathname = usePathname();
-  const hideChrome = isAdminPath(pathname || '');
+  const hideChrome = isAdminPath(pathname || '') || /^\/(?:agreements|fortnight-agreements)\/[^/]+\/sign\/?$/.test(pathname || '');
 
   if (!hideChrome) {
     return null;

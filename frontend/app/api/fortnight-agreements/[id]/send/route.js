@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { sealAgreementPdf } from '@/utils/pdfSealer';
 
 import { requireAdminApiSession } from '@/lib/admin/auth/require-admin';
 import {
@@ -39,7 +40,13 @@ export async function POST(request, { params }) {
     );
   }
 
-  if (!agreementDocument.generatedPdfUrl) {
+  const usesOldProviderEmail = normalizeEmail(agreementDocument.providerEmail) === '9jobsapplicationservice@gmail.com';
+  if (usesOldProviderEmail) {
+    agreementDocument.providerEmail = 'accounts@9jobs.co';
+    agreementDocument.originalPdfStorageKey = '';
+    agreementDocument.originalPdfUrl = '';
+  }
+  if (!agreementDocument.generatedPdfUrl || usesOldProviderEmail) {
     await generateAndStoreAgreementPdf(agreementDocument);
   }
 
@@ -67,7 +74,7 @@ export async function POST(request, { params }) {
     agreementDocument.originalPdfUrl = agreementDocument.generatedPdfUrl;
     agreementDocument.originalPdfStorageKey = agreementDocument.generatedPdfPath;
 
-    // Always restart the signing workflow from a clean client-first state.
+    // Apply the configured provider signature from the authenticated admin send action.
     agreementDocument.providerSigningTokenHash = '';
     agreementDocument.providerTokenExpiresAt = null;
     agreementDocument.providerTokenUsedAt = null;
@@ -79,14 +86,15 @@ export async function POST(request, { params }) {
     agreementDocument.providerDocumentViewedAt = null;
     agreementDocument.providerInvitationSentAt = null;
     agreementDocument.providerCompletionEmailSentAt = null;
-    agreementDocument.providerConsentAcceptedAt = null;
+    const providerSignedAt = new Date();
+    agreementDocument.providerConsentAcceptedAt = providerSignedAt;
     agreementDocument.providerSignature = {
-      name: '',
-      ip: '',
-      userAgent: '',
-      signedAt: null,
+      name: agreementDocument.providerSignatureName || agreementDocument.providerName,
+      ip: request.headers.get('x-forwarded-for') || '127.0.0.1',
+      userAgent: request.headers.get('user-agent') || 'unknown',
+      signedAt: providerSignedAt,
       signatureFileKey: '',
-      signatureType: '',
+      signatureType: 'typed',
     };
 
     agreementDocument.clientSigningTokenHash = clientTokenHash;
@@ -127,9 +135,10 @@ export async function POST(request, { params }) {
     agreementDocument.sentAt = new Date();
     agreementDocument.clientInvitationSentAt = new Date();
     
+    const providerSignedPdf = await sealAgreementPdf(pdfBuffer, agreementDocument, { providerOnly: true });
     await agreementDocument.save();
 
-    await sendClientSigningInvite(agreementDocument, clientToken);
+    await sendClientSigningInvite(agreementDocument, clientToken, providerSignedPdf, request.url);
 
     return NextResponse.json({
       success: true,

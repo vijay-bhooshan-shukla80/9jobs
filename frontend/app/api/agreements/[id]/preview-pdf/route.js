@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { requireAdminApiSession } from '@/lib/admin/auth/require-admin';
 import { agreementIdParamSchema } from '@/lib/agreements/schema';
+import { PDF_PREVIEW_HEADERS } from '@/lib/agreements/preview-headers';
 import { getAgreementById, getAgreementDocumentById, generateAndStoreAgreementPdf, getAgreementPdfBuffer } from '@/lib/agreements/service';
 
 export const dynamic = 'force-dynamic';
@@ -35,10 +36,6 @@ export async function GET(request, { params }) {
 
   return new NextResponse(pdfBuffer, {
     status: 200,
-    headers: {
-      'content-type': 'application/pdf',
-      'content-disposition': 'inline; filename="agreement-preview.pdf"',
-      'cache-control': 'private, no-store, no-cache, must-revalidate',
-    },
+    headers: PDF_PREVIEW_HEADERS,
   });
 }

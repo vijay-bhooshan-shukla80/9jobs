@@ -86,7 +86,7 @@ describe('agreement sign context routes', () => {
       providerSignatureName: 'Aditya Singh',
       clientSigningTokenHash: 'same-hash',
       providerSigningTokenHash: 'provider-hash',
-      clientTokenExpiresAt: new Date('2026-08-20T00:00:00.000Z'),
+      clientTokenExpiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
       clientTokenUsedAt: null,
       clientOtpVerifiedAt: null,
     });
@@ -117,7 +117,7 @@ describe('agreement sign context routes', () => {
       providerSignatureName: 'Aditya Singh',
       clientSigningTokenHash: 'client-hash',
       providerSigningTokenHash: 'same-hash',
-      providerTokenExpiresAt: new Date('2026-08-20T00:00:00.000Z'),
+      providerTokenExpiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
       providerTokenUsedAt: null,
       providerOtpVerifiedAt: null,
     });
@@ -148,7 +148,7 @@ describe('agreement sign context routes', () => {
       providerSignatureName: 'Aditya Singh',
       clientSigningTokenHash: 'client-hash',
       providerSigningTokenHash: 'same-hash',
-      providerTokenExpiresAt: new Date('2026-08-20T00:00:00.000Z'),
+      providerTokenExpiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
       providerTokenUsedAt: null,
       providerOtpVerifiedAt: null,
     });

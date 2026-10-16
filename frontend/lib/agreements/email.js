@@ -3,6 +3,26 @@ import { sendEmail } from '@/lib/email/delivery';
 const ADMIN_MAILBOX = process.env.MAIL_FROM || 'accounts@9jobs.co';
 const ADMIN_COPY_MAILBOXES = ['Info@9jobs.co', 'accounts@9jobs.co'];
 
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+}
+
+function formatEmail(content) {
+  // Presentation tables keep the email centered in Outlook and narrow inboxes.
+  return `<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0;padding:0;background:#f8fafc;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;"><tr><td align="center" style="padding:16px 8px;">
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#ffffff;border-collapse:collapse;"><tr><td style="overflow-wrap:anywhere;word-break:break-word;">${content}</td></tr></table>
+    </td></tr></table></body></html>`;
+}
+
+function emailBaseUrl(requestUrl) {
+  if (requestUrl) {
+    const url = new URL(requestUrl);
+    if (['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) return url.origin;
+  }
+  return (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '');
+}
+
 /**
  * Sends a six-digit OTP to the signer.
  */
@@ -10,12 +30,12 @@ export async function sendOtpEmail({ email, name, otp }) {
   await sendEmail({
     to: email,
     subject: '9Jobs Verification Code: ' + otp,
-    html: `
+    html: formatEmail(`
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
         <div style="background-color: #0f172a; padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 20px;">
           <h2 style="color: #ffffff; margin: 0; font-size: 20px;">9Jobs Contract Portal</h2>
         </div>
-        <p style="font-size: 16px; color: #334155; line-height: 1.5;">Hello ${name},</p>
+        <p style="font-size: 16px; color: #334155; line-height: 1.5;">Hello ${escapeHtml(name)},</p>
         <p style="font-size: 16px; color: #334155; line-height: 1.5;">To access the signing session for your 9Jobs contract, please use the following 6-digit verification code:</p>
         <div style="text-align: center; margin: 30px 0;">
           <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #0f172a; background-color: #f1f5f9; padding: 10px 25px; border-radius: 6px; border: 1px dashed #cbd5e1;">${otp}</span>
@@ -24,28 +44,36 @@ export async function sendOtpEmail({ email, name, otp }) {
         <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
         <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">© 2026 9Jobs Pty Ltd. All rights reserved.</p>
       </div>
-    `
+    `)
   });
 }
 
 /**
  * Sends a signing invitation link to the client.
  */
-export async function sendClientSigningInvite(agreement, rawToken) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+export async function sendClientSigningInvite(agreement, rawToken, pdfBuffer, requestUrl) {
+  const baseUrl = emailBaseUrl(requestUrl);
   const signingUrl = `${baseUrl}/agreements/${agreement._id}/sign?token=${rawToken}`;
+  const previewUrl = `${baseUrl}/api/agreements/${agreement._id}/preview-original?token=${encodeURIComponent(rawToken)}`;
+  const attachments = pdfBuffer.length <= 20 * 1024 * 1024
+    ? [{ filename: `9jobs-agreement-${agreement._id}.pdf`, content: pdfBuffer, contentType: 'application/pdf' }]
+    : [];
 
   await sendEmail({
     to: agreement.clientEmail,
     bcc: ADMIN_COPY_MAILBOXES,
-    subject: 'Signature Required: Your 9Jobs Contract',
-    html: `
+    subject: 'Your 9Jobs agreement for review and signature',
+    html: formatEmail(`
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
         <div style="background-color: #0f172a; padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 20px;">
           <h2 style="color: #ffffff; margin: 0; font-size: 20px;">9Jobs Contract Portal</h2>
         </div>
-        <p style="font-size: 16px; color: #334155; line-height: 1.5;">Dear ${agreement.clientName},</p>
-        <p style="font-size: 16px; color: #334155; line-height: 1.5;">You have been sent a contract from 9Jobs for your review and signature. Please click the button below to verify your identity and sign the document.</p>
+        <p style="font-size: 16px; color: #334155; line-height: 1.5;">Dear ${escapeHtml(agreement.clientName)},</p>
+        ${agreement.providerSignature?.signedAt ? '<p style="font-size: 16px; color: #334155; line-height: 1.5;">The service provider has already signed this agreement. Once you sign, both parties will receive the completed copy.</p>' : ''}
+        <p style="font-size: 16px; color: #334155; line-height: 1.5;">Please read your agreement PDF first using the link below${attachments.length ? ' or the PDF attached to this email' : ''}. You can open it on your phone or computer. After reviewing the agreement, return to this email and click Review and Sign Contract to verify your identity and sign.</p>
+        <div style="text-align: center; margin: 25px 0;">
+          <a href="${previewUrl}" style="color: #2563eb; text-decoration: underline; padding: 12px 16px; font-size: 16px; font-weight: bold; display: inline-block;">View Agreement PDF</a>
+        </div>
         <div style="text-align: center; margin: 35px 0;">
           <a href="${signingUrl}" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 6px; display: inline-block;">Review and Sign Contract</a>
         </div>
@@ -53,7 +81,8 @@ export async function sendClientSigningInvite(agreement, rawToken) {
         <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
         <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">© 2026 9Jobs Pty Ltd. All rights reserved.</p>
       </div>
-    `
+    `),
+    attachments,
   });
 }
 
@@ -68,13 +97,13 @@ export async function sendProviderSigningInvite(agreement, rawToken) {
     to: agreement.providerEmail,
     bcc: ADMIN_COPY_MAILBOXES,
     subject: 'Signature Required: 9Jobs Contract (' + agreement.clientName + ')',
-    html: `
+    html: formatEmail(`
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
         <div style="background-color: #0f172a; padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 20px;">
           <h2 style="color: #ffffff; margin: 0; font-size: 20px;">9Jobs Contract Portal</h2>
         </div>
-        <p style="font-size: 16px; color: #334155; line-height: 1.5;">Dear ${agreement.providerSignatureName},</p>
-        <p style="font-size: 16px; color: #334155; line-height: 1.5;">The client <strong>${agreement.clientName}</strong> has successfully signed the contract. Please click the button below to verify your identity and countersign the document.</p>
+        <p style="font-size: 16px; color: #334155; line-height: 1.5;">Dear ${escapeHtml(agreement.providerSignatureName)},</p>
+        <p style="font-size: 16px; color: #334155; line-height: 1.5;">The client <strong>${escapeHtml(agreement.clientName)}</strong> has successfully signed the contract. Please click the button below to verify your identity and countersign the document.</p>
         <div style="text-align: center; margin: 35px 0;">
           <a href="${signingUrl}" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 6px; display: inline-block;">Review and Countersign</a>
         </div>
@@ -82,7 +111,7 @@ export async function sendProviderSigningInvite(agreement, rawToken) {
         <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
         <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">© 2026 9Jobs Pty Ltd. All rights reserved.</p>
       </div>
-    `
+    `)
   });
 }
 
@@ -108,13 +137,13 @@ export async function sendAgreementCompletedEmail({ email, name, agreement, pdfB
     to: email,
     bcc: ADMIN_COPY_MAILBOXES,
     subject: 'Contract Completed: 9Jobs & ' + agreement.clientName,
-    html: `
+    html: formatEmail(`
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
         <div style="background-color: #0f172a; padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 20px;">
           <h2 style="color: #ffffff; margin: 0; font-size: 20px;">9Jobs Contract Portal</h2>
         </div>
-        <p style="font-size: 16px; color: #334155; line-height: 1.5;">Hello ${name},</p>
-        <p style="font-size: 16px; color: #334155; line-height: 1.5;">The contract between 9Jobs and <strong>${agreement.clientName}</strong> is now fully signed by both parties.</p>
+        <p style="font-size: 16px; color: #334155; line-height: 1.5;">Hello ${escapeHtml(name)},</p>
+        <p style="font-size: 16px; color: #334155; line-height: 1.5;">The contract between 9Jobs and <strong>${escapeHtml(agreement.clientName)}</strong> is now fully signed by both parties.</p>
         ${
           pdfBuffer.length > 20 * 1024 * 1024 
             ? `<p style="font-size: 16px; color: #334155; line-height: 1.5;">Because the document size exceeds the email attachment limit, you can securely download your copy here:</p>
@@ -126,7 +155,7 @@ export async function sendAgreementCompletedEmail({ email, name, agreement, pdfB
         <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
         <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">© 2026 9Jobs Pty Ltd. All rights reserved.</p>
       </div>
-    `,
+    `),
     attachments,
   });
 }

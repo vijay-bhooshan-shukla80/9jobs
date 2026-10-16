@@ -82,6 +82,31 @@ describe('secure internal e-signature workflow', () => {
     mockSendAgreementCompletedEmail.mockResolvedValue(true);
   });
 
+  test.each(['completed', 'completion_processing_failed'])('client signing a pre-signed agreement returns %s without inviting the provider again', async (finalStatus) => {
+    const agreement = new MockAgreement({
+      _id: 'agreement-1', clientName: 'Jane Client', clientEmail: 'jane@example.com',
+      clientSigningTokenHash: hashToken('valid-token'),
+      clientTokenExpiresAt: new Date(Date.now() + 100000), clientTokenUsedAt: null,
+      clientOtpVerifiedAt: new Date(), status: 'sent_to_client',
+      providerSignature: { name: 'Aditya Singh', signedAt: new Date(), signatureType: 'typed' },
+    });
+    mockFindOne.mockResolvedValue(agreement);
+    const updated = new MockAgreement({ ...agreement, status: 'completion_processing', clientSignature: { name: 'Jane Client', signedAt: new Date() } });
+    mockFindOneAndUpdate.mockResolvedValue(updated);
+    if (finalStatus === 'completed') mockExecuteFinalSealing.mockResolvedValueOnce({ status: 'completed' });
+    else mockExecuteFinalSealing.mockRejectedValueOnce(new Error('Storage unavailable'));
+    const { POST } = await loadSignRoute();
+    const response = await POST(new Request('http://localhost/api/agreements/agreement-1/sign', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'submit_signature', token: 'valid-token', consentAccepted: true, signatureType: 'typed', signatureName: 'Jane Client' }),
+    }), { params: Promise.resolve({ id: 'agreement-1' }) });
+    expect(response.status).toBe(200);
+    expect((await response.json()).status).toBe(finalStatus);
+    expect(mockFindOneAndUpdate.mock.calls[0][1].$set.status).toBe('completion_processing');
+    expect(mockExecuteFinalSealing).toHaveBeenCalledWith(updated);
+    expect(mockSendProviderSigningInvite).not.toHaveBeenCalled();
+  });
+
   test('rejects request with invalid token', async () => {
     mockFindOne.mockResolvedValue(null);
     const { POST } = await loadSignRoute();
@@ -434,7 +459,7 @@ describe('secure internal e-signature workflow', () => {
   });
 
   test('real PDF anchor-extraction regression test', async () => {
-    const pdfBuffer = await generateAgreementPdfBuffer({
+    const artifact = await generateAgreementPdfArtifact({
       clientName: 'Jane Client',
       clientEmail: 'jane@example.com',
       clientPhone: '+61 400 111 222',
@@ -450,17 +475,17 @@ describe('secure internal e-signature workflow', () => {
       notes: 'Priority applications for Melbourne operations roles.',
     });
 
-    const coords = await parsePdfSignatureCoords(pdfBuffer);
+    const coords = await parsePdfSignatureCoords(artifact.buffer);
     expect(coords.providerSign).toBeTruthy();
     expect(coords.customerSign).toBeTruthy();
     expect(coords.dateBlock).toBeTruthy();
 
     expect(coords.providerSign.x).toBe(114);
-    expect(coords.providerSign.y).toBe(459.39);
+    expect(coords.providerSign.y).toBeCloseTo(artifact.anchorCoords.providerSign.y, 2);
     expect(coords.customerSign.x).toBe(375);
-    expect(coords.customerSign.y).toBe(459.39);
+    expect(coords.customerSign.y).toBeCloseTo(artifact.anchorCoords.customerSign.y, 2);
     expect(coords.dateBlock.x).toBe(114);
-    expect(coords.dateBlock.y).toBe(424.39);
+    expect(coords.dateBlock.y).toBeCloseTo(coords.providerSign.y - 35, 2);
   });
 
   test('generated PDF artifact exposes deterministic anchor coordinates', async () => {

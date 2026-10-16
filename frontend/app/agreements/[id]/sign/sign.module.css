@@ -1,0 +1,50 @@
+.layout {
+  height: 100dvh !important;
+  width: 100%;
+  min-width: 0;
+}
+
+.layout *, .layout *::before, .layout *::after {
+  box-sizing: border-box;
+}
+
+.pdfPanel {
+  min-width: 0;
+}
+
+.signPanel {
+  flex: 0 0 450px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .signPanel {
+    flex-basis: 360px;
+    width: 360px !important;
+    padding: 22px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .layout {
+    flex-direction: column;
+    height: auto !important;
+    min-height: 100dvh;
+    overflow: visible !important;
+  }
+
+  .pdfPanel {
+    flex: none !important;
+    height: 60dvh !important;
+    min-height: 320px;
+    border-right: none !important;
+  }
+
+  .signPanel {
+    flex: none;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 22px 18px !important;
+  }
+}

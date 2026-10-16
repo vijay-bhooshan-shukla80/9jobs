@@ -362,7 +362,7 @@ export async function POST(request, { params }) {
             'clientSignature.signedAt': new Date(),
             'clientSignature.signatureFileKey': signatureFileKey,
             'clientSignature.signatureType': signatureType,
-            status: 'client_signed'
+            status: agreement.providerSignature?.signedAt ? 'completion_processing' : 'client_signed'
           }
         },
         { new: true }
@@ -370,6 +370,20 @@ export async function POST(request, { params }) {
 
       if (!updatedClient) {
         return NextResponse.json({ error: 'Submission conflict: Signature already processed.' }, { status: 409 });
+      }
+
+      if (updatedClient.providerSignature?.signedAt) {
+        try {
+          const finalizedAgreement = await executeFinalSealing(updatedClient);
+          return NextResponse.json({
+            success: true,
+            status: finalizedAgreement?.status || 'completion_processing',
+            message: 'Both signatures received. Finalizing the completed agreement.',
+          });
+        } catch (err) {
+          console.error('Final sealing execution failed:', err);
+          return NextResponse.json({ success: true, status: 'completion_processing_failed', message: 'Signatures saved. Document processing needs a retry.' });
+        }
       }
 
       const providerToken = generateSecureToken();

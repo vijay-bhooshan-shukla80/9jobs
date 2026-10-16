@@ -1,0 +1,11 @@
+.viewer { height: 100%; width: 100%; overflow: auto; background: #282828; color: #fff; }
+.toolbar { position: sticky; top: 0; z-index: 1; min-height: 48px; padding: 10px 16px; background: #3b3b3b; display: flex; align-items: center; justify-content: space-between; gap: 12px; font: 13px Arial, sans-serif; }
+.zoom { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.zoom button { background: transparent; border: 0; color: #fff; cursor: pointer; font-size: 22px; width: 28px; height: 28px; }
+.zoom button:disabled { opacity: .4; cursor: default; }
+.pages { padding: 16px; display: flex; flex-direction: column; gap: 16px; min-width: max-content; }
+.page { margin: 0 auto; background: #fff; box-shadow: 0 2px 12px #0008; }
+.page canvas { display: block; }
+.pageText { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.message { padding: 24px; font: 14px/1.5 Arial, sans-serif; }
+.message a { color: #93c5fd; }

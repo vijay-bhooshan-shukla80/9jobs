@@ -12,6 +12,9 @@ const mockGenerateSecureToken = jest.fn();
 const mockHashToken = jest.fn();
 const mockSendClientSigningInvite = jest.fn();
 const mockSave = jest.fn();
+const mockSealAgreementPdf = jest.fn().mockResolvedValue(Buffer.from('%PDF provider signed'));
+
+jest.doMock('@/utils/pdfSealer', () => ({ sealAgreementPdf: mockSealAgreementPdf }));
 
 jest.doMock('@/lib/admin/auth/require-admin', () => ({
   requireAdminApiSession: mockRequireAdminApiSession,
@@ -59,6 +62,7 @@ function makeAgreement(overrides = {}) {
     esignError: 'old error',
     clientEmail: 'client@example.com',
     providerEmail: 'provider@example.com',
+    providerSignatureName: 'Aditya Singh',
     clientSigningTokenHash: 'old-client-hash',
     clientTokenExpiresAt: new Date('2026-08-01T00:00:00.000Z'),
     clientTokenUsedAt: new Date('2026-08-01T00:10:00.000Z'),
@@ -136,7 +140,7 @@ describe('agreement send route', () => {
     mockSave.mockResolvedValue(true);
   });
 
-  test('restarts the internal signing workflow in a clean client-first state', async () => {
+  test('sends a provider-signed PDF with a fresh client link and retains the unsigned original', async () => {
     const agreementDocument = makeAgreement();
     mockGetAgreementDocumentById.mockResolvedValue(agreementDocument);
 
@@ -158,11 +162,16 @@ describe('agreement send route', () => {
     expect(agreementDocument.providerOtpHash).toBe('');
     expect(agreementDocument.providerOtpVerifiedAt).toBeNull();
     expect(agreementDocument.providerInvitationSentAt).toBeNull();
-    expect(agreementDocument.providerSignature.signedAt).toBeNull();
+    expect(agreementDocument.providerSignature.signedAt).toBeInstanceOf(Date);
+    expect(agreementDocument.providerSignature.name).toBe('Aditya Singh');
+    expect(agreementDocument.providerSignature.signatureType).toBe('typed');
+    expect(agreementDocument.providerConsentAcceptedAt).toBeInstanceOf(Date);
+    expect(agreementDocument.originalPdfSha256).toBe('fresh-pdf-sha');
     expect(agreementDocument.signedPdfStorageKey).toBe('');
     expect(agreementDocument.auditTrailStorageKey).toBe('');
     expect(agreementDocument.completionLockId).toBe('');
-    expect(mockSendClientSigningInvite).toHaveBeenCalledWith(agreementDocument, 'raw-client-token');
+    expect(mockSealAgreementPdf).toHaveBeenCalledWith(Buffer.from('%PDF-1.4'), agreementDocument, { providerOnly: true });
+    expect(mockSendClientSigningInvite).toHaveBeenCalledWith(agreementDocument, 'raw-client-token', Buffer.from('%PDF provider signed'), 'http://localhost/api/docusign/send/agreement-1');
   });
 
   test('blocks sending when client and provider email are the same', async () => {
@@ -183,4 +192,15 @@ describe('agreement send route', () => {
     expect(body.error).toContain('must be different');
     expect(mockSendClientSigningInvite).not.toHaveBeenCalled();
   });
+  test('replaces the legacy provider mailbox and regenerates the PDF before sending', async () => {
+    const agreementDocument = makeAgreement({ providerEmail: '9jobsapplicationservice@gmail.com' });
+    mockGetAgreementDocumentById.mockResolvedValue(agreementDocument);
+    const { POST } = await loadRoute();
+    const response = await POST(new Request('http://localhost/api/docusign/send/agreement-1', { method: 'POST' }), { params: Promise.resolve({ agreementId: 'agreement-1' }) });
+    expect(response.status).toBe(200);
+    expect(agreementDocument.providerEmail).toBe('accounts@9jobs.co');
+    expect(mockGenerateAndStoreAgreementPdf).toHaveBeenCalledWith(agreementDocument);
+    expect(agreementDocument.providerSignature.signedAt).toBeInstanceOf(Date);
+  });
+
 });

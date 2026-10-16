@@ -55,6 +55,7 @@ export async function createAgreement(payload) {
   await connectDB();
   const agreement = await FortnightAgreement.create({
     ...payload,
+    providerEmail: 'accounts@9jobs.co',
     notes: payload.notes || '',
     status: 'draft',
   });
@@ -78,6 +79,7 @@ export async function updateAgreementById(id, updates) {
     id,
     {
       ...updates,
+      providerEmail: 'accounts@9jobs.co',
       generatedPdfUrl: '',
       generatedPdfPath: '',
       signedPdfUrl: '',

@@ -5,6 +5,8 @@ import Agreement from '@/models/Agreement';
 import { hashToken, constantTimeCompare } from '@/utils/cryptoUtils';
 import { fetchBlobBuffer, fetchBlobBufferByKey, openDownloadStreamByKey } from '@/lib/storage/blob';
 import { isRateLimited } from '@/utils/rateLimiter';
+import { sealAgreementPdf } from '@/utils/pdfSealer';
+import { PDF_PREVIEW_HEADERS } from '@/lib/agreements/preview-headers';
 
 export const dynamic = 'force-dynamic';
 
@@ -97,15 +99,24 @@ export async function GET(request, { params }) {
 
   // 5. Fetch Original PDF Buffer
   try {
+    if (agreement.status === 'completed' && agreement.signedPdfStorageKey) {
+      const { stream } = await openDownloadStreamByKey(agreement.signedPdfStorageKey);
+      return new NextResponse(Readable.toWeb(stream), { headers: PDF_PREVIEW_HEADERS });
+    }
+    if (agreement.providerSignature?.signedAt && agreement.status === 'sent_to_client') {
+      const key = agreement.originalPdfStorageKey || agreement.generatedPdfPath;
+      const url = agreement.originalPdfUrl || agreement.generatedPdfUrl;
+      const original = key ? await fetchBlobBufferByKey(key)
+        : url?.startsWith('data:application/pdf;base64,') ? Buffer.from(url.split(',')[1], 'base64')
+          : await fetchBlobBuffer(url);
+      const preview = await sealAgreementPdf(original, agreement, { providerOnly: true });
+      return new NextResponse(preview, { headers: PDF_PREVIEW_HEADERS });
+    }
     if (agreement.originalPdfStorageKey) {
       const { stream } = await openDownloadStreamByKey(agreement.originalPdfStorageKey);
       return new NextResponse(Readable.toWeb(stream), {
         status: 200,
-        headers: {
-          'content-type': 'application/pdf',
-          'cache-control': 'private, no-store, no-cache, must-revalidate',
-          'x-robots-tag': 'noindex, nofollow, nosnippet',
-        },
+        headers: PDF_PREVIEW_HEADERS,
       });
     }
 
@@ -114,11 +125,7 @@ export async function GET(request, { params }) {
       const { stream } = await openDownloadStreamByKey(fallbackKey);
       return new NextResponse(Readable.toWeb(stream), {
         status: 200,
-        headers: {
-          'content-type': 'application/pdf',
-          'cache-control': 'private, no-store, no-cache, must-revalidate',
-          'x-robots-tag': 'noindex, nofollow, nosnippet',
-        },
+        headers: PDF_PREVIEW_HEADERS,
       });
     }
 
@@ -141,11 +148,7 @@ export async function GET(request, { params }) {
 
     return new NextResponse(pdfBuffer, {
       status: 200,
-      headers: {
-        'content-type': 'application/pdf',
-        'cache-control': 'private, no-store, no-cache, must-revalidate',
-        'x-robots-tag': 'noindex, nofollow, nosnippet',
-      },
+      headers: PDF_PREVIEW_HEADERS,
     });
   } catch (err) {
     console.error('Failed to fetch original PDF:', err);

@@ -10,6 +10,8 @@ const mockGenerateSecureToken = jest.fn();
 const mockHashToken = jest.fn();
 const mockSendClientSigningInvite = jest.fn();
 const mockSave = jest.fn();
+const mockSealAgreementPdf = jest.fn();
+jest.doMock('@/utils/pdfSealer', () => ({ sealAgreementPdf: mockSealAgreementPdf }));
 
 jest.doMock('@/lib/admin/auth/require-admin', () => ({
   requireAdminApiSession: mockRequireAdminApiSession,
@@ -49,6 +51,7 @@ function makeAgreement(overrides = {}) {
     esignError: 'old error',
     clientEmail: 'client@example.com',
     providerEmail: 'provider@example.com',
+    providerSignatureName: 'Karan Singh',
     clientSigningTokenHash: 'old-client-hash',
     clientTokenExpiresAt: new Date('2026-08-01T00:00:00.000Z'),
     clientTokenUsedAt: new Date('2026-08-01T00:10:00.000Z'),
@@ -122,9 +125,10 @@ describe('fortnight send route', () => {
     mockHashToken.mockReturnValue('hashed-client-token');
     mockSendClientSigningInvite.mockResolvedValue(true);
     mockSave.mockResolvedValue(true);
+    mockSealAgreementPdf.mockResolvedValue(Buffer.from('%PDF-provider-signed'));
   });
 
-  test('restarts the workflow in a clean client-first state before sending', async () => {
+  test('applies the provider signature and sends a provider-signed PDF to the client', async () => {
     const agreementDocument = makeAgreement();
     mockGetAgreementDocumentById.mockResolvedValue(agreementDocument);
 
@@ -148,11 +152,15 @@ describe('fortnight send route', () => {
     expect(agreementDocument.providerOtpHash).toBe('');
     expect(agreementDocument.providerOtpVerifiedAt).toBeNull();
     expect(agreementDocument.providerInvitationSentAt).toBeNull();
-    expect(agreementDocument.providerSignature.signedAt).toBeNull();
+    expect(agreementDocument.providerSignature.signedAt).toBeInstanceOf(Date);
+    expect(agreementDocument.providerSignature.name).toBe('Karan Singh');
+    expect(agreementDocument.providerSignature.signatureType).toBe('typed');
+    expect(agreementDocument.providerConsentAcceptedAt).toEqual(agreementDocument.providerSignature.signedAt);
     expect(agreementDocument.signedPdfStorageKey).toBe('');
     expect(agreementDocument.auditTrailStorageKey).toBe('');
     expect(agreementDocument.completionLockId).toBe('');
-    expect(mockSendClientSigningInvite).toHaveBeenCalledWith(agreementDocument, 'raw-client-token');
+    expect(mockSealAgreementPdf).toHaveBeenCalledWith(Buffer.from('%PDF-1.4'), agreementDocument, { providerOnly: true });
+    expect(mockSendClientSigningInvite).toHaveBeenCalledWith(agreementDocument, 'raw-client-token', Buffer.from('%PDF-provider-signed'), 'http://localhost/api/fortnight-agreements/agreement-1/send');
   });
 
   test('blocks sending once the workflow has already started', async () => {
@@ -187,4 +195,15 @@ describe('fortnight send route', () => {
     expect(body.error).toContain('must be different');
     expect(mockSendClientSigningInvite).not.toHaveBeenCalled();
   });
+  test('replaces the legacy provider mailbox and regenerates the PDF before sending', async () => {
+    const agreementDocument = makeAgreement({ providerEmail: '9jobsapplicationservice@gmail.com' });
+    mockGetAgreementDocumentById.mockResolvedValue(agreementDocument);
+    const { POST } = await loadRoute();
+    const response = await POST(new Request('http://localhost/api/fortnight-agreements/agreement-1/send', { method: 'POST' }), { params: Promise.resolve({ id: 'agreement-1' }) });
+    expect(response.status).toBe(200);
+    expect(agreementDocument.providerEmail).toBe('accounts@9jobs.co');
+    expect(mockGenerateAndStoreAgreementPdf).toHaveBeenCalledWith(agreementDocument);
+    expect(agreementDocument.providerSignature.signedAt).toBeInstanceOf(Date);
+  });
+
 });

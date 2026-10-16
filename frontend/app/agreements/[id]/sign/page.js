@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useParams } from 'next/navigation';
+import layoutStyles from './sign.module.css';
+import AgreementPdfPreview from '@/components/AgreementPdfPreview';
 
 const SIGNATURE_FONT_STACK = '"Segoe Script", "Snell Roundhand", "Brush Script MT", "Lucida Handwriting", cursive';
 const MAX_SIGNATURE_EXPORT_WIDTH = 560;
@@ -44,10 +46,6 @@ export default function SignAgreementPage() {
     signerContext?.signerRole === 'Client'
       ? signerContext?.clientName
       : signerContext?.providerSignerName || signerContext?.signerName || signerContext?.providerName;
-  const signerRoleSummary =
-    signerContext?.signerRole === 'Client'
-      ? `Signing as CLIENT: ${signerContext?.clientName} (${signerContext?.signerEmail})`
-      : `Signing as SERVICE PROVIDER: ${signerContext?.providerSignerName || signerContext?.signerName} (${signerContext?.providerName})`;
 
   // Fetch Initial Token Verification Context
   useEffect(() => {
@@ -445,12 +443,15 @@ export default function SignAgreementPage() {
       if (!res.ok) {
         alert(data.error || 'Failed to submit signature.');
       } else {
-        if (signerContext?.signerRole === 'Client') {
+        if (data.status === 'client_signed') {
           setSubmissionState('client_signed');
           setSubmissionMessage('The service provider will receive the invitation to sign next.');
         } else if (data.status === 'completed') {
           setSubmissionState('completed');
           setSubmissionMessage('A completed copy of the document has been emailed to your registered mailbox.');
+        } else if (data.status === 'completion_processing_failed') {
+          setSubmissionState('completion_processing_failed');
+          setSubmissionMessage('Both signatures were saved. Our team will retry processing the completed document.');
         } else {
           setSubmissionState('completion_processing');
           setSubmissionMessage('We are finalizing the completed agreement now.');
@@ -514,14 +515,12 @@ export default function SignAgreementPage() {
     );
   }
 
-  // 1. Render OTP Verification Form
-  if (!isOtpVerified) {
-    return (
-      <div style={styles.otpContainer}>
-        <div style={styles.otpCard}>
+  // Keep document review available while identity verification is pending.
+  const otpContent = (
+        <div style={{ ...styles.otpCard, width: '100%', padding: '24px 18px', marginTop: '20px' }}>
           <h3 style={styles.otpTitle}>Security Identity Verification</h3>
           <p style={styles.otpDesc}>
-            For security compliance, please verify your identity to access the signing portal for this document.
+            Review the agreement in the preview, then verify your email to sign it.
           </p>
 
           {!otpSent ? (
@@ -564,47 +563,38 @@ export default function SignAgreementPage() {
             </form>
           )}
         </div>
-      </div>
     );
-  }
 
   // 2. Render PDF Viewer & Signature Collection Form
   return (
-    <div style={styles.signLayout}>
+    <div className={layoutStyles.layout} style={styles.signLayout}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
-        * { font-family: 'Outfit', sans-serif; }
+        .${layoutStyles.layout} * { font-family: 'Outfit', sans-serif; }
       `}</style>
       
       {/* PDF View Panel */}
-      <div style={styles.pdfPanel}>
-        <iframe
-          src={`/api/agreements/${agreementId}/preview-original?token=${token}`}
-          style={styles.iframe}
-          title="Document Preview"
+      <div className={layoutStyles.pdfPanel} style={styles.pdfPanel}>
+        <AgreementPdfPreview
+          key={`${agreementId}:${token}`}
+          src={`/api/agreements/${agreementId}/preview-original?token=${encodeURIComponent(token)}`}
+          title="Agreement PDF"
         />
       </div>
 
       {/* Signature Panel */}
-      <div style={styles.signPanel}>
+      <div className={layoutStyles.signPanel} style={styles.signPanel}>
         <div style={styles.signCard}>
+          <a
+            href={`/api/agreements/${agreementId}/preview-original?token=${encodeURIComponent(token)}`}
+            target="_blank"
+            rel="noreferrer"
+            style={{ ...styles.btnSecondary, textAlign: 'center', marginBottom: '20px' }}
+          >
+            View Agreement PDF
+          </a>
+          {!isOtpVerified ? otpContent : <>
           <span style={styles.badge}>{signerContext?.signerRole} Session</span>
-
-          <div style={{
-            backgroundColor: signerContext?.signerRole === 'Client' ? '#eff6ff' : '#f0fdf4',
-            border: signerContext?.signerRole === 'Client' ? '1px solid #bfdbfe' : '1px solid #bbf7d0',
-            color: signerContext?.signerRole === 'Client' ? '#1e3a8a' : '#15803d',
-            padding: '12px',
-            borderRadius: '6px',
-            fontSize: '13px',
-            fontWeight: '600',
-            marginTop: '12px',
-            marginBottom: '15px',
-            textAlign: 'center',
-            lineHeight: '1.4'
-          }}>
-            {signerRoleSummary}
-          </div>
 
           <h2 style={styles.signTitle}>Review and Sign</h2>
           <p style={styles.signDesc}>
@@ -694,6 +684,7 @@ export default function SignAgreementPage() {
           >
             {submittingSign ? 'Submitting Signature...' : 'Sign and Submit'}
           </button>
+          </>}
         </div>
       </div>
     </div>
@@ -959,6 +950,7 @@ const styles = {
   tabInactive: {
     background: 'none',
     border: 'none',
+    borderBottom: '2.5px solid transparent',
     color: '#64748b',
     padding: '10px',
     fontSize: '14px',

@@ -106,6 +106,14 @@ export async function executeFinalSealing(agreement) {
     lockedAgreement.esignError = '';
     await lockedAgreement.save();
 
+    // Refresh the admin register on its next request after both signatures finish.
+    const registerCache = globalThis.__nineJobsAdminAgreementListCache;
+    if (registerCache) {
+      registerCache.data = null;
+      registerCache.expiresAt = 0;
+      registerCache.promise = null;
+    }
+
     const keysToDelete = [];
     if (lockedAgreement.clientSignature.signatureFileKey) {
       keysToDelete.push(lockedAgreement.clientSignature.signatureFileKey);

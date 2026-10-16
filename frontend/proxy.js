@@ -33,6 +33,12 @@ async function hasValidAdminSession(request) {
 export async function proxy(request) {
   const { pathname } = request.nextUrl;
 
+  if (/^\/(?:agreements|fortnight-agreements)\/[^/]+\/sign\/?$/.test(pathname)) {
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-9jobs-standalone-route', '1');
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
+
   if (pathname === '/admin/login' || pathname === '/admin/reset-password') {
     return withAdminRouteHeader(request);
   }
@@ -56,5 +62,5 @@ export async function proxy(request) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/agreements/:id/sign', '/fortnight-agreements/:id/sign'],
 };

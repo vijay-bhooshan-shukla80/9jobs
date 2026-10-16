@@ -69,6 +69,7 @@ function jsonLd(schema) {
 export default async function RootLayout({ children }) {
   const requestHeaders = await headers();
   const isAdminRoute = requestHeaders.get("x-9jobs-admin-route") === "1";
+  const isStandaloneRoute = requestHeaders.get("x-9jobs-standalone-route") === "1";
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -135,7 +136,7 @@ export default async function RootLayout({ children }) {
         />
       </head>
       <body className={`${onest.variable} ${onest.className}`}>
-        {isAdminRoute ? children : <AppChrome>{children}</AppChrome>}
+        {isAdminRoute || isStandaloneRoute ? children : <AppChrome>{children}</AppChrome>}
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
           <DeferredAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
         )}

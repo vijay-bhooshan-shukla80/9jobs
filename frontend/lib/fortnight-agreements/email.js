@@ -25,21 +25,31 @@ export async function sendOtpEmail({ email, name, otp }) {
   });
 }
 
-export async function sendClientSigningInvite(agreement, rawToken) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+export async function sendClientSigningInvite(agreement, rawToken, pdfBuffer, requestUrl) {
+  const localUrl = requestUrl ? new URL(requestUrl) : null;
+  const baseUrl = localUrl && ['localhost', '127.0.0.1', '[::1]'].includes(localUrl.hostname)
+    ? localUrl.origin : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '');
   const signingUrl = `${baseUrl}/fortnight-agreements/${agreement._id}/sign?token=${rawToken}`;
+  const previewUrl = `${baseUrl}/api/fortnight-agreements/${agreement._id}/preview-original?token=${encodeURIComponent(rawToken)}`;
+  const attachments = pdfBuffer.length <= 20 * 1024 * 1024
+    ? [{ filename: `9jobs-agreement-${agreement._id}.pdf`, content: pdfBuffer, contentType: 'application/pdf' }]
+    : [];
 
   await sendEmail({
     to: agreement.clientEmail,
     bcc: ADMIN_COPY_MAILBOXES,
-    subject: 'Signature Required: Your 9Jobs Contract',
+    subject: 'Your 9Jobs agreement for review and signature',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
         <div style="background-color: #0f172a; padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 20px;">
           <h2 style="color: #ffffff; margin: 0; font-size: 20px;">9Jobs Contract Portal</h2>
         </div>
         <p style="font-size: 16px; color: #334155; line-height: 1.5;">Dear ${agreement.clientName},</p>
-        <p style="font-size: 16px; color: #334155; line-height: 1.5;">You have been sent a contract from 9Jobs for your review and signature. Please click the button below to verify your identity and sign the document.</p>
+        <p style="font-size: 16px; color: #334155; line-height: 1.5;">Please read your agreement PDF first using the link below${attachments.length ? ' or the PDF attached to this email' : ''}. You can open it on your phone or computer. After reviewing the agreement, return to this email and click Review and Sign Contract to verify your identity and sign.</p>
+        ${agreement.providerSignature?.signedAt ? '<p style="font-size: 16px; color: #334155; line-height: 1.5;">The service provider has already signed this agreement. Once you sign, both parties will receive the completed copy.</p>' : ''}
+        <div style="text-align: center; margin: 25px 0;">
+          <a href="${previewUrl}" style="color: #2563eb; text-decoration: underline; padding: 12px 16px; font-size: 16px; font-weight: bold; display: inline-block;">View Agreement PDF</a>
+        </div>
         <div style="text-align: center; margin: 35px 0;">
           <a href="${signingUrl}" style="background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 6px; display: inline-block;">Review and Sign Contract</a>
         </div>
@@ -47,7 +57,8 @@ export async function sendClientSigningInvite(agreement, rawToken) {
         <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
         <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">© 2026 9Jobs Pty Ltd. All rights reserved.</p>
       </div>
-    `
+    `,
+    attachments,
   });
 }
 

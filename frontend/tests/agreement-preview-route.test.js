@@ -6,6 +6,9 @@ const mockFortnightFindOne = jest.fn();
 const mockIsRateLimited = jest.fn().mockResolvedValue(false);
 const mockOpenDownloadStreamByKey = jest.fn();
 const mockHashToken = jest.fn(() => 'same-hash');
+const mockFetchBlobBufferByKey = jest.fn();
+const mockSealAgreementPdf = jest.fn();
+jest.doMock('@/utils/pdfSealer', () => ({ sealAgreementPdf: mockSealAgreementPdf }));
 const mockConstantTimeCompare = jest.fn((left, right) => left === right);
 
 jest.doMock('@/utils/db', () => ({
@@ -24,7 +27,7 @@ jest.doMock('@/utils/cryptoUtils', () => ({
 
 jest.doMock('@/lib/storage/blob', () => ({
   fetchBlobBuffer: jest.fn(),
-  fetchBlobBufferByKey: jest.fn(),
+  fetchBlobBufferByKey: mockFetchBlobBufferByKey,
   openDownloadStreamByKey: mockOpenDownloadStreamByKey,
 }));
 
@@ -63,13 +66,65 @@ describe('agreement preview routes', () => {
     mockOpenDownloadStreamByKey.mockResolvedValue({ stream: makeStream() });
   });
 
+  test.each(['agreements', 'fortnight-agreements'])('%s client PDF review includes the provider signature before the client signs', async (kind) => {
+    const agreement = {
+      _id: 'agreement-1', status: 'sent_to_client', clientSigningTokenHash: 'same-hash',
+      clientTokenExpiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
+      originalPdfStorageKey: 'original.pdf', providerSignature: { signedAt: new Date() },
+    };
+    (kind === 'agreements' ? mockFindOne : mockFortnightFindOne).mockResolvedValue(agreement);
+    mockFetchBlobBufferByKey.mockResolvedValue(Buffer.from('%PDF unsigned'));
+    mockSealAgreementPdf.mockResolvedValue(Buffer.from('%PDF provider signed'));
+    const { GET } = await (kind === 'agreements' ? loadWeeklyRoute() : loadFortnightRoute());
+    const response = await GET(new Request(`http://localhost/api/${kind}/agreement-1/preview-original?token=test-token`), { params: Promise.resolve({ id: 'agreement-1' }) });
+    expect(response.status).toBe(200);
+    expect(Buffer.from(await response.arrayBuffer())).toEqual(Buffer.from('%PDF provider signed'));
+    expect(mockSealAgreementPdf).toHaveBeenCalledWith(Buffer.from('%PDF unsigned'), agreement, { providerOnly: true });
+  });
+
+  test.each(['agreements', 'fortnight-agreements'])('%s completed client review opens the PDF with both signatures', async (kind) => {
+    (kind === 'agreements' ? mockFindOne : mockFortnightFindOne).mockResolvedValue({
+      _id: 'agreement-1', status: 'completed', clientSigningTokenHash: 'same-hash',
+      clientTokenExpiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
+      clientTokenUsedAt: new Date(), originalPdfStorageKey: 'original.pdf', signedPdfStorageKey: 'signed.pdf',
+    });
+    const { GET } = await (kind === 'agreements' ? loadWeeklyRoute() : loadFortnightRoute());
+    const response = await GET(new Request(`http://localhost/api/${kind}/agreement-1/preview-original?token=test-token`), { params: Promise.resolve({ id: 'agreement-1' }) });
+    expect(response.status).toBe(200);
+    await response.arrayBuffer();
+    expect(mockOpenDownloadStreamByKey).toHaveBeenCalledWith('signed.pdf');
+    expect(response.headers.get('content-disposition')).toContain('inline');
+  });
+
+  test.each(['agreements', 'fortnight-agreements'])('%s email PDF link opens the original document before signing', async (kind) => {
+    const findOne = kind === 'agreements' ? mockFindOne : mockFortnightFindOne;
+    findOne.mockResolvedValue({
+      _id: 'agreement-1',
+      status: 'sent_to_client',
+      clientSigningTokenHash: 'same-hash',
+      providerSigningTokenHash: 'provider-hash',
+      clientTokenExpiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
+      clientTokenUsedAt: null,
+      originalPdfStorageKey: 'original.pdf',
+    });
+    const { GET } = await (kind === 'agreements' ? loadWeeklyRoute() : loadFortnightRoute());
+    const response = await GET(
+      new Request(`http://localhost/api/${kind}/agreement-1/preview-original?token=test-token`),
+      { params: Promise.resolve({ id: 'agreement-1' }) }
+    );
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toBe('application/pdf');
+    expect(Buffer.from(await response.arrayBuffer())).toEqual(Buffer.from('%PDF-1.4 test pdf'));
+    expect(mockOpenDownloadStreamByKey).toHaveBeenCalledWith('original.pdf');
+  });
+
   test('weekly preview remains accessible to client token after client signs and provider step starts', async () => {
     mockFindOne.mockResolvedValue({
       _id: 'agreement-1',
       status: 'sent_to_provider',
       clientSigningTokenHash: 'same-hash',
       providerSigningTokenHash: 'provider-hash',
-      clientTokenExpiresAt: new Date('2026-08-20T00:00:00.000Z'),
+      clientTokenExpiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
       clientTokenUsedAt: new Date('2026-08-18T09:00:00.000Z'),
       originalPdfStorageKey: 'agreements/original.pdf',
     });
@@ -90,7 +145,7 @@ describe('agreement preview routes', () => {
       status: 'sent_to_provider',
       clientSigningTokenHash: 'same-hash',
       providerSigningTokenHash: 'provider-hash',
-      clientTokenExpiresAt: new Date('2026-08-20T00:00:00.000Z'),
+      clientTokenExpiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
       clientTokenUsedAt: new Date('2026-08-18T09:00:00.000Z'),
       originalPdfStorageKey: 'fortnight/original.pdf',
     });
