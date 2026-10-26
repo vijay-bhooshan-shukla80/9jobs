@@ -90,13 +90,14 @@ export default function PricingPage() {
 
   return (
     <PageTransition>
-      <main className="site-main fj-page" data-fj-motion-root="true">
+      <main className={`site-main fj-page ${styles.page}`} data-fj-motion-root="true">
         <JsonLd schema={breadcrumbSchema} />
         <section className={styles.section} aria-labelledby="pricing-title">
           <div className={styles.container}>
             <Reveal direction="down" duration={0.6}>
               <header className={styles.heading}>
-                <h1 id="pricing-title">Choose <span>Your Plan</span></h1>
+                <span className={styles.eyebrow}>PRICING PLANS</span>
+                <h1 id="pricing-title">Choose <span>Your</span> Plan</h1>
                 <p>Flexible support for every stage of your Australian job search.</p>
               </header>
             </Reveal>
@@ -106,8 +107,6 @@ export default function PricingPage() {
                 return (
                   <StaggerItem as="div" className={styles.cardSlot} key={plan.name}>
                     <HoverCard className={`${styles.card} ${plan.dark ? styles.dark : ""} ${plan.highlighted ? styles.popular : ""}`}>
-                      {plan.highlighted && <span className={styles.popularBadge}>Most Popular</span>}
-                      {plan.dark && <span className={styles.valueBadge}>Best Value</span>}
                       <div className={styles.planHeading}>
                         <span className={styles.icon}><Icon size={30} strokeWidth={2.6} aria-hidden="true" /></span>
                         <div>
@@ -136,7 +135,7 @@ export default function PricingPage() {
             </StaggerContainer>
             <div className={styles.trust}>
               {trustItems.map(({ icon: Icon, title, detail }) => (
-                <div className={styles.trustItem} key={title}><Icon size={38} strokeWidth={1.8} aria-hidden="true" /><div><strong>{title}</strong><span>{detail}</span></div></div>
+                <div className={styles.trustItem} key={title}><span className={styles.trustIcon}><Icon size={19} strokeWidth={1.8} aria-hidden="true" /></span><div><strong>{title}</strong><span>{detail}</span></div></div>
               ))}
             </div>
           </div>
@@ -144,7 +143,7 @@ export default function PricingPage() {
 
         <ResumePricingSection />
 
-        <section className="fj-section fj-section--tight">
+        <section className={`fj-section fj-section--tight ${styles.finalSection}`}>
           <div className="fj-container">
             <Reveal direction="up" distance={24}>
               <div className="fj-final-cta">
