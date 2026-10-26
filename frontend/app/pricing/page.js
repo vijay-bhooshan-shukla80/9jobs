@@ -1,4 +1,5 @@
-import { ArrowRight, Check, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Sparkles, Rocket, ChartNoAxesColumnIncreasing, Crown, Zap, Gift, ShieldCheck, Headphones, FileText, MapPinned } from "lucide-react";
+import styles from "./pricing.module.css";
 import { CalendlyLink } from "../../components/CalendlyWidget";
 import PricingCheckoutButton from "../../components/PricingCheckoutButton";
 import ResumePricingSection from "../../components/ResumePricingSection";
@@ -7,43 +8,74 @@ import { Reveal, StaggerContainer, StaggerItem, HoverCard, PageTransition } from
 
 const plans = [
   {
-    name: "Trial",
+    name: "Trial Plan",
+    icon: "trial",
     price: "AUD $49",
     period: "/ 2 days",
-    summary: "Try the 9Jobs experience for 2 days with a simple one-time checkout under the Standard Plan.",
-    items: ["Full platform access", "Resume review", "Application support", "2-day support window"],
+    billing: "One-time payment",
+    highlights: ["Experience our complete job application process with no commitment."],
+    items: [
+      "2-day guided job application trial",
+      "Australian job search & application demo",
+      "Resume review",
+      "Cover letter support",
+      "LinkedIn, SEEK, Indeed & Jora workflow overview",
+      "Applications submitted on your behalf",
+      "2-day support window",
+    ],
     ctaLabel: "Pay Now",
   },
   {
     name: "Standard Plan",
+    checkoutPlanName: "Standard Plan + GST",
+    icon: "standard",
     price: "AUD $149",
     period: "/ week",
-    summary: "Standard Plan weekly job-support subscription with recurring billing disclosed before payment.",
+    billing: "Recurring billing",
+    highlights: ["100+ Job Applications / Week", "Just A$1.49 per application (before GST)"],
     items: [
-      "Private checkout link",
-      "Amount due today shown before payment",
-      "Same amount charged every week until cancelled",
-      "Cancellation path included in billing flow",
-      "Agreement-linked recurring consent",
+      "100+ targeted job applications every week",
+      "Professional resume creation & optimization",
+      "Tailored cover letter creation",
+      "LinkedIn optimization",
+      "SEEK, Indeed & Jora profile optimization",
+      "Applications submitted on your behalf",
+      "Weekly progress tracking",
+      "Dedicated job-search support",
     ],
     highlighted: true,
     ctaLabel: "Pay Now",
   },
   {
-    name: "Two-Month Success-Based",
-    price: "AUD $199",
-    period: "/ onboarding",
-    summary: "Start with upfront onboarding fees, then handle any later success fee as a separate one-time charge.",
+    name: "Premium Plan",
+    icon: "premium",
+    price: "AUD $1,499",
+    period: "/ one-time payment",
+    billing: "2 months",
+    highlights: ["Everything managed for your job search"],
     items: [
-      "Personalised onboarding amount",
-      "No automatic weekly recurring charge",
-      "Separate success-fee request when triggered",
-      "Private billing link and agreement review",
-      "Manual approval before any success-fee payment",
+      "Everything in Standard",
+      "Dedicated job-search manager",
+      "Resume creation and updates",
+      "Tailored cover letter creation",
+      "LinkedIn, SEEK, Indeed & Jora optimization",
+      "Priority application management",
+      "Custom job targeting strategy",
+      "Weekly progress updates and tracking",
+      "1 interview free preparation session",
+      "10 interview opportunities target",
     ],
     dark: true,
     ctaLabel: "Pay Now",
   },
+];
+
+const planIcons = { trial: Rocket, standard: ChartNoAxesColumnIncreasing, premium: Crown };
+const trustItems = [
+  { icon: ShieldCheck, title: "Secure Payments", detail: "SSL encrypted & safe checkout" },
+  { icon: Headphones, title: "Dedicated Support", detail: "Real human support team" },
+  { icon: FileText, title: "Transparent Pricing", detail: "No hidden fees. GST clearly shown." },
+  { icon: MapPinned, title: "Australian Focus", detail: "Jobs from SEEK, Indeed, Jora & more" },
 ];
 
 const routeSeo = getRouteSeo("/pricing");
@@ -60,51 +92,53 @@ export default function PricingPage() {
     <PageTransition>
       <main className="site-main fj-page" data-fj-motion-root="true">
         <JsonLd schema={breadcrumbSchema} />
-        <section className="fj-page-hero">
-          <div className="fj-container">
+        <section className={styles.section} aria-labelledby="pricing-title">
+          <div className={styles.container}>
             <Reveal direction="down" duration={0.6}>
-              <span className="fj-announcement"><span>Plans</span> Clear support for every stage</span>
+              <header className={styles.heading}>
+                <h1 id="pricing-title">Choose <span>Your Plan</span></h1>
+                <p>Flexible support for every stage of your Australian job search.</p>
+              </header>
             </Reveal>
-            <StaggerContainer as="div" className="fj-home-copy-stack" stagger={0.12} delayChildren={0.08}>
-              <StaggerItem as="div">
-                <h1>A plan for anyone. <span className="heading-mark">Anytime.</span></h1>
-              </StaggerItem>
-              <StaggerItem as="div">
-                <p>Start small, add hands-on support when you need it, or build a repeatable workflow for a team.</p>
-              </StaggerItem>
+            <StaggerContainer as="div" className={styles.grid} stagger={0.1}>
+              {plans.map((plan) => {
+                const Icon = planIcons[plan.icon];
+                return (
+                  <StaggerItem as="div" className={styles.cardSlot} key={plan.name}>
+                    <HoverCard className={`${styles.card} ${plan.dark ? styles.dark : ""} ${plan.highlighted ? styles.popular : ""}`}>
+                      {plan.highlighted && <span className={styles.popularBadge}>Most Popular</span>}
+                      {plan.dark && <span className={styles.valueBadge}>Best Value</span>}
+                      <div className={styles.planHeading}>
+                        <span className={styles.icon}><Icon size={30} strokeWidth={2.6} aria-hidden="true" /></span>
+                        <div>
+                          <h2>{plan.name}</h2>
+                        </div>
+                      </div>
+                      <div className={styles.price}><strong>{plan.price}</strong><span>+ 10% GST</span></div>
+                      <p className={styles.period}>{plan.period}<span>·</span>{plan.billing}</p>
+                      <div className={styles.highlights}>
+                        {plan.highlights.map((highlight, index) => {
+                          const HighlightIcon = plan.dark ? Gift : plan.highlighted ? (index === 0 ? Zap : ChartNoAxesColumnIncreasing) : Sparkles;
+                          return <div className={styles.highlight} key={highlight}><HighlightIcon size={23} aria-hidden="true" /><span>{highlight}</span></div>;
+                        })}
+                      </div>
+                      <ul className={styles.features}>
+                        {plan.items.map((item) => <li key={item}><Check size={21} strokeWidth={3} aria-hidden="true" /><span>{item}</span></li>)}
+                      </ul>
+                      <div className={styles.actions}>
+                        <PricingCheckoutButton plan={plan} className={`${styles.button} ${styles.payButton}`} />
+                        <CalendlyLink className={styles.button}>Get a schedule <ArrowRight size={23} aria-hidden="true" /></CalendlyLink>
+                      </div>
+                    </HoverCard>
+                  </StaggerItem>
+                );
+              })}
             </StaggerContainer>
-          </div>
-        </section>
-
-        <section className="fj-section fj-section--tight">
-          <div className="fj-container">
-            <StaggerContainer as="div" className="fj-card-grid fj-card-grid--three" stagger={0.1}>
-              {plans.map((plan) => (
-                <StaggerItem as="div" key={plan.name}>
-                  <HoverCard className={plan.dark ? "fj-pricing-card is-dark" : "fj-pricing-card"} style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-                    {plan.highlighted && <span className="fj-badge">Popular</span>}
-                    <h2>{plan.name}</h2>
-                    <p>{plan.summary}</p>
-                    <strong>{plan.price}</strong>{plan.period && <span className="fj-price-period">{plan.period}</span>}
-                    <div className="fj-price-list">
-                      {plan.items.map((item) => (
-                        <span key={item}><Check size={17} /> {item}</span>
-                      ))}
-                    </div>
-
-                    <div className="fj-pricing-actions" style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "auto", paddingTop: "24px" }}>
-                      <PricingCheckoutButton
-                        plan={plan}
-                        className={plan.dark ? "fj-button fj-button--lime" : "fj-button"}
-                      />
-                      <CalendlyLink className="fj-button fj-button--ghost">
-                        Get a schedule <ArrowRight size={17} />
-                      </CalendlyLink>
-                    </div>
-                  </HoverCard>
-                </StaggerItem>
+            <div className={styles.trust}>
+              {trustItems.map(({ icon: Icon, title, detail }) => (
+                <div className={styles.trustItem} key={title}><Icon size={38} strokeWidth={1.8} aria-hidden="true" /><div><strong>{title}</strong><span>{detail}</span></div></div>
               ))}
-            </StaggerContainer>
+            </div>
           </div>
         </section>
 

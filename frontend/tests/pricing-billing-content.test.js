@@ -23,9 +23,11 @@ describe('pricing billing content regression', () => {
     expect(pricingPage).toContain('/ 2 days');
     expect(pricingPage).toContain('Standard Plan');
     expect(pricingPage.match(/ctaLabel: "Pay Now"/g)).toHaveLength(3);
-    expect(pricingPage).toContain('Two-Month Success-Based');
+    expect(pricingPage).toContain('Premium Plan');
     expect(pricingPage).toContain('AUD $149');
-    expect(pricingPage).toContain('AUD $199');
+    expect(pricingPage).toContain('AUD $1,499');
+    expect(pricingPage).toContain('+ 10% GST');
+    expect(pricingPage).toContain('checkoutPlanName: "Standard Plan + GST"');
     expect(pricingPage).not.toContain('action: "contact"');
     expect(checkoutButton).toContain('/api/billing/one-time-checkout');
     expect(checkoutButton).toContain('fetch(endpoint');

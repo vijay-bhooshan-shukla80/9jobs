@@ -19,6 +19,25 @@ export const BILLING_PLAN_TYPES = {
 export const DEFAULT_WEEKLY_TERMS_VERSION = 'weekly-subscription-v2';
 
 export const ONE_TIME_CHECKOUT_PLANS = {
+  'Trial Plan': {
+    unitAmount: 5390,
+    currency: 'aud',
+    description: 'Trial Plan: AUD $49 + 10% GST ($4.90), total AUD $53.90 - 2 days',
+    mode: 'payment',
+  },
+  'Standard Plan + GST': {
+    unitAmount: 16390,
+    currency: 'aud',
+    description: 'Standard Plan: AUD $149 + 10% GST ($14.90), total AUD $163.90 per week',
+    mode: 'subscription',
+    recurring: { interval: 'week' },
+  },
+  'Premium Plan': {
+    unitAmount: 164890,
+    currency: 'aud',
+    description: 'Premium Plan: AUD $1,499 + 10% GST ($149.90), total AUD $1,648.90 - one-time payment',
+    mode: 'payment',
+  },
   Trial: {
     unitAmount: 4900,
     currency: 'aud',
@@ -56,6 +75,18 @@ export const ONE_TIME_CHECKOUT_PLANS = {
     unitAmount: 4900,
     currency: 'aud',
     description: 'Resume Makeover plan - one-time',
+  },
+  'Resume Makeover + GST': {
+    unitAmount: 5390,
+    currency: 'aud',
+    description: 'Resume Makeover: AUD $49 + 10% GST ($4.90), total AUD $53.90 - one-time payment',
+    mode: 'payment',
+  },
+  'Resume, LinkedIn & SEEK Optimisation + GST': {
+    unitAmount: 9790,
+    currency: 'aud',
+    description: 'Resume, LinkedIn & SEEK Optimisation: AUD $89 + 10% GST ($8.90), total AUD $97.90 - one-time payment',
+    mode: 'payment',
   },
   'Resume + LinkedIn Optimisation': {
     unitAmount: 8900,

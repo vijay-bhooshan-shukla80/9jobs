@@ -18,7 +18,7 @@ export default function PricingCheckoutButton({ plan, className, style }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          planName: plan.name,
+          planName: plan.checkoutPlanName || plan.name,
           token: plan.token,
         }),
       });
