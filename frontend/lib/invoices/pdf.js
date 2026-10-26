@@ -219,6 +219,8 @@ function drawWrappedText(page, text, x, y, maxWidth, lineHeight, options) {
 
 export async function generateInvoicePdfBuffer(invoice) {
   const invoiceData = applyInvoiceDefaults(invoice);
+  const hasGst = invoiceData.gstRate === 10;
+  const subtotal = hasGst ? invoiceData.subtotal : invoiceData.total;
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
   const regular = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -413,13 +415,13 @@ export async function generateInvoicePdfBuffer(invoice) {
     color: COLOR_TEXT,
   }, 'center');
 
-  drawCellText(page, `$${invoiceData.total}`, rateColumnX, currentY, rateColumnWidth, {
+  drawCellText(page, `$${subtotal}`, rateColumnX, currentY, rateColumnWidth, {
     font: regular,
     size: 11,
     color: COLOR_TEXT,
   }, 'center');
 
-  drawCellText(page, `$${invoiceData.total}`, amountColumnX, currentY, amountColumnWidth, {
+  drawCellText(page, `$${subtotal}`, amountColumnX, currentY, amountColumnWidth, {
     font: bold,
     size: 11,
     color: COLOR_TEXT,
@@ -472,7 +474,7 @@ export async function generateInvoicePdfBuffer(invoice) {
     size: 11,
     color: COLOR_TEXT,
   });
-  const subText = `$${invoiceData.total}`;
+  const subText = `$${subtotal}`;
   const subWidth = regular.widthOfTextAtSize(subText, 11);
   drawText(page, subText, PAGE_WIDTH - MARGIN_RIGHT - 12 - subWidth, totalsY - 20, {
     font: regular,
@@ -495,12 +497,12 @@ export async function generateInvoicePdfBuffer(invoice) {
   });
 
   // Tax
-  drawText(page, 'Tax:', 310, totalsY - 60, {
+  drawText(page, hasGst ? '+ GST (10%):' : 'Tax:', 310, totalsY - 60, {
     font: regular,
     size: 11,
     color: COLOR_TEXT,
   });
-  const taxText = '$0.00';
+  const taxText = hasGst ? `$${invoiceData.gstAmount}` : '$0.00';
   const taxWidth = regular.widthOfTextAtSize(taxText, 11);
   drawText(page, taxText, PAGE_WIDTH - MARGIN_RIGHT - 12 - taxWidth, totalsY - 60, {
     font: regular,

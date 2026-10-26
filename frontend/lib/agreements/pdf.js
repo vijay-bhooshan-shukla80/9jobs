@@ -687,13 +687,6 @@ export async function generateAgreementPdfArtifact(agreement) {
     color: COLOR_MUTED,
   });
 
-  // Date line
-  renderer.page.drawLine({
-    start: { x: 54, y: startY - 85 },
-    end: { x: 280, y: startY - 85 },
-    thickness: 0.8,
-    color: COLOR_MUTED,
-  });
   // --- CLIENT SIGNATURE BLOCK ---
   renderer.page.drawText('CLIENT', {
     x: 315,
@@ -725,13 +718,6 @@ export async function generateAgreementPdfArtifact(agreement) {
     color: COLOR_MUTED,
   });
 
-  // Date line
-  renderer.page.drawLine({
-    start: { x: 315, y: startY - 85 },
-    end: { x: 541, y: startY - 85 },
-    thickness: 0.8,
-    color: COLOR_MUTED,
-  });
   // Render e-signature anchors invisibly in white
   renderer.page.drawText('[[DS_PROVIDER_SIGN_HERE]]', {
     x: 54 + 60,

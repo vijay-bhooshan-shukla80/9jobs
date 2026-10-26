@@ -3,6 +3,8 @@
 import { startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import InvoiceGstSummary from '@/components/admin/InvoiceGstSummary';
+
 import { useToast } from '@/components/admin/ToastProvider';
 
 function addDays(input, days) {
@@ -123,6 +125,8 @@ export default function UnifiedInvoiceBuilder({
           description: weeklyDescription,
           duration: weeklyAutopay ? '1 WEEK' : 'ONE TIME PAYMENT',
           total: normalizeAmount(amount),
+          subtotal: normalizeAmount(amount),
+          gstRate: 10,
         };
       } else {
         endpoint = '/api/fortnight-invoices';
@@ -156,6 +160,8 @@ export default function UnifiedInvoiceBuilder({
                 ? `${fortnightTerm} ${months === 1 ? 'MONTH' : 'MONTHS'}`
                 : 'ONE TIME PAYMENT',
           total: normalizeAmount(amount),
+          subtotal: normalizeAmount(amount),
+          gstRate: 10,
         };
       }
 
@@ -299,9 +305,11 @@ export default function UnifiedInvoiceBuilder({
                 <input onChange={(event) => setBilledToPhone(event.target.value)} type="text" value={billedToPhone} />
               </label>
               <label className="admin-field">
-                <span>Payment Amount (AUD)</span>
+                <span>Payment Amount (AUD, excluding GST)</span>
                 <input onChange={(event) => setAmount(event.target.value)} type="text" value={amount} />
+                <small>+ GST (10%) will be added automatically.</small>
               </label>
+              <InvoiceGstSummary amount={normalizeAmount(amount)} />
             </div>
           </section>
 

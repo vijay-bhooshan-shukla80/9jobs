@@ -3,6 +3,8 @@
 import { startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import InvoiceGstSummary from '@/components/admin/InvoiceGstSummary';
+
 import { useToast } from '@/components/admin/ToastProvider';
 import { invoiceInputSchema } from '@/lib/invoices/schema';
 
@@ -64,7 +66,9 @@ function getInputType(field) {
 export default function InvoiceForm({ initialValues = null, invoiceId = '', mode = 'create' }) {
   const router = useRouter();
   const { pushToast } = useToast();
-  const [values, setValues] = useState(initialValues || initialState);
+  const [values, setValues] = useState(() => initialValues
+    ? { ...initialValues, total: initialValues.gstRate === 10 ? initialValues.subtotal : initialValues.total }
+    : { ...initialState, gstRate: 10 });
   const [fieldErrors, setFieldErrors] = useState({});
   const [isPending, setIsPending] = useState(false);
 
@@ -77,7 +81,7 @@ export default function InvoiceForm({ initialValues = null, invoiceId = '', mode
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const validation = invoiceInputSchema.safeParse(values);
+    const validation = invoiceInputSchema.safeParse(values.gstRate === 10 ? { ...values, subtotal: values.total } : values);
 
     if (!validation.success) {
       const nextErrors = {};
@@ -142,7 +146,7 @@ export default function InvoiceForm({ initialValues = null, invoiceId = '', mode
           <div className="admin-form-grid">
             {section.fields.map((field) => (
                <label className="admin-field" key={field}>
-                <span>{labels[field]}</span>
+                <span>{field === 'total' && values.gstRate === 10 ? 'Payment Amount (AUD, excluding GST)' : labels[field]}</span>
                 <input
                   onChange={(event) => updateField(field, event.target.value)}
                   placeholder={placeholders[field] || ''}
@@ -156,7 +160,9 @@ export default function InvoiceForm({ initialValues = null, invoiceId = '', mode
         </section>
  ))}
 
-               <div className="admin-form-actions">
+               {values.gstRate === 10 ? <InvoiceGstSummary amount={values.total} /> : null}
+
+      <div className="admin-form-actions">
         <button className="admin-primary-button" disabled={isPending} type="submit">
           {isPending ? (mode === 'edit' ? 'Saving...' : 'Creating...') : (mode === 'edit' ? 'Save Invoice' : 'Create Invoice')}
         </button>

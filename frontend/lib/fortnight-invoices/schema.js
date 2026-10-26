@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { applyInvoiceGst } from '@/lib/invoices/gst';
 
 function normalizeDateInput(value) {
   const raw = String(value ?? '').trim();
@@ -47,4 +48,9 @@ export const fortnightInvoiceInputSchema = z.object({
   description: z.string().trim().min(1).max(500),
   duration: z.string().trim().min(1).max(100),
   total: amountSchema,
-});
+  subtotal: amountSchema.optional(),
+  gstRate: z.literal(10).optional(),
+}).refine((data) => data.gstRate !== 10 || data.subtotal !== undefined, {
+  path: ['subtotal'],
+  message: 'A subtotal is required for GST.',
+}).transform(applyInvoiceGst);

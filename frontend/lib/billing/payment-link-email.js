@@ -109,6 +109,7 @@ Please complete your payment to activate your <strong>9JOBS</strong> service.
 <div class="amount" style="font-size:46px;line-height:1.1;font-weight:900;color:#111;margin-top:18px;text-shadow:0 2px 0 #fff,0 5px 10px rgba(0,0,0,.16);">
 AUD $${escapeHtml(invoice.total)}
 </div>
+${invoice.gstRate === 10 ? '<div style="font-size:14px;line-height:1.5;font-weight:600;color:#333;margin-top:8px;">Includes 10% GST</div>' : ''}
 </td>
 </tr>
 
