@@ -60,6 +60,31 @@ describe('fortnight invoice service', () => {
     jest.useFakeTimers().setSystemTime(new Date('2026-08-14T10:00:00.000Z'));
   });
 
+  test.each(['ONE TIME PAYMENT', '1 MONTH'])('charges the GST-inclusive email total for %s', async (duration) => {
+    const { createFortnightInvoiceCheckout } = await loadFortnightInvoiceService();
+    const { fortnightInvoiceInputSchema } = await import('@/lib/fortnight-invoices/schema');
+    const { buildPaymentLinkEmailHtml } = await import('@/lib/billing/payment-link-email');
+    const invoice = {
+      ...fortnightInvoiceInputSchema.parse({
+        invoiceNumber: 'GST-270', invoiceDate: '2026-10-26',
+        billedToName: 'Sample Client', billedToEmail: 'client@example.com', billedToPhone: '+61400000000',
+        monthLabel: '1', issuedDate: '2026-10-26', validUntil: '2026-11-26', dueDate: '2026-10-27',
+        description: 'Fortnight Plan', duration, subtotal: '270', total: '270', gstRate: 10,
+      }),
+      _id: 'fortnight-gst', stripeCustomerId: 'cus_gst', save: jest.fn(),
+    };
+    checkoutCreate.mockResolvedValue({ id: 'cs_gst', url: 'https://checkout.stripe.com/pay/cs_gst' });
+
+    const result = await createFortnightInvoiceCheckout(invoice, 'http://localhost:3000');
+    const session = checkoutCreate.mock.calls[0][0];
+    expect(session.mode).toBe(duration === '1 MONTH' ? 'subscription' : 'payment');
+    expect(session.line_items[0].price_data.unit_amount).toBe(29700);
+    const html = buildPaymentLinkEmailHtml(invoice, result.checkoutUrl, result.paymentMode);
+    expect(html).toContain('AUD $270.00');
+    expect(html).toContain('+ GST (10%): AUD $27.00');
+    expect(html).toContain('Total payable: AUD $297.00');
+  });
+
   test('suggests month-based defaults for one-time fortnight invoices', async () => {
     findOne.mockReturnValue({
       sort: jest.fn().mockReturnValue({

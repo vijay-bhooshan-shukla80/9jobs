@@ -68,6 +68,36 @@ describe('invoice service payment link', () => {
     jest.clearAllMocks();
   });
 
+  test.each(['ONE TIME PAYMENT', '1 WEEK'])('charges the GST-inclusive total shown in the email for %s', async (duration) => {
+    const { createInvoicePaymentLink } = await loadInvoiceService();
+    const { invoiceInputSchema } = await import('@/lib/invoices/schema');
+    const { buildPaymentLinkEmailHtml } = await import('@/lib/billing/payment-link-email');
+    const invoice = {
+      ...invoiceInputSchema.parse({
+        invoiceNumber: 'GST-270', invoiceDate: '2026-10-26',
+        billedToName: 'Sample Client', billedToEmail: 'client@example.com', billedToPhone: '+61400000000',
+        weekLabel: '1', issuedDate: '2026-10-26', validUntil: '2026-11-02', dueDate: '2026-10-27',
+        description: 'Weekly Plan', duration, subtotal: '270', total: '270', gstRate: 10,
+      }),
+      _id: 'invoice-gst', stripeCustomerId: 'cus_gst', save: jest.fn(),
+    };
+    findById.mockResolvedValue(invoice);
+    findOneClient.mockResolvedValue({ _id: 'client-gst', billing: { auditLog: [] }, save: jest.fn() });
+    checkoutCreate.mockResolvedValue({ id: 'cs_gst', url: 'https://checkout.stripe.com/pay/cs_gst' });
+
+    const result = await createInvoicePaymentLink(invoice._id, 'http://localhost:3000');
+    const session = checkoutCreate.mock.calls[0][0];
+    expect(session.mode).toBe(duration === '1 WEEK' ? 'subscription' : 'payment');
+    expect(session.line_items[0].price_data.unit_amount).toBe(29700);
+    const html = buildPaymentLinkEmailHtml(invoice, result.checkoutUrl);
+    expect(html).toContain('AUD $270.00');
+    expect(html).toContain('+ GST (10%): AUD $27.00');
+    expect(html).toContain('Total payable: AUD $297.00');
+    expect(html).toContain(`href="${result.checkoutUrl}"`);
+    expect(html).not.toContain('Includes 10% GST');
+    expect(buildPaymentLinkEmailHtml({ ...invoice, gstRate: undefined }, result.checkoutUrl)).not.toContain('Total payable:');
+  });
+
   test('stores weekly autopay subscription details after Stripe marks invoice paid', async () => {
     const { markInvoicePaidFromStripe } = await loadInvoiceService();
     findByIdAndUpdate.mockResolvedValue({

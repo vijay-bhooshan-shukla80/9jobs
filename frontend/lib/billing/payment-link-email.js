@@ -7,6 +7,7 @@ function escapeHtml(value) {
 }
 
 export function buildPaymentLinkEmailHtml(invoice, checkoutUrl, paymentMode) {
+  const hasGst = invoice.gstRate === 10;
   const durationLabel = String(invoice.duration || '').trim();
   const rawDeadline = String(invoice.dueDate || '').trim();
   const date = /^\d{4}-\d{2}-\d{2}$/.test(rawDeadline)
@@ -107,9 +108,10 @@ Please complete your payment to activate your <strong>9JOBS</strong> service.
 </div>
 
 <div class="amount" style="font-size:46px;line-height:1.1;font-weight:900;color:#111;margin-top:18px;text-shadow:0 2px 0 #fff,0 5px 10px rgba(0,0,0,.16);">
-AUD $${escapeHtml(invoice.total)}
+AUD $${escapeHtml(hasGst ? invoice.subtotal : invoice.total)}
 </div>
-${invoice.gstRate === 10 ? '<div style="font-size:14px;line-height:1.5;font-weight:600;color:#333;margin-top:8px;">Includes 10% GST</div>' : ''}
+${hasGst ? `<div style="font-size:15px;line-height:1.6;color:#333;margin-top:10px;">+ GST (10%): AUD $${escapeHtml(invoice.gstAmount)}</div>
+<div style="font-size:18px;line-height:1.6;font-weight:700;color:#111;margin-top:4px;">Total payable: AUD $${escapeHtml(invoice.total)}</div>` : ''}
 </td>
 </tr>
 
