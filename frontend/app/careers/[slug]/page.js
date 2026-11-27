@@ -44,7 +44,7 @@ export default async function RolePage({params}) {
             <SaveRoleButton key={role.slug} slug={role.slug} />
           </div>
         </section>
-        <section className={styles.culture}><h2><span className={styles.iconTile}><Sparkles size={25} aria-hidden="true" /></span>Why Join 9Jobs?</h2><CheckList items={['Work on meaningful products', 'Collaborative and people-first culture', 'Growth and learning opportunities']} /><p className={styles.notice}>Proposed culture statements, subject to company approval.</p><Rocket className={styles.rocket} size={53} strokeWidth={1.4} aria-hidden="true" /></section>
+        <section className={styles.culture}><h2><span className={styles.iconTile}><Sparkles size={25} aria-hidden="true" /></span>Why Join 9Jobs?</h2><CheckList items={['Support Australian job seekers', 'Contribute to 9Jobs career services', 'Improve profiles and application workflows']} /><p className={styles.notice}>See this 9Jobs vacancy for role requirements and work arrangements.</p><Rocket className={styles.rocket} size={53} strokeWidth={1.4} aria-hidden="true" /></section>
       </aside>
     </div>
   </div></div>;

@@ -2,7 +2,7 @@ import styles from './careers.module.css';
 
 export const metadata = {
   title: {absolute: 'Careers at 9Jobs | Join Our Team'},
-  description: 'Explore career opportunities at 9Jobs and join a team helping people build better careers through technology and personalised recruitment solutions.',
+  description: 'Explore internal career opportunities at 9Jobs. Help Australian job seekers with resume writing, LinkedIn and SEEK profiles, job applications and interview support.',
 };
 
 export default function CareersLayout({children}) {
