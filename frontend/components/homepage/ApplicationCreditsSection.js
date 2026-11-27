@@ -139,66 +139,6 @@ export default function ApplicationCreditsSection() {
       <div className={styles.container}>
         {/* Section Header */}
         <div className={styles.headerWrapper}>
-          {/* Handwritten Decorative Notes (Desktop only) */}
-          <div className={styles.decorLeft} aria-hidden="true">
-            <span className={styles.decorLeftText}>
-              &apos;Hire&apos;
-              <br />
-              Smarter
-              <br />
-              Faster
-            </span>
-            <svg
-              width="44"
-              height="44"
-              viewBox="0 0 44 44"
-              fill="none"
-              className={styles.decorLeftArrow}
-            >
-              <path
-                d="M10 8 C 12 24, 22 34, 34 32"
-                stroke="#65a30d"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                strokeDasharray="3 3"
-              />
-              <path
-                d="M27 26 L 34 32 L 26 38"
-                stroke="#65a30d"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-
-          <div className={styles.decorRight} aria-hidden="true">
-            <span className={styles.decorRightText}>
-              Great
-              <br />
-              People
-              <br />
-              Build
-              <br />
-              Great
-              <br />
-              Companies
-            </span>
-            <svg
-              width="72"
-              height="14"
-              viewBox="0 0 72 14"
-              fill="none"
-              style={{ marginTop: "6px" }}
-            >
-              <path
-                d="M3 8 C 22 3, 50 12, 69 7"
-                stroke="#65a30d"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-            </svg>
-          </div>
 
           <div className={styles.topBadge}>
             <span>AUSTRALIAN JOB APPLICATION PLANS</span>

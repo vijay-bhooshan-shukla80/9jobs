@@ -44,6 +44,7 @@ const sidebarGroups = [
     title: 'Client Information',
     links: [
       { href: '/admin/client-information', label: 'Client Information', icon: UserRound },
+      { href: '/admin/careers', label: 'Careers Applications', icon: UserRound },
     ],
   },
 ];
@@ -98,6 +99,10 @@ function isLinkActive(pathname, href) {
 
   if (href === '/admin/client-information') {
     return pathname === '/admin/client-information' || pathname.startsWith('/admin/client-information/');
+  }
+
+  if (href === '/admin/careers') {
+    return pathname === href || pathname.startsWith(href + '/');
   }
 
   return false;

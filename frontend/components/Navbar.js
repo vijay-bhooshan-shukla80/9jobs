@@ -38,6 +38,7 @@ const links = [
       { href: "/blog", label: "Blog" },
     ],
   },
+  { href: "/careers", label: "Careers" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -46,7 +47,7 @@ function normalizeMenuLabel(label) {
 }
 
 function isActive(pathname, href) {
-  return pathname === href;
+  return pathname === href || (href === "/careers" && pathname.startsWith('/careers/'));
 }
 
 export default function Navbar() {
