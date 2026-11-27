@@ -1,13 +1,14 @@
 import {jest} from '@jest/globals';
 import {EventEmitter} from 'node:events';
 const connect = jest.fn(), init = jest.fn(), find = jest.fn(), create = jest.fn(), remove = jest.fn(), email = jest.fn(), deleteFile = jest.fn(), abort = jest.fn();
-const limit = jest.fn(); let failUpload = false; let record;
+const limit = jest.fn(), getJob = jest.fn(); let failUpload = false; let record;
 class Upload extends EventEmitter { constructor(){super();this.id='private-id';this.writableFinished=false;} end(){queueMicrotask(() => {this.writableFinished=!failUpload;this.emit(failUpload?'error':'finish', failUpload?new Error('storage failed'):undefined);});} abort(){return abort();} }
 const connection = {readyState:0, name:'9jobs_careers_test', db:{collection:() => ({createIndex:jest.fn(),findOneAndUpdate:limit})}};
 jest.doMock('mongoose', () => ({__esModule:true,default:{connection,mongo:{GridFSBucket:class {openUploadStream(){return new Upload();} delete(id){return deleteFile(id);}}}}}));
 jest.doMock('@/utils/db', () => ({__esModule:true,default:connect}));
 jest.doMock('@/models/CareerApplication', () => ({__esModule:true,default:{init,findOne:find,create,deleteOne:remove}}));
 jest.doMock('@/lib/careers/email', () => ({deliverCareerEmails:email}));
+jest.doMock('@/lib/careers/jobs', () => ({getPublishedJobById:getJob}));
 let submitCareerApplication, assertCareersDatabase;
 beforeAll(async () => {({submitCareerApplication, assertCareersDatabase} = await import('@/lib/careers/service'));});
 const original = {...process.env};
@@ -15,7 +16,9 @@ const applicant = {fullName:'Test Candidate',email:'candidate@example.test',posi
 const resume = {buffer:Buffer.from('test-resume'),size:11,extension:'pdf',contentType:'application/pdf'};
 beforeEach(() => {jest.clearAllMocks(); process.env.NODE_ENV='development'; process.env.CAREERS_APPLICATIONS_ENABLED='true';process.env.MONGODB_URI='mongodb://127.0.0.1:27017/9jobs_careers_test'; connection.readyState=0; failUpload=false; limit.mockResolvedValue({attempts:1}); find.mockReturnValue({select:jest.fn().mockResolvedValue(null)}); record={_id:'test-id',reference:'9J-TEST',save:jest.fn().mockResolvedValue(undefined)};create.mockResolvedValue(record);email.mockResolvedValue(undefined);});
 afterEach(() => {process.env={...original};});
-test('persists a private resume and complete application before email delivery', async () => {const result=await submitCareerApplication(applicant,resume,'request-key','local');expect(result).toEqual({reference:'9J-TEST',duplicate:false});expect(record.resume.id).toBe('private-id');expect(record.persistenceState).toBe('complete');expect(record.save.mock.invocationCallOrder[0]).toBeLessThan(email.mock.invocationCallOrder[0]);expect(create.mock.calls[0][0]).toMatchObject({applicationKind:'Expression of Interest',positionTitle:'Full Stack Developer'});});
+test('persists a private resume and complete application before email delivery', async () => {const result=await submitCareerApplication(applicant,resume,'request-key','local');expect(result).toEqual({reference:'9J-TEST',duplicate:false});expect(record.resume.id).toBe('private-id');expect(record.persistenceState).toBe('complete');expect(record.save.mock.invocationCallOrder[0]).toBeLessThan(email.mock.invocationCallOrder[0]);expect(create.mock.calls[0][0]).toMatchObject({applicationKind:'Expression of Interest',positionTitle:applicant.position});});
+test('published job applications retain the approved title and job relationship', async () => {getJob.mockResolvedValue({id:'507f1f77bcf86cd799439011',slug:'approved-role',title:'Approved Role'});await submitCareerApplication({...applicant,jobId:'507f1f77bcf86cd799439011',submissionType:'role-interest'},resume,'key','local');expect(create.mock.calls[0][0]).toMatchObject({applicationKind:'Vacancy Application',positionTitle:'Approved Role',jobId:'507f1f77bcf86cd799439011',jobSlug:'approved-role'});});
+test('closed or missing jobs cannot receive new role applications', async () => {getJob.mockResolvedValue(null);await expect(submitCareerApplication({...applicant,jobId:'507f1f77bcf86cd799439011',submissionType:'role-interest'},resume,'key','local')).rejects.toMatchObject({status:409});expect(create).not.toHaveBeenCalled();});
 test('a storage failure aborts upload and removes only the incomplete application', async () => {failUpload=true;await expect(submitCareerApplication(applicant,resume,'key','local')).rejects.toMatchObject({status:503});expect(abort).toHaveBeenCalled();expect(remove).toHaveBeenCalledWith({_id:'test-id',persistenceState:'uploading'});expect(email).not.toHaveBeenCalled();});
 test('a persistence failure removes the stored file', async () => {record.save.mockRejectedValue(new Error('db failed'));await expect(submitCareerApplication(applicant,resume,'key','local')).rejects.toMatchObject({status:503});expect(deleteFile).toHaveBeenCalledWith('private-id');expect(email).not.toHaveBeenCalled();});
 test('email failure never loses a saved application', async () => {email.mockRejectedValue(new Error('delivery'));await expect(submitCareerApplication(applicant,resume,'key','local')).resolves.toHaveProperty('reference');expect(remove).not.toHaveBeenCalled();});

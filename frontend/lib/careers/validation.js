@@ -15,12 +15,14 @@ export const applicationSchema = z.object({
   location: text(160),
   position: text(160, 2),
   submissionType: z.enum(['expression-of-interest', 'role-interest']).optional(),
+  jobId: z.string().regex(/^[a-f\d]{24}$/i, 'Select a valid job.').optional(),
   experience: z.enum(['0–1', '1–3', '3–5', '5–10', '10+'], {error: 'Select your experience.'}),
   linkedin: url(true).refine(value => { try { return /^(www\.)?linkedin\.com$/.test(new URL(value).hostname) && new URL(value).pathname.startsWith('/in/'); } catch { return false; } }, 'Enter a LinkedIn profile URL.'),
   portfolio: url(), coverLetter: text(5000, 0), additionalInformation: text(2000, 0),
   consent: z.literal('true', {error: 'Please agree to the privacy policy.'}),
   preferredDepartment: z.string().optional(),
 }).superRefine((data, context) => {
+  if (data.submissionType === 'role-interest' && !data.jobId) context.addIssue({code: 'custom', path: ['position'], message: 'Please open the application from a current job listing.'});
   if ((data.submissionType === 'expression-of-interest' || data.position === 'expression-of-interest') && !departments.includes(data.preferredDepartment)) context.addIssue({code: 'custom', path: ['preferredDepartment'], message: 'Select your preferred department.'});
 });
 export function fieldErrors(error) {

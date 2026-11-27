@@ -10,6 +10,7 @@ import {
   PenLine,
   ReceiptText,
   UserRound,
+  BriefcaseBusiness,
   TrendingUp,
   PlusCircle,
   Bell,
@@ -44,6 +45,12 @@ const sidebarGroups = [
     title: 'Client Information',
     links: [
       { href: '/admin/client-information', label: 'Client Information', icon: UserRound },
+    ],
+  },
+  {
+    title: 'Job Posting',
+    links: [
+      { href: '/admin/careers/jobs', label: 'Manage Jobs', icon: BriefcaseBusiness },
       { href: '/admin/careers', label: 'Careers Applications', icon: UserRound },
     ],
   },
@@ -101,8 +108,12 @@ function isLinkActive(pathname, href) {
     return pathname === '/admin/client-information' || pathname.startsWith('/admin/client-information/');
   }
 
-  if (href === '/admin/careers') {
+  if (href === '/admin/careers/jobs') {
     return pathname === href || pathname.startsWith(href + '/');
+  }
+
+  if (href === '/admin/careers') {
+    return pathname === href || (pathname.startsWith(href + '/') && !pathname.startsWith('/admin/careers/jobs'));
   }
 
   return false;
@@ -111,6 +122,7 @@ function isLinkActive(pathname, href) {
 export default function AdminShell({
   title,
   eyebrow,
+  showCreateActions = true,
   children,
   agreementMetrics = null,
   invoiceMetrics = null,
@@ -258,7 +270,7 @@ export default function AdminShell({
                 </button>
               </div>
             )}
-            <Link
+            {showCreateActions && <><Link
               className="admin-ghost-button admin-ghost-button--link"
               href="/admin/invoices/new"
               onMouseEnter={() => router.prefetch('/admin/invoices/new')}
@@ -276,6 +288,7 @@ export default function AdminShell({
               <PlusCircle size={16} style={{ marginRight: '8px' }} />
               New Agreement
             </Link>
+            </>}
           </div>
         </header>
 

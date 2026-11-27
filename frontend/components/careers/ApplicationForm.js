@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import Link from 'next/link';
 import { applicationSchema, fieldErrors, MAX_RESUME_BYTES } from '@/lib/careers/validation';
-import { departments, roles } from '@/data/careers';
+import { departments } from '@/data/careers';
 import { Asset, IconBox } from './Primitives';
 import { UserRound, Mail, Phone, MapPin, BriefcaseBusiness, ChartNoAxesColumnIncreasing, Link as LinkIcon, FileText, CloudUpload, Info, Send, Layers, UsersRound, Check } from 'lucide-react';
 import styles from '@/app/careers/careers.module.css';
@@ -16,7 +16,7 @@ export default function ApplicationForm({role}) {
   const [position, setPosition] = useState(role?.title || 'Future Opportunities');
   const [dragging, setDragging] = useState(false);
   const eoi = !role;
-  const selectedRole = roles.find(item => item.slug === position || item.title.toLowerCase() === position.trim().toLowerCase()) || role;
+  const selectedRole = role;
   const title = position.trim() || selectedRole?.title || 'Future Opportunities';
 
   function focusError(fields) {
@@ -36,6 +36,7 @@ export default function ApplicationForm({role}) {
     const form = new FormData(formRef.current);
     if (file) form.set('resume', file);
     form.set('submissionType', eoi ? 'expression-of-interest' : 'role-interest');
+    if (role) form.set('jobId', role.id);
     form.set('consent', form.get('consent') === 'on' ? 'true' : 'false');
     const result = applicationSchema.safeParse(Object.fromEntries(form));
     const fields = result.success ? {} : fieldErrors(result.error);
@@ -69,7 +70,7 @@ export default function ApplicationForm({role}) {
   const input = (name, label, Icon, props = {}) => <label className={styles.field}>{labelText(label)}<span className={styles.inputShell}><Icon size={19} aria-hidden="true" /><input name={name} aria-invalid={Boolean(errors[name])} aria-describedby={errors[name] ? name + '-error' : undefined} {...props} /></span>{errors[name] && <span className={styles.error} id={name + '-error'}>{errors[name]}</span>}</label>;
   return <section className={[styles.formPage, styles.applicationPage].join(' ')}><div className={styles.applicationContainer}>
     <Link className={styles.back} href="/careers#opportunities"><Asset name="d2483.svg" />Back to Career Opportunities</Link>
-    {!reference && <header className={styles.applicationBanner}><h1>{eoi ? <>Share <span>Your Profile</span></> : <>Apply for <span>{title}</span></>}</h1><p>Join the 9Jobs team and help us build smarter career solutions for job seekers and employers.</p><p className={styles.applicationPreview}>{eoi ? 'Share your profile as an expression of interest for future opportunities.' : 'Illustrative role preview. Submissions are expressions of interest, not applications for confirmed vacancies.'}</p></header>}
+    {!reference && <header className={styles.applicationBanner}><h1>{eoi ? <>Share <span>Your Profile</span></> : <>Apply for <span>{title}</span></>}</h1><p>Join the 9Jobs team and help us build smarter career solutions for job seekers and employers.</p>{eoi && <p className={styles.applicationPreview}>Share your profile as an expression of interest for future opportunities.</p>}</header>}
     <div className={reference ? styles.applicationSuccessLayout : styles.applicationLayout}>
       <div className={styles.formCard}>{reference ? <div className={styles.success} ref={successRef} tabIndex={-1} role="status"><IconBox>check_circle</IconBox><span className={styles.eyebrow}>Application received</span><h1>Thank you for your application!</h1><p>We’ve received your details. Our recruitment team will review your profile and contact you if a suitable opportunity is available.</p><Link href="/careers" className={styles.primary}>Back to Careers</Link></div> : <>
         {error && <div role="alert" className={styles.errorBanner}>{error}</div>}
@@ -108,7 +109,7 @@ export default function ApplicationForm({role}) {
         </form>
       </>}</div>
       {!reference && <aside className={styles.applicationAside}>
-        <section className={styles.applicationRoleCard}><header><IconBox>{selectedRole?.icon || 'person_search'}</IconBox><div><h2>{title}</h2><p>{selectedRole?.department || 'Expression of Interest'}</p></div></header>{selectedRole && <ul className={styles.applicationRoleMeta}><li><MapPin size={20} aria-hidden="true" />{selectedRole.location}</li><li><BriefcaseBusiness size={20} aria-hidden="true" />{selectedRole.type}</li><li><Layers size={20} aria-hidden="true" />{selectedRole.arrangement}</li></ul>}<div className={styles.applicationAbout}><h3>About the Role</h3><p>{selectedRole?.description || 'Share your experience, interests and preferred department to connect with 9Jobs for future opportunities.'}</p></div><p className={styles.applicationPreview}>Illustrative preview. Final vacancy details require company approval.</p></section>
+        <section className={styles.applicationRoleCard}><header><IconBox>{selectedRole?.icon || 'person_search'}</IconBox><div><h2>{title}</h2><p>{selectedRole?.department || 'Expression of Interest'}</p></div></header>{selectedRole && <ul className={styles.applicationRoleMeta}><li><MapPin size={20} aria-hidden="true" />{selectedRole.location}</li><li><BriefcaseBusiness size={20} aria-hidden="true" />{selectedRole.type}</li><li><Layers size={20} aria-hidden="true" />{selectedRole.arrangement}</li></ul>}<div className={styles.applicationAbout}><h3>About the Role</h3><p>{selectedRole?.description || 'Share your experience, interests and preferred department to connect with 9Jobs for future opportunities.'}</p></div></section>
         <section className={styles.applicationCultureCard}><h2><span><UsersRound size={24} aria-hidden="true" /></span>Why Join 9Jobs?</h2><ul>{['Work on meaningful products','Collaborative and people-first culture','Growth and learning opportunities','Inclusive and respectful workplace'].map(item => <li key={item}><Check size={17} aria-hidden="true" />{item}</li>)}</ul><p className={styles.applicationPreview}>Proposed culture pillars, subject to company approval.</p></section>
       </aside>}
     </div>

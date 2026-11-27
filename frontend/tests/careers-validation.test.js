@@ -4,6 +4,11 @@ import { PDFDocument, PDFName, PDFString } from 'pdf-lib';
 
 export const applicant = {fullName: 'Test Candidate', email: 'candidate@example.test', phone: '+61 400 000 000', location: 'Sydney', position: 'full-stack-developer', experience: '1–3', linkedin: 'https://linkedin.com/in/test-candidate', portfolio: '', coverLetter: '', additionalInformation: '', consent: 'true'};
 describe('Careers validation', () => {
+  test('role applications require a valid job ID', () => {
+    expect(applicationSchema.safeParse({...applicant,submissionType:'role-interest'}).success).toBe(false);
+    expect(applicationSchema.safeParse({...applicant,submissionType:'role-interest',jobId:'invalid'}).success).toBe(false);
+    expect(applicationSchema.safeParse({...applicant,submissionType:'role-interest',jobId:'507f1f77bcf86cd799439011'}).success).toBe(true);
+  });
   test('validates and sanitises only approved form fields', () => {
     const parsed = applicationSchema.parse({...applicant, fullName: ' <Test Candidate> ', email: 'CANDIDATE@EXAMPLE.TEST', status: 'Approved'});
     expect(parsed.fullName).toBe('Test Candidate'); expect(parsed.email).toBe(applicant.email); expect(parsed.status).toBeUndefined();

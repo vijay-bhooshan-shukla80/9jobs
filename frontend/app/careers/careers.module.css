@@ -14,7 +14,7 @@
 .container{max-width:1280px;width:100%;padding:0 32px;margin:auto}
 .section{padding:80px 0;border-bottom:1px solid var(--career-line);scroll-margin-top:100px}
 .soft{background:var(--career-soft)}
-.hero{border-bottom:1px solid var(--career-line);background:radial-gradient(#dce6cd 1px,transparent 1px) 0 0/18px 18px,#fff}
+.hero{border-bottom:1px solid var(--career-line);background:#fff}
 .heroGrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;padding-top:96px;padding-bottom:96px;align-items:center}
 .heroCopy{display:flex;flex-direction:column;align-items:flex-start;gap:24px}
 .heroCopy h1 span{background:linear-gradient(90deg,#376b00,#60b300 50%,#75d100);background-clip:text;color:transparent}
@@ -61,6 +61,11 @@
 .search>img{position:absolute;left:14px;top:13px}
 .textButton{font-size:14px;font-weight:600;color:#376b00;min-height:44px}
 .jobList{display:flex;flex-direction:column;gap:16px}
+.jobActions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px}
+.jobApplyButton,.jobDetailsButton{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:38px;padding:8px 14px;border:1px solid #cddfba;border-radius:6px;color:#397400;font-size:13px;font-weight:600;line-height:20px;text-decoration:none;transition:background-color .2s,border-color .2s}
+.jobApplyButton{background:#fff}
+.jobDetailsButton{background:#f4f9ee}
+.jobApplyButton:hover,.jobDetailsButton:hover{background:#eaf5dc;border-color:#9cc76e}
 .job{display:flex;align-items:center;justify-content:space-between;gap:24px;background:white;border:1px solid var(--career-line);border-radius:16px;padding:24px;box-shadow:0 1px 2px #0000000d}
 .jobBody{display:flex;align-items:flex-start;gap:16px;min-width:0}
 .jobBody>div{min-width:0}
@@ -138,7 +143,7 @@
 .opportunities{position:relative;overflow:hidden;background:#fcfcfa;padding:64px 0 72px}
 .opportunities::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(#acd776 1px,transparent 1px) 0 0/21px 21px;mask-image:linear-gradient(135deg,#000 0,transparent 15%,transparent 85%,#000 100%);opacity:.6}
 .opportunities::after{content:'';position:absolute;pointer-events:none;width:min(460px,100%);height:180px;top:0;right:0;background:radial-gradient(circle at 90% -240px,transparent 0 360px,#ebf7da 361px 388px,transparent 389px)}
-.opportunities>.container{position:relative;z-index:1;max-width:1248px}
+.opportunities>.container{position:relative;z-index:1;max-width:1000px}
 .opportunities .headingRow{gap:32px;align-items:center}
 .opportunities .sectionHeading{gap:12px;min-width:0}
 .opportunities .eyebrow{font-size:14px;line-height:20px;letter-spacing:0;color:#478800}
@@ -152,7 +157,7 @@
 .opportunities .search>img{top:14px}
 .opportunities .textButton{border-left:1px solid #d7dcdf;padding-left:20px;min-width:106px;align-self:center;min-height:24px}
 .opportunities .jobList{gap:20px}
-.opportunities .job{min-height:156px;padding:22px 28px;gap:28px;border:1px solid #e7e9e8;border-radius:20px;background:linear-gradient(120deg,#fff,#fefefe);box-shadow:0 2px 3px #20242406,0 9px 24px #20242408;transition:box-shadow .2s,border-color .2s}
+.opportunities .job{width:100%;min-height:156px;padding:22px 28px;gap:28px;border:1px solid #e7e9e8;border-radius:20px;background:linear-gradient(120deg,#fff,#fefefe);box-shadow:0 2px 3px #20242406,0 9px 24px #20242408;transition:box-shadow .2s,border-color .2s}
 .opportunities .job:hover{border-color:#c9dfac;box-shadow:0 4px 8px #20242407,0 12px 28px #2024240c}
 .opportunities .jobBody{gap:26px;flex:1;align-items:flex-start}
 .opportunities .jobBody .iconBox{width:68px;height:68px;border-radius:18px;background:linear-gradient(135deg,#eff9e0,#e7f5d3);margin-top:2px}
@@ -174,7 +179,7 @@
 @media(max-width:767px){.opportunities{padding:48px 0}.opportunities h2{font-size:32px;line-height:39px;letter-spacing:-.8px}.opportunities .sectionHeading>p{font-size:16px;line-height:25px}.opportunities .previewNotice{font-size:13px!important;line-height:20px!important}.opportunities .filters{margin:28px 0;padding:16px;gap:12px}.opportunities .textButton{border:0;padding-left:0}.opportunities .job{padding:20px;min-height:0;gap:20px}.opportunities .jobBody{gap:14px}.opportunities .jobBody .iconBox{width:48px;height:48px;border-radius:14px}.opportunities .iconBox .symbol{font-size:27px}.opportunities .roleTitle h3{font-size:20px;line-height:27px}.opportunities .roleTitle{gap:8px}.jobMetadata{gap:6px;margin-top:10px}.jobMetadata>span{padding-right:0;margin-right:8px;border:0;gap:6px;font-size:12px}.opportunities .jobDescription{font-size:14px;line-height:23px;margin-top:10px!important}.opportunities .job .actions{flex-direction:row;gap:10px}.opportunities .job .primary,.opportunities .job .secondary{min-width:0;min-height:46px;font-size:14px!important;padding:11px 12px}}
 @media(max-width:359px){.opportunities .jobBody{flex-direction:column;gap:12px}.opportunities h2{font-size:29px;line-height:36px}.opportunities .roleTitle h3{font-size:19px;line-height:26px}.opportunities .job{padding:18px}.opportunities .filters{padding:12px}.opportunities .job .actions{gap:8px}}
 /* Careers hero revision from the supplied large-format reference. */
-.hero{position:relative;overflow:hidden;border-bottom:1px solid #edf1e8;background:radial-gradient(#dce7d4 1px,transparent 1px) 0 0/23px 23px,#fff}
+.hero{position:relative;overflow:hidden;border-bottom:1px solid #edf1e8;background:#fff}
 .hero::before{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#fff 0,transparent 12%,transparent 82%,#fff 100%)}
 .heroGrid{position:relative;max-width:1600px;grid-template-columns:minmax(0,.96fr) minmax(0,1.04fr);gap:64px;padding:108px 64px 116px;min-height:760px}
 .heroCopy{gap:32px;position:relative;z-index:2}
@@ -327,4 +332,76 @@
 @media(min-width:768px) and (max-width:1100px){.applicationPage .formCard{padding:20px}.applicationPage .formGrid{column-gap:18px;padding-inline:5px}.applicationFormIntro{margin-inline:4px}.applicationGroup>h3{font-size:16px;gap:9px;padding-inline:10px}.applicationGroup>h3 svg{width:20px;height:20px}.applicationLongField{margin-inline:5px}.resumeDropzone{column-gap:14px;padding-inline:12px}.applicationPage .submitRow{grid-template-columns:minmax(0,1fr);margin-inline:5px}.applicationPage .submitRow .primary{justify-self:end}.applicationPage .submitRow>p{grid-row:3}.applicationFormIntro h2{font-size:25px;line-height:31px}}
 @media(max-width:900px){.applicationFieldset{display:block}.applicationGroup:first-of-type .formGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.applicationGroup:nth-of-type(2) .formGrid,.applicationGroup:nth-of-type(3) .formGrid{grid-template-columns:1fr}.applicationGroup:nth-of-type(3)::before{display:none}}
 @media(max-width:767px){.applicationPage{padding:24px 16px 36px}.applicationPage .formCard{padding:20px 16px;border-radius:8px}.applicationFormIntro{margin:0 0 20px;gap:12px}.applicationIntroIcon{width:43px;height:43px}.applicationFormIntro h2{font-size:23px;line-height:29px}.applicationFormIntro p{font-size:14px;line-height:22px}.applicationGroup{margin-bottom:18px}.applicationGroup>h3{font-size:16px;line-height:23px;gap:10px;padding:7px 10px}.applicationPage .formGrid,.applicationGroup:first-of-type .formGrid{grid-template-columns:minmax(0,1fr);gap:12px;padding-inline:0}.applicationPage .field input,.applicationPage .field select{font-size:16px;min-height:44px;padding-top:10px;padding-bottom:10px}.applicationPage .applicationLongField textarea{font-size:16px;min-height:64px;height:64px}.applicationLongField{margin:0 0 16px}.resumeDropzone{grid-template-columns:32px minmax(0,1fr);column-gap:12px;row-gap:6px;padding:14px 12px;min-height:110px}.resumeDropzone>svg{width:28px;height:34px;padding-right:9px}.dropzonePrompt{gap:8px;flex-direction:column;align-items:flex-start}.dropzonePrompt strong{font-size:13px;line-height:19px}.resumeDropzone .secondary{min-height:38px}.applicationPage .resumeDropzone p{font-size:11px;line-height:17px}.applicationPage .submitRow{grid-template-columns:minmax(0,1fr);gap:14px;margin:6px 0 0;padding-top:16px}.applicationPage .submitRow .consent{font-size:12px;line-height:20px}.applicationPage .submitRow .primary{width:100%;min-height:46px}.applicationPage .submitRow>p{grid-row:3}.applicationRoleCard,.applicationCultureCard{padding:18px}}
-@media(prefers-reduced-motion:reduce){:global(html):has(.careers){scroll-behavior:auto}.careers *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* Layered Careers artwork: retain the team photograph and float its feature cards. */
+.heroArt::after{content:'';position:absolute;inset:10% -5% 8% -5%;border:18px solid #dff1c5;border-left-color:transparent;border-right-color:#edf8df;border-radius:50%;transform:rotate(-24deg);opacity:.7;z-index:-1;pointer-events:none;animation:career-ribbon-drift 12s ease-in-out infinite alternate}
+.hero .heroAura{background:radial-gradient(ellipse,#e6f4d5b3,transparent 72%);animation:career-aura-drift 10s ease-in-out infinite alternate}
+.hero .heroOrbit path{animation:career-orbit-flow 32s linear infinite}
+.hero .heroVisual{border-radius:20px;box-shadow:0 24px 40px -18px #233b2440,0 6px 16px #253f1514;transform:perspective(1400px) rotateY(-4deg) rotate(-1deg)}
+.hero .heroImage{border-radius:12px}
+.hero .floating{border-radius:12px;border-bottom:3px solid #dce7d2;box-shadow:0 15px 24px -10px #233b2440,0 2px 6px #233b2414;animation:career-card-float 6s ease-in-out infinite}
+.hero .floating>span{border-radius:10px;background:linear-gradient(135deg,#d0f697,#e9facd);box-shadow:0 2px 5px #579c0024}
+.hero .float0{animation-delay:-1s}
+.hero .float1{animation-delay:-3s}
+.hero .float2{animation-delay:-4.5s}
+.hero .float3{animation-delay:-2s}
+@keyframes career-card-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes career-orbit-flow{to{stroke-dashoffset:-260}}
+@keyframes career-ribbon-drift{from{transform:rotate(-24deg) scale(.98)}to{transform:rotate(-16deg) scale(1.03)}}
+@keyframes career-aura-drift{from{transform:rotate(-18deg) scale(.98)}to{transform:rotate(-8deg) scale(1.05)}}
+@media(max-width:767px){.hero .heroVisual{transform:none}.heroArt::after{border-width:10px}.hero .floating{animation-name:career-card-float-mobile}}
+@keyframes career-card-float-mobile{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+/* Careers hero with benefits and recruitment summary cards. */
+.heroRefresh .heroGrid{grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:44px;padding-top:112px;padding-bottom:134px;min-height:780px}
+.heroRefresh .heroCopy{gap:30px}
+.heroRefresh .heroCopy .pill{border:0;background:#f0fadd;color:#4b850d;font-size:14px;padding:9px 16px}
+.heroRefresh .heroCopy h1{font-size:clamp(32px,3.15vw,52px);line-height:1.23;letter-spacing:-1.8px}
+.heroRefresh .heroCopy h1 span{background:none;color:#4c920d}
+.heroRefresh .heroCopy>p{max-width:610px;font-size:22px;line-height:33px;color:#627080}
+.heroRefresh .heroCopy .actions{margin-top:8px;gap:20px}
+.heroRefresh .heroCopy .primary,.heroRefresh .heroCopy .secondary{min-height:60px;padding:15px 28px;font-size:19px!important;border-radius:17px}
+.heroBenefits{display:flex;align-items:center;gap:0;list-style:none;padding:0;margin:28px 0 0;width:100%}
+.heroBenefits li{display:flex;align-items:center;gap:13px;padding:0 24px;border-right:1px solid #dce2d7;font-family:CareersWix,Arial,sans-serif;font-weight:600;font-size:17px;line-height:23px}
+.heroBenefits li:first-child{padding-left:0}
+.heroBenefits li:last-child{border:0;padding-right:0}
+.heroBenefits li>span{display:grid;place-items:center;flex-shrink:0;width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,#effbdd,#f8fdef);color:#519414}
+.heroBenefits svg{width:28px;height:28px;stroke-width:2.5}
+.heroRefresh .heroArt{margin:12px 0 0}
+.heroRefresh .heroArt::after{display:none}
+.heroRefresh .heroAura{inset:-7% -8% -19% -3%;background:linear-gradient(135deg,#f4faeb,#eaf5dc);border-radius:48% 52% 62% 38% / 50% 42% 58% 50%;opacity:.85}
+.heroRefresh .heroOrbit{left:-11%;top:-18%;height:140%;width:122%}
+.heroRefresh .heroVisual{transform:none;padding:10px;border-radius:52px;box-shadow:0 12px 28px #3553210c;border-color:#edf0e8}
+.heroRefresh .heroImage{aspect-ratio:1.42;border-radius:42px}
+.heroFeatureCard{position:absolute;display:flex;align-items:center;gap:20px;padding:19px 22px;border:1px solid #e0e5dc;border-radius:24px;background:linear-gradient(130deg,#fff,#fdfefc);box-shadow:0 12px 25px #3a542012;animation:career-card-float 7s ease-in-out infinite}
+.heroFeatureIcon{display:grid;place-items:center;flex-shrink:0;width:66px;height:66px;border-radius:18px;background:linear-gradient(135deg,#edfbd9,#f5fbe9);color:#528f12}
+.heroFeatureIcon svg{width:35px;height:35px;stroke-width:2.3}
+.heroFeatureCard strong{display:block;font-family:CareersWix,Arial,sans-serif;font-size:20px;line-height:27px;font-weight:700;letter-spacing:-.6px}
+.heroFeatureCard p{font-size:17px;line-height:22px;color:#647181;margin-top:4px}
+.heroOpenRoles{top:-48px;right:-4px;min-width:248px;animation-delay:-2s}
+.heroOpenRoles strong{font-size:38px;line-height:42px}
+.heroLearning{left:30px;bottom:-44px;animation-delay:-4s}
+.heroFlexible{right:22px;bottom:-44px;animation-delay:-1s}
+@media(max-width:1279px){.heroRefresh .heroGrid{gap:34px;padding:90px 40px 110px;min-height:680px}.heroRefresh .heroCopy{gap:24px}.heroRefresh .heroCopy h1{font-size:38px;letter-spacing:-1.3px}.heroRefresh .heroCopy>p{font-size:19px;line-height:29px}.heroBenefits{margin-top:16px}.heroBenefits li{font-size:14px;line-height:20px;gap:8px;padding-inline:13px}.heroBenefits li>span{width:36px;height:36px}.heroBenefits svg{width:23px;height:23px}.heroFeatureCard{gap:12px;padding:15px;border-radius:20px}.heroFeatureIcon{width:48px;height:48px;border-radius:14px}.heroFeatureIcon svg{width:29px;height:29px}.heroFeatureCard strong{font-size:16px;line-height:23px}.heroFeatureCard p{font-size:14px;line-height:20px}.heroOpenRoles{min-width:190px;top:-42px}.heroOpenRoles strong{font-size:32px;line-height:36px}.heroLearning{left:6px}.heroFlexible{right:6px}.heroRefresh .heroCopy .primary,.heroRefresh .heroCopy .secondary{font-size:16px!important;padding:13px 21px;min-height:52px}}
+@media(min-width:768px) and (max-width:959px){.heroRefresh .heroGrid{grid-template-columns:1fr 1fr;padding-inline:30px;gap:28px}.heroRefresh .heroCopy h1{font-size:32px}.heroRefresh .heroCopy>p{font-size:17px;line-height:27px}.heroBenefits{flex-wrap:wrap;gap:12px}.heroBenefits li{border:0;padding:0}.heroRefresh .heroCopy .actions{gap:12px}.heroFeatureCard{gap:9px;padding:12px}.heroFeatureIcon{width:38px;height:38px}.heroFeatureCard strong{font-size:14px}.heroFeatureCard p{font-size:12px;line-height:17px}.heroLearning{left:-9px;bottom:-55px}.heroFlexible{right:-9px;bottom:55px}.heroOpenRoles{min-width:162px}.heroRefresh .heroImage{aspect-ratio:1.05}}
+@media(max-width:767px){.heroRefresh .heroGrid{grid-template-columns:1fr;gap:84px;padding:38px 24px 106px;min-height:0}.heroRefresh .heroCopy{gap:22px}.heroRefresh .heroCopy h1{font-size:clamp(31px,7.5vw,48px);letter-spacing:-1px}.heroRefresh .heroCopy>p{font-size:18px;line-height:28px}.heroRefresh .heroCopy .actions{grid-template-columns:1fr 1fr;gap:12px;width:100%;margin-top:4px}.heroRefresh .heroCopy .primary,.heroRefresh .heroCopy .secondary{font-size:14px!important;padding:12px 10px;min-height:50px;gap:8px}.heroBenefits{margin-top:8px;gap:12px;justify-content:space-between;align-items:flex-start}.heroBenefits li{flex-direction:column;align-items:flex-start;padding:0;border:0;gap:8px;font-size:12px;line-height:18px}.heroRefresh .heroArt{margin:0 0 10px}.heroRefresh .heroVisual{padding:7px;border-radius:34px}.heroRefresh .heroImage{border-radius:27px;aspect-ratio:1.25}.heroOpenRoles{min-width:170px;top:-40px;right:0}.heroLearning{left:0;bottom:-48px}.heroFlexible{right:0;bottom:-48px}.heroFeatureCard{padding:12px 10px;gap:8px;border-radius:18px;animation-name:career-card-float-mobile}.heroFeatureIcon{width:38px;height:42px;border-radius:12px}.heroFeatureIcon svg{width:27px;height:27px}.heroFeatureCard strong{font-size:14px;line-height:20px;letter-spacing:-.4px}.heroFeatureCard p{font-size:12px;line-height:17px}.heroOpenRoles strong{font-size:29px;line-height:32px}}
+@media(max-width:359px){.heroRefresh .heroGrid{padding-inline:18px}.heroRefresh .heroCopy h1{font-size:29px}.heroFeatureCard{gap:6px;padding:10px 8px}.heroFeatureIcon{width:30px;height:36px}.heroFeatureIcon svg{width:23px;height:23px}.heroFeatureCard strong{font-size:12px}.heroFeatureCard p{font-size:11px;line-height:16px}.heroOpenRoles{min-width:150px}.heroOpenRoles strong{font-size:27px}}
+/* Keep the opportunities heading, filters and results on one aligned column. */
+.opportunities .filters{margin:28px 0;gap:12px;padding:16px;border-radius:16px}
+.opportunities .job{border-radius:16px;padding:24px}
+.opportunities .jobBody{gap:20px;width:100%}
+.opportunities .jobBody>div{flex:1}
+.opportunities .jobBody .iconBox{width:56px;height:56px;border-radius:16px}
+.opportunities .jobDescription{max-width:none}
+.opportunities .jobActions{margin-top:18px}
+@media(min-width:1101px){.opportunities .filters{grid-template-columns:minmax(180px,1.5fr) minmax(150px,1.1fr) minmax(120px,.85fr) minmax(110px,.8fr) auto}.opportunities .textButton{padding-left:12px;min-width:94px}}
+@media(max-width:767px){.opportunities .job{padding:20px}.opportunities .jobBody{gap:14px}.opportunities .jobBody .iconBox{width:46px;height:46px}.opportunities .filters{margin:24px 0}.opportunities .jobActions{gap:10px;margin-top:16px}}
+/* Compact floating cards matching the supplied feature-card reference. */
+.heroRefresh .heroFeatureCard{gap:12px;padding:12px 15px;border:1px solid #e0e7db;border-bottom:3px solid #dce6d3;border-radius:13px;background:#fff;box-shadow:0 16px 24px -12px #293f2c55,0 2px 6px #293f2c14}
+.heroRefresh .heroFeatureIcon{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#d0f58e,#e4fbb9);box-shadow:0 2px 5px #6a9d0026;color:#3e7309}
+.heroRefresh .heroFeatureIcon svg{width:27px;height:27px;stroke-width:2.2}
+.heroRefresh .heroFeatureCard strong{font-size:15px;line-height:21px;letter-spacing:-.3px}
+.heroRefresh .heroFeatureCard p{font-size:12px;line-height:17px;margin-top:3px}
+.heroRefresh .heroOpenRoles{min-width:190px}
+.heroRefresh .heroOpenRoles strong{font-size:22px;line-height:25px}
+@media(max-width:959px){.heroRefresh .heroFeatureCard{gap:8px;padding:10px;border-radius:12px}.heroRefresh .heroFeatureIcon{width:34px;height:36px;border-radius:9px}.heroRefresh .heroFeatureIcon svg{width:23px;height:23px}.heroRefresh .heroFeatureCard strong{font-size:13px;line-height:18px}.heroRefresh .heroFeatureCard p{font-size:11px;line-height:15px}.heroRefresh .heroOpenRoles{min-width:154px}.heroRefresh .heroOpenRoles strong{font-size:20px;line-height:23px}}
+@media(max-width:359px){.heroRefresh .heroFeatureCard{padding:9px 8px;gap:6px}.heroRefresh .heroFeatureIcon{width:29px;height:32px}.heroRefresh .heroFeatureCard strong{font-size:12px}.heroRefresh .heroFeatureCard p{font-size:10px;line-height:15px}}
+@media(prefers-reduced-motion:reduce){:global(html):has(.careers){scroll-behavior:auto}.careers *,.heroArt::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

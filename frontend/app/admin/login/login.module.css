@@ -1,0 +1,51 @@
+.page{position:relative;isolation:isolate;min-height:100svh;display:flex;flex-direction:column;gap:24px;align-items:center;justify-content:center;padding:38px 24px;background:#f1f5ed;color:#202424;font-family:Arial,Helvetica,sans-serif;overflow:hidden}
+.background{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1;background:linear-gradient(130deg,#f5f8ef,#eef5e8 55%,#f9faf7)}
+.background span{position:absolute;width:550px;height:550px;border-radius:45% 55% 65% 35%;background:radial-gradient(circle,#cbe7ad9c,transparent 70%);filter:blur(20px);animation:loginBackdropDrift 19s ease-in-out infinite alternate;will-change:transform}
+.background span:first-child{top:-180px;left:-120px}.background span:last-child{right:-130px;bottom:-200px;background:radial-gradient(circle,#afd78570,transparent 70%);animation-duration:24s;animation-delay:-9s}
+.frame{position:relative;z-index:1;width:100%;max-width:1040px;border:1px solid #e0e8d8;border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 22px 65px #273e1712}
+.brand{position:absolute;z-index:2;left:29px;top:25px;display:inline-flex;align-items:center;gap:9px;color:#284616;text-decoration:none;font-size:23px;line-height:28px;font-weight:700;letter-spacing:-1px}.brand svg{width:18px;height:21px}
+.content{display:grid;grid-template-columns:46% 54%;min-height:570px}
+.welcome{position:relative;min-width:0;display:flex;flex-direction:column;align-items:center;background:linear-gradient(145deg,#c7d8b5,#e2ebd8);padding:88px 29px 24px}
+.welcomeCopy{width:100%;max-width:350px}.welcome h2{font:700 25px/31px Arial,Helvetica,sans-serif;letter-spacing:-.5px;color:#284616;margin:0 0 12px}.welcome p{font-size:13px;line-height:21px;color:#405636;margin:0;max-width:315px}.welcome p strong{font-weight:700}
+.scene{position:relative;width:100%;max-width:350px;aspect-ratio:1/.94;flex-shrink:0;margin:8px auto 0;pointer-events:none}
+.cubes{object-fit:contain;padding:0 20px;filter:drop-shadow(0 12px 12px #29451a0a)}
+.orbits{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.orbitOne,.orbitTwo{offset-rotate:0deg;animation:loginOrbitTravel 18s linear infinite}
+.orbitOne{offset-path:path('M 26 215 a 224 82 0 1 0 448 0 a 224 82 0 1 0 -448 0')}
+.orbitTwo{offset-path:path('M 26 280 a 224 82 0 1 0 448 0 a 224 82 0 1 0 -448 0');animation-duration:24s;animation-direction:reverse;animation-delay:-8s}
+.formPanel{display:flex;align-items:center;justify-content:center;min-width:0;padding:48px 52px;background:#fff}
+.form{display:flex;flex-direction:column;gap:20px;width:100%;max-width:350px;min-width:0;margin:0;padding:0;background:transparent;border:0;box-shadow:none}
+.heading{text-align:center;margin:0 0 2px}.heading h1{font:700 31px/39px Arial,Helvetica,sans-serif;letter-spacing:-.8px;color:#202424;margin:0}
+.field{display:flex;flex-direction:column;min-width:0;margin:0}
+.inputRow,.password{position:relative;display:flex;align-items:center;gap:11px;width:100%;min-height:50px;padding:0 13px;border:1px solid #dbe4d4;border-radius:11px;background:#f9fbf7;color:#7f9472;transition:border-color .18s,box-shadow .18s}
+.inputRow:focus-within,.password:focus-within{border-color:#86b758;box-shadow:0 0 0 3px #60b3000c}
+.inputRow>svg,.password>svg{flex-shrink:0}
+.field input{display:block;width:100%;min-width:0;height:48px;border:0;border-radius:0;background:transparent;color:#202424;padding:8px 0;font:inherit;font-size:14px;line-height:24px;box-shadow:none;outline:none}
+.field input::placeholder{color:#84927c;font-size:13px;letter-spacing:.1px}.field input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px #f9fbf7 inset;-webkit-text-fill-color:#202424;caret-color:#202424}
+.password input{padding-right:28px}.visibility{position:absolute;right:7px;top:4px;display:inline-flex;align-items:center;justify-content:center;width:34px;height:40px;border:0;padding:0;background:transparent;color:#91a085;cursor:pointer}.visibility:hover{color:#4a840e}
+.security{display:flex;align-items:center;justify-content:center;gap:7px;color:#6b7961;font-size:11px;line-height:18px;margin:-2px 0 2px}.security svg{color:#799267;flex-shrink:0}
+.submit{display:inline-flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin-top:3px;padding:12px 28px;border:1px solid #5aab00;border-radius:11px;background:linear-gradient(110deg,#66b900,#55a000);color:white;font:600 15px/22px Arial,Helvetica,sans-serif;box-shadow:0 5px 14px #60b30018;cursor:pointer;transition:background .18s,box-shadow .18s}.submit:hover{background:#519b00;box-shadow:0 7px 18px #60b30025}.submit:disabled{opacity:.65;cursor:wait}
+.page :is(a,button):focus-visible{outline:2px solid #376b00;outline-offset:4px}.form .error{font-size:12px;line-height:19px;color:#b32b2b;margin:0}
+.footer{display:flex;align-items:center;justify-content:center;gap:11px;color:#9ba990;font-size:10px;line-height:18px;letter-spacing:1px;margin:4px 0 0}.footer span{height:1px;background:#e0e7d9;flex:1;max-width:75px}
+.srOnly{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@keyframes loginOrbitTravel{from{offset-distance:0%}to{offset-distance:100%}}
+@keyframes loginBackdropDrift{from{transform:translate3d(0,0,0) rotate(0deg) scale(1)}to{transform:translate3d(85px,45px,0) rotate(25deg) scale(1.18)}}
+@media(max-width:1000px){.page{padding:28px 20px}.content{min-height:560px;grid-template-columns:46% 54%}.welcome{padding:89px 24px 20px}.brand{left:24px}.welcome h2{font-size:17px;letter-spacing:2.1px}.formPanel{padding:42px 34px}.scene{margin-top:18px}.cubes{padding-inline:34px}}
+@media(max-width:700px){.page{padding:20px 16px}.frame{border-radius:21px;max-width:440px}.content{grid-template-columns:minmax(0,1fr);min-height:0}.brand{left:24px;top:22px;font-size:22px}.welcome{padding:79px 24px 15px}.welcomeCopy{max-width:340px}.welcome h2{font-size:16px;line-height:24px;letter-spacing:2px;margin-bottom:8px}.welcome p{font-size:12px;line-height:19px;max-width:340px}.scene{width:230px;max-width:100%;margin-top:4px;aspect-ratio:1/.95}.cubes{padding:0 24px}.formPanel{padding:30px 26px 34px}.form{gap:17px}.heading{margin-bottom:7px}.heading h1{font-size:28px;line-height:36px}.field input{font-size:16px}.background span{width:380px;height:380px}.inputRow,.password{min-height:48px}}
+@media(max-width:359px){.page{padding:14px 10px}.welcome{padding-inline:22px}.brand{left:22px}.scene{width:205px}.formPanel{padding:25px 22px 30px}.welcome h2{font-size:15px}.heading h1{font-size:26px}}
+@media(prefers-reduced-motion:reduce){.orbitOne,.orbitTwo,.background span{animation:none}.inputRow,.password,.submit{transition:none}.orbitTwo{offset-distance:60%}}
+
+
+.pageIntro{position:relative;z-index:1;width:100%;max-width:1040px;text-align:center}.pageIntro>span{display:inline-block;color:#5a7b43;font-size:10px;line-height:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase}.pageIntro h2{font:700 30px/39px Arial,Helvetica,sans-serif;letter-spacing:-.8px;margin:6px 0;color:#263323}.pageIntro em{font-style:normal;color:#589e13}.pageIntro p{text-align:center;margin:0;color:#78836f;font-size:13px;line-height:21px}
+.background::before{content:'';position:absolute;inset:0;background-image:radial-gradient(#9abe7c 1px,transparent 1px);background-size:28px 28px;opacity:.2;mask-image:linear-gradient(90deg,#000,transparent 32%,transparent 68%,#000);animation:loginGridDrift 50s linear infinite}
+.backgroundWords{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}.backgroundWords span{position:absolute;font-size:12px;line-height:20px;font-weight:600;letter-spacing:.2px;padding:9px 15px;border:1px solid #d9e5cf;border-radius:30px;background:#ffffff80;color:#7c956b;animation:loginWordFloat 8s ease-in-out infinite alternate}.backgroundWords span:nth-child(1){left:4%;top:25%}.backgroundWords span:nth-child(2){right:3%;top:39%;animation-delay:-3s}.backgroundWords span:nth-child(3){left:5%;bottom:18%;animation-delay:-5s}
+.accessBadge{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:30px;background:#eff7e7;color:#598337;font-size:10px;line-height:17px;font-weight:600;margin-bottom:10px}.heading p{font-size:12px;line-height:20px;color:#87917f;margin:9px 0 0}.fieldLabel{font-size:12px;line-height:18px;font-weight:600;color:#4b5941;margin-bottom:7px}.pillars{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:4px;width:100%;color:#536e40}.pillars span{display:inline-flex;align-items:center;gap:5px;border:1px solid #a9c09170;background:#ffffff48;padding:5px 9px;border-radius:20px;font-size:10px;line-height:16px}
+@keyframes loginWordFloat{from{transform:translateY(-7px)}to{transform:translateY(9px)}}
+@keyframes loginGridDrift{to{background-position:56px -56px}}
+@media(max-width:1350px){.backgroundWords{display:none}}
+@media(max-width:1000px){.welcome h2{font-size:23px;letter-spacing:-.4px}.welcome p{font-size:12px}.pillars{gap:5px}.pillars span{padding:4px 7px}.cubes{padding-inline:22px}}
+@media(max-width:700px){.page{gap:18px;padding-block:24px}.pageIntro h2{font-size:23px;line-height:30px}.pageIntro p{font-size:11px;line-height:18px}.pageIntro>span{font-size:9px;letter-spacing:1.5px}.welcome h2{font-size:23px;line-height:29px;letter-spacing:-.4px}.welcome p{font-size:12px}.welcome{padding-bottom:20px}.scene{width:210px}.pillars{margin-top:0}.heading p{font-size:11px}.accessBadge{margin-bottom:7px}}
+@media(prefers-reduced-motion:reduce){.backgroundWords span,.background::before{animation:none}}
+
+/* Compact desktop proportions; keep the form and artwork close together. */
+@media(min-width:701px){.page{padding:24px;gap:16px}.frame,.pageIntro{max-width:980px}.content{min-height:0;grid-template-columns:44% 56%}.welcome{padding:78px 26px 20px;justify-content:center}.welcome h2{font-size:22px;line-height:27px}.welcome p{font-size:12px;line-height:19px}.scene{width:245px;max-width:100%;margin-top:6px;aspect-ratio:1/.94}.cubes{padding-inline:16px}.formPanel{padding:34px 42px}.form{max-width:330px;gap:16px}.heading{margin-bottom:0}.heading h1{font-size:28px;line-height:35px}.heading p{margin-top:7px}.pageIntro h2{font-size:26px;line-height:34px}.pageIntro p{font-size:12px}.backgroundWords{display:none}}

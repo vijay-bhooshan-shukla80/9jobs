@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 import connectDB from '@/utils/db';
 import CareerApplication from '@/models/CareerApplication';
-import { assertCareersDatabase } from './service';
+import { assertCareersDatabase } from './database';
 
 export async function listCareerApplications({page = 1, search = ''} = {}) {
   assertCareersDatabase({requireEnabled: false});
   await connectDB();
-  const query = {persistenceState: 'complete'};
+  const query = {persistenceState: 'complete', deletedAt: null};
   const term = String(search).trim().slice(0, 120);
   if (term) {
     const escaped = Array.from(term, char => '\\^$.*+?()[]{}|'.includes(char) ? '\\' + char : char).join('');
@@ -24,5 +24,5 @@ export async function getCareerApplication(id) {
   if (!mongoose.isValidObjectId(id)) return null;
   assertCareersDatabase({requireEnabled: false});
   await connectDB();
-  return CareerApplication.findOne({_id: id, persistenceState: 'complete'}).lean();
+  return CareerApplication.findOne({_id: id, persistenceState: 'complete', deletedAt: null}).lean();
 }

@@ -1,0 +1,14 @@
+import {jest} from '@jest/globals';
+const session = jest.fn(), save = jest.fn();
+jest.doMock('@/lib/admin/auth/require-admin', () => ({requireAdminApiSession:session}));
+jest.doMock('@/lib/careers/jobs', () => ({saveCareerJob:save}));
+let handle;
+beforeAll(async () => {({handleJobWrite:handle}=await import('@/lib/careers/job-routes'));});
+beforeEach(() => {jest.clearAllMocks();session.mockResolvedValue({email:'admin@example.test'});save.mockResolvedValue({id:'507f1f77bcf86cd799439011',slug:'approved-role',status:'published'});});
+const request = (body='{}', origin='http://localhost:3000', contentType='application/json') => new Request('http://localhost:3000/api/admin/careers/jobs',{method:'POST',headers:{origin,'Content-Type':contentType},body});
+test('unauthenticated writes never access job storage', async () => {session.mockResolvedValue(null);expect((await handle(request())).status).toBe(401);expect(save).not.toHaveBeenCalled();});
+test('cross-site job writes are rejected even with an admin cookie', async () => {expect((await handle(request('{}','https://evil.test'))).status).toBe(403);expect(save).not.toHaveBeenCalled();});
+test('authenticated create and update use the existing admin identity', async () => {expect((await handle(request('{"title":"Example"}'))).status).toBe(201);expect(save).toHaveBeenCalledWith({title:'Example'},{email:'admin@example.test'},undefined);expect((await handle(request(),'507f1f77bcf86cd799439011')).status).toBe(200);});
+test('malformed and oversized JSON are rejected before storage', async () => {expect((await handle(request('{'))).status).toBe(400);expect((await handle(request('x'.repeat(65537)))).status).toBe(413);expect(save).not.toHaveBeenCalled();});
+test('validation messages expose fields without database details', async () => {save.mockRejectedValue({name:'ZodError',issues:[{path:['title'],message:'Required'}]});const r=await handle(request());expect(r.status).toBe(422);expect((await r.json()).fields.title).toBe('Required');});
+test('missing jobs and unavailable storage return safe responses', async () => {save.mockResolvedValue(null);expect((await handle(request(),'unknown')).status).toBe(404);save.mockRejectedValue(new Error('private-db-credentials'));const r=await handle(request());expect(r.status).toBe(503);expect(JSON.stringify(await r.json())).not.toContain('private-db-credentials');});
